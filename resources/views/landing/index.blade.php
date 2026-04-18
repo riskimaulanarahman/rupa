@@ -180,9 +180,6 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('booking.index') }}" class="px-5 py-2.5 border-2 {{ $lt->border_400 }} {{ $lt->text }} font-medium text-sm rounded-full {{ $lt->hover_bg }} transition-all whitespace-nowrap">
-                        {{ __('landing.nav_book_now') }}
-                    </a>
                     <a href="{{ route('register.index') }}" class="px-5 py-2.5 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold text-sm rounded-full hover:shadow-lg {{ $lt->hover_shadow }} transition-all hover:-translate-y-0.5 whitespace-nowrap">
                         {{ __('landing.nav_get_sourcecode') }}
                     </a>
@@ -211,7 +208,6 @@
                     <x-language-switcher />
                 </div>
                 <div class="pt-4 border-t {{ $lt->border }} space-y-3">
-                    <a href="{{ route('booking.index') }}" class="block text-center px-6 py-3 border-2 {{ $lt->border_400 }} {{ $lt->text }} font-semibold rounded-full">{{ __('landing.nav_book_now') }}</a>
                     <a href="{{ route('login') }}" class="block text-center text-gray-700 font-medium py-2">{{ __('landing.nav_login') }}</a>
                     <a href="{{ route('register.index') }}" class="block text-center px-6 py-3 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold rounded-full">{{ __('landing.nav_get_sourcecode') }}</a>
                 </div>
