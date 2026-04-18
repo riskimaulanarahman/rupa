@@ -2,7 +2,7 @@
 
 return [
     'title' => 'Import Data',
-    'subtitle' => 'Import data from Excel file to migrate data to GlowUp',
+    'subtitle' => 'Import data from Excel file to migrate data to Rupa',
 
     // Entity types
     'customers' => 'Customers',

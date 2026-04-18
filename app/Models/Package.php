@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOutlet;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,9 +12,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Package extends Model
 {
-    use HasFactory, SoftDeletes;
+    use BelongsToOutlet, BelongsToTenant, HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'tenant_id',
+        'outlet_id',
         'name',
         'description',
         'service_id',

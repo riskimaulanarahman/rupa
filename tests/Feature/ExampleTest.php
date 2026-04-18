@@ -25,10 +25,11 @@ class ExampleTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_setup_page_is_shown_when_setup_not_completed(): void
+    public function test_landing_page_is_shown_when_setup_not_completed(): void
     {
         $response = $this->get('/');
 
-        $response->assertRedirect(route('setup.index'));
+        $response->assertStatus(200);
+        $response->assertViewIs('landing.index');
     }
 }

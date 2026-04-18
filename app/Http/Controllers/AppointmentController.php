@@ -186,6 +186,7 @@ class AppointmentController extends Controller
         $slots = $this->appointmentService->getAvailableSlots(
             $date,
             (int) $request->service_id,
+            outlet_id(),
             $request->staff_id ? (int) $request->staff_id : null,
             $request->exclude_appointment_id ? (int) $request->exclude_appointment_id : null
         );

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\LandingContent;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
 
@@ -26,6 +27,10 @@ if (! function_exists('business_type')) {
      */
     function business_type(): ?string
     {
+        if (app()->has('outlet')) {
+            return app('outlet')->business_type;
+        }
+
         return Cache::remember('business_type', 60, function () {
             try {
                 return Setting::get('business_type');
@@ -218,6 +223,32 @@ if (! function_exists('landing_text')) {
      */
     function landing_text(string $key, array $replace = []): string
     {
+        $locale = app()->getLocale();
+        $cacheKey = "landing_content.{$locale}.{$key}";
+
+        $dbText = Cache::remember($cacheKey, 300, function () use ($key, $locale) {
+            try {
+                $content = LandingContent::query()->where('key', $key)->first();
+                if (! $content) {
+                    return null;
+                }
+
+                $value = $content->content[$locale] ?? $content->content['id'] ?? null;
+
+                return is_string($value) && $value !== '' ? $value : null;
+            } catch (\Throwable $e) {
+                return null;
+            }
+        });
+
+        if (is_string($dbText) && $dbText !== '') {
+            foreach ($replace as $replaceKey => $replaceValue) {
+                $dbText = str_replace(':'.$replaceKey, (string) $replaceValue, $dbText);
+            }
+
+            return $dbText;
+        }
+
         $type = business_type() ?? 'clinic';
 
         // Try business-specific key first (e.g., landing.salon.hero_badge)

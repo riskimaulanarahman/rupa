@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PublicBookingRequest extends FormRequest
 {
@@ -21,12 +22,22 @@ class PublicBookingRequest extends FormRequest
      */
     public function rules(): array
     {
+        $outletId = outlet_id();
+
+        $serviceExistsRule = Rule::exists('services', 'id');
+        $staffExistsRule = Rule::exists('users', 'id');
+
+        if ($outletId) {
+            $serviceExistsRule = $serviceExistsRule->where(fn ($query) => $query->where('outlet_id', $outletId));
+            $staffExistsRule = $staffExistsRule->where(fn ($query) => $query->where('outlet_id', $outletId));
+        }
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
             'email' => ['nullable', 'email', 'max:255'],
-            'service_id' => ['required', 'exists:services,id'],
-            'staff_id' => ['nullable', 'exists:users,id'],
+            'service_id' => ['required', $serviceExistsRule],
+            'staff_id' => ['nullable', $staffExistsRule],
             'appointment_date' => ['required', 'date', 'after_or_equal:today'],
             'start_time' => ['required', 'date_format:H:i'],
             'notes' => ['nullable', 'string', 'max:500'],

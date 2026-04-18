@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOutlet;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,9 +15,11 @@ use Illuminate\Support\Str;
 class Customer extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\CustomerFactory> */
-    use HasFactory, Notifiable, SoftDeletes;
+    use BelongsToOutlet, BelongsToTenant, HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
+        'tenant_id',
+        'outlet_id',
         'name',
         'phone',
         'email',

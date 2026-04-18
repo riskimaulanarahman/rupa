@@ -1,8 +1,8 @@
-# Analisis Ekspansi GlowUp untuk Salon & Barbershop
+# Analisis Ekspansi Rupa untuk Salon & Barbershop
 
 ## Ringkasan Eksekutif
 
-Setelah menganalisis codebase GlowUp secara menyeluruh, **sistem ini SANGAT COCOK** untuk di-expand ke bisnis Salon dan Barbershop dengan modifikasi minimal. Arsitektur yang sudah dibangun sangat generic dan fleksibel.
+Setelah menganalisis codebase Rupa secara menyeluruh, **sistem ini SANGAT COCOK** untuk di-expand ke bisnis Salon dan Barbershop dengan modifikasi minimal. Arsitektur yang sudah dibangun sangat generic dan fleksibel.
 
 ---
 
@@ -425,7 +425,7 @@ Setting::set('staff_role_label', 'Beautician', 'string');
 
 **Verdict: HIGHLY FEASIBLE**
 
-Sistem GlowUp sudah memiliki arsitektur yang sangat baik dan modular. Ekspansi ke Salon dan Barbershop memerlukan:
+Sistem Rupa sudah memiliki arsitektur yang sangat baik dan modular. Ekspansi ke Salon dan Barbershop memerlukan:
 
 - **~5-7 file** perlu dimodifikasi
 - **~3-5 file** perlu ditambahkan (config, seeders, migrations)
@@ -576,4 +576,4 @@ return [
 
 *Document Version: 1.0*
 *Created: February 2026*
-*Author: GlowUp Development Team*
+*Author: Rupa Development Team*

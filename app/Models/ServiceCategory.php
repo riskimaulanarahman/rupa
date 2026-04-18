@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOutlet;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,9 +11,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ServiceCategory extends Model
 {
-    use HasFactory, SoftDeletes;
+    use BelongsToOutlet, BelongsToTenant, HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'tenant_id',
+        'outlet_id',
         'name',
         'description',
         'icon',

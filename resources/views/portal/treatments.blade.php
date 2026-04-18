@@ -15,7 +15,7 @@
         @if($treatments->count() > 0)
             <div class="divide-y divide-gray-200 dark:divide-gray-700">
                 @foreach($treatments as $treatment)
-                    <a href="{{ route('portal.treatments.show', $treatment) }}" class="block p-4 max-sm:p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <a href="{{ customer_route('treatments.show', $treatment) }}" class="block p-4 max-sm:p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <div class="flex items-center gap-3 max-sm:gap-2">
                             <div class="w-12 h-12 max-sm:w-10 max-sm:h-10 bg-purple-100 dark:bg-purple-900/50 rounded-xl flex flex-col items-center justify-center flex-shrink-0">
                                 <span class="text-xs max-sm:text-[10px] font-medium text-purple-600 dark:text-purple-300">{{ $treatment->created_at->format('M') }}</span>

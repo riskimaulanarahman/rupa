@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOutlet;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,9 +13,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Service extends Model
 {
     /** @use HasFactory<\Database\Factories\ServiceFactory> */
-    use HasFactory, SoftDeletes;
+    use BelongsToOutlet, BelongsToTenant, HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'tenant_id',
+        'outlet_id',
         'category_id',
         'name',
         'description',
@@ -51,16 +55,16 @@ class Service extends Model
 
     public function getFormattedPriceAttribute(): string
     {
-        return 'Rp ' . number_format($this->price, 0, ',', '.');
+        return 'Rp '.number_format($this->price, 0, ',', '.');
     }
 
     public function getFormattedIncentiveAttribute(): string
     {
-        return 'Rp ' . number_format($this->incentive ?? 0, 0, ',', '.');
+        return 'Rp '.number_format($this->incentive ?? 0, 0, ',', '.');
     }
 
     public function getFormattedDurationAttribute(): string
     {
-        return $this->duration_minutes . ' min';
+        return $this->duration_minutes.' min';
     }
 }

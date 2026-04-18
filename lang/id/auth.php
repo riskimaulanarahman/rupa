@@ -15,6 +15,8 @@ return [
     'owner' => 'Pemilik',
     'admin' => 'Admin',
     'beautician' => 'Beautician',
+    'dont_have_account' => 'Belum memiliki akun?',
+    'register_now' => 'Daftar Sekarang',
 
     'failed' => 'Kredensial tidak cocok dengan data kami.',
     'password_incorrect' => 'Kata sandi yang dimasukkan salah.',

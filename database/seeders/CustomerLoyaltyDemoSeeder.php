@@ -10,18 +10,25 @@ use App\Models\Transaction;
 use App\Models\TransactionItem;
 use App\Models\TreatmentRecord;
 use App\Models\User;
+use Database\Seeders\Concerns\ResolvesDemoTenantOutlet;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class CustomerLoyaltyDemoSeeder extends Seeder
 {
+    use ResolvesDemoTenantOutlet;
+
     public function run(): void
     {
+        [$tenant, $outlet] = $this->ensureDemoContextBound();
+
         // Find or create the customer
         $customer = Customer::where('email', 'saiful.bahri.tl@gmail.com')->first();
 
         if (! $customer) {
             $customer = Customer::create([
+                'tenant_id' => $tenant->id,
+                'outlet_id' => $outlet->id,
                 'name' => 'Saiful Bahri',
                 'email' => 'saiful.bahri.tl@gmail.com',
                 'phone' => '+6281234567890',
@@ -36,12 +43,18 @@ class CustomerLoyaltyDemoSeeder extends Seeder
             ]);
         }
 
-        // Get services and staff
-        $services = Service::where('is_active', true)->take(5)->get();
-        $staff = User::where('role', 'beautician')->first() ?? User::first();
+        if (LoyaltyPoint::query()->where('customer_id', $customer->id)->exists()) {
+            $this->command->info("Customer {$customer->email} already has loyalty data. Skipping re-seed.");
 
-        if ($services->isEmpty()) {
-            $this->command->warn('No active services found. Please seed services first.');
+            return;
+        }
+
+        // Get services and staff
+        $services = Service::query()->where('is_active', true)->take(5)->get();
+        $staff = User::query()->where('role', 'beautician')->first() ?? User::query()->first();
+
+        if ($services->isEmpty() || ! $staff) {
+            $this->command->warn('No active services/staff found. Please seed required data first.');
 
             return;
         }
@@ -63,6 +76,8 @@ class CustomerLoyaltyDemoSeeder extends Seeder
 
             // Create appointment
             $appointment = Appointment::create([
+                'tenant_id' => $tenant->id,
+                'outlet_id' => $outlet->id,
                 'customer_id' => $customer->id,
                 'service_id' => $service->id,
                 'staff_id' => $staff->id,
@@ -76,6 +91,8 @@ class CustomerLoyaltyDemoSeeder extends Seeder
 
             // Create treatment record
             TreatmentRecord::create([
+                'tenant_id' => $tenant->id,
+                'outlet_id' => $outlet->id,
                 'appointment_id' => $appointment->id,
                 'customer_id' => $customer->id,
                 'staff_id' => $staff->id,
@@ -90,6 +107,8 @@ class CustomerLoyaltyDemoSeeder extends Seeder
             $total = $subtotal - $discount;
 
             $transaction = Transaction::create([
+                'tenant_id' => $tenant->id,
+                'outlet_id' => $outlet->id,
                 'customer_id' => $customer->id,
                 'appointment_id' => $appointment->id,
                 'cashier_id' => $staff->id,
@@ -98,12 +117,18 @@ class CustomerLoyaltyDemoSeeder extends Seeder
                 'discount_type' => $discount > 0 ? 'fixed' : null,
                 'tax_amount' => 0,
                 'total_amount' => $total,
+                'paid_amount' => $total,
                 'status' => 'paid',
                 'notes' => null,
+                'paid_at' => $date,
+                'created_at' => $date,
+                'updated_at' => $date,
             ]);
 
             // Create transaction item
             TransactionItem::create([
+                'tenant_id' => $tenant->id,
+                'outlet_id' => $outlet->id,
                 'transaction_id' => $transaction->id,
                 'item_type' => 'service',
                 'service_id' => $service->id,
@@ -191,6 +216,8 @@ class CustomerLoyaltyDemoSeeder extends Seeder
 
         // Create upcoming appointment
         Appointment::create([
+            'tenant_id' => $tenant->id,
+            'outlet_id' => $outlet->id,
             'customer_id' => $customer->id,
             'service_id' => $services->first()->id,
             'staff_id' => $staff->id,

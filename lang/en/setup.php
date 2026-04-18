@@ -2,7 +2,7 @@
 
 return [
     'title' => 'Setup',
-    'welcome' => 'Welcome to GlowUp',
+    'welcome' => 'Welcome to Rupa',
     'select_business_type' => 'Select your business type to get started',
     'business_type' => 'Business Type',
     'details' => 'Details',
@@ -30,7 +30,7 @@ return [
     'complete_setup' => 'Complete Setup',
     'terms_agreement' => 'By completing setup, you agree to our terms and conditions',
     'can_change_later' => 'You can change these settings later in the settings page',
-    'setup_completed' => 'Setup completed successfully! Welcome to GlowUp.',
+    'setup_completed' => 'Setup completed successfully! Welcome to Rupa.',
 
     // Business types
     'clinic' => 'Beauty Clinic',

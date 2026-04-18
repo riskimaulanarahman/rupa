@@ -1,6 +1,6 @@
-# Sistem Referral GlowUp
+# Sistem Referral Rupa
 
-Dokumentasi lengkap tentang sistem referral dan loyalty points di GlowUp.
+Dokumentasi lengkap tentang sistem referral dan loyalty points di Rupa.
 
 ## Daftar Isi
 

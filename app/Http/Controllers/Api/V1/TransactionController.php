@@ -367,7 +367,7 @@ class TransactionController extends Controller
     {
         $transaction->load(['customer', 'items', 'payments']);
 
-        $clinicName = Setting::where('key', 'clinic_name')->value('value') ?? 'GlowUp Clinic';
+        $clinicName = Setting::where('key', 'clinic_name')->value('value') ?? 'Rupa Clinic';
         $clinicAddress = Setting::where('key', 'clinic_address')->value('value') ?? '';
         $clinicPhone = Setting::where('key', 'clinic_phone')->value('value') ?? '';
 

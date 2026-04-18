@@ -15,7 +15,7 @@
         @if($packages->count() > 0)
             <div class="divide-y divide-gray-200 dark:divide-gray-700">
                 @foreach($packages as $customerPackage)
-                    <a href="{{ route('portal.packages.show', $customerPackage) }}" class="block p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <a href="{{ customer_route('packages.show', $customerPackage) }}" class="block p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <div class="flex items-center gap-4">
                             <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/50 rounded-xl flex items-center justify-center">
                                 <svg class="w-7 h-7 text-purple-600 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -4,17 +4,23 @@ namespace Database\Seeders;
 
 use App\Models\Customer;
 use App\Models\LoyaltyPoint;
+use Database\Seeders\Concerns\ResolvesDemoTenantOutlet;
 use Illuminate\Database\Seeder;
 
 class AllCustomersLoyaltySeeder extends Seeder
 {
+    use ResolvesDemoTenantOutlet;
+
     /**
-     * Seed loyalty points data for ALL existing customers.
-     * This seeder is safe to run on production - it will only ADD points, not replace.
+     * Seed loyalty points data for all customers in the active tenant/outlet context.
      */
     public function run(): void
     {
-        $customers = Customer::all();
+        if (! app()->has('tenant_id') || ! app()->has('outlet_id')) {
+            $this->ensureDemoContextBound();
+        }
+
+        $customers = Customer::query()->get();
 
         if ($customers->isEmpty()) {
             $this->command->warn('No customers found in database.');

@@ -2,11 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOutlet;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class OperatingHour extends Model
 {
+    use BelongsToOutlet, BelongsToTenant;
+
     protected $fillable = [
+        'tenant_id',
+        'outlet_id',
         'day_of_week',
         'open_time',
         'close_time',

@@ -42,6 +42,18 @@ class AuthController extends Controller
             'data' => [
                 'user' => new UserResource($user),
                 'token' => $token,
+                'tenant' => tenant() ? [
+                    'id' => tenant()->id,
+                    'name' => tenant()->name,
+                    'slug' => tenant()->slug,
+                    'status' => tenant()->status,
+                ] : null,
+                'outlet' => outlet() ? [
+                    'id' => outlet()->id,
+                    'name' => outlet()->name,
+                    'slug' => outlet()->slug,
+                    'business_type' => outlet()->business_type,
+                ] : null,
             ],
         ]);
     }

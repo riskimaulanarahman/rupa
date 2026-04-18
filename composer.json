@@ -27,7 +27,8 @@
         "files": [
             "app/Helpers/business.php",
             "app/Helpers/branding.php",
-            "app/Helpers/format.php"
+            "app/Helpers/format.php",
+            "app/Helpers/tenant.php"
         ],
         "psr-4": {
             "App\\": "app/",

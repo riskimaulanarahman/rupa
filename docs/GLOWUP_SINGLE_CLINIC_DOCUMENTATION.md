@@ -1,4 +1,4 @@
-# GlowUp - Beauty Clinic Management System
+# Rupa - Beauty Clinic Management System
 ## Complete Documentation: PRD, FSD, Database Design
 
 **Version:** 1.0  
@@ -13,7 +13,7 @@
 ## 1.1 Executive Summary
 
 ### Product Vision
-GlowUp adalah sistem manajemen klinik kecantikan yang dirancang untuk membantu owner klinik mengelola operasional bisnis secara efisien. Sistem ini mencakup booking management, customer records, treatment history, POS, dan reporting dalam satu platform terintegrasi.
+Rupa adalah sistem manajemen klinik kecantikan yang dirancang untuk membantu owner klinik mengelola operasional bisnis secara efisien. Sistem ini mencakup booking management, customer records, treatment history, POS, dan reporting dalam satu platform terintegrasi.
 
 ### Target User
 - **Primary:** Owner klinik kecantikan skala kecil-menengah (1-10 staff)
@@ -41,7 +41,7 @@ GlowUp adalah sistem manajemen klinik kecantikan yang dirancang untuk membantu o
 
 ### Current Pain Points (Klinik Kecantikan)
 
-| Problem | Impact | GlowUp Solution |
+| Problem | Impact | Rupa Solution |
 |---------|--------|-----------------|
 | Booking via WA manual | Bentrok jadwal, lupa follow-up | Centralized booking system |
 | Catatan treatment di kertas | Hilang, susah dicari, tidak profesional | Digital treatment records |
@@ -541,7 +541,7 @@ US-10.2: Sebagai Owner, saya ingin mengelola user/staff,
 ├─────────────────────────────────────────────────────────────┤
 │  MySQL 8.0                                                  │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │  Database: glowup_clinic                              │  │
+│  │  Database: rupa_clinic                              │  │
 │  └──────────────────────────────────────────────────────┘  │
 │                                                             │
 │  File Storage (Local/S3)                                    │
@@ -570,7 +570,7 @@ US-10.2: Sebagai Owner, saya ingin mengelola user/staff,
 **UI Components:**
 ```
 ┌────────────────────────────────────────┐
-│              GlowUp Logo               │
+│              Rupa Logo               │
 │                                        │
 │  ┌──────────────────────────────────┐  │
 │  │ Email                            │  │
@@ -1699,7 +1699,7 @@ CREATE INDEX idx_transactions_report ON transactions (created_at, payment_method
 #!/bin/bash
 # /scripts/backup.sh
 
-DB_NAME="glowup_clinic"
+DB_NAME="rupa_clinic"
 BACKUP_DIR="/backups/mysql"
 DATE=$(date +%Y%m%d_%H%M%S)
 
@@ -1731,7 +1731,7 @@ find $BACKUP_DIR -name "*.sql.gz" -mtime +7 -delete
 ## B. File Structure
 
 ```
-glowup-clinic/
+rupa-clinic/
 ├── app/
 │   ├── Http/
 │   │   ├── Controllers/

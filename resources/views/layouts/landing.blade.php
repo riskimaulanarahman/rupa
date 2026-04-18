@@ -71,9 +71,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', brand_name() . ' - ' . brand_tagline())</title>
     <meta name="description" content="@yield('description', brand_description())">
-    @if(brand_logo('favicon'))
-        <link rel="icon" type="image/x-icon" href="{{ brand_logo('favicon') }}">
-    @endif
+    <link rel="icon" type="image/x-icon" href="{{ brand_logo('favicon') ?? asset('favicon.ico') }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

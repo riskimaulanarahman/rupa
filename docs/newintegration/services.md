@@ -1,4 +1,4 @@
-# Flutter API Services - GlowUp Integration
+# Flutter API Services - Rupa Integration
 
 Implementasi API services/datasources untuk Flutter.
 
@@ -15,7 +15,7 @@ import '../models/responses/api_response.dart';
 import 'auth_local_datasource.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://glowup.jagoflutter.com/api/v1';
+  static const String baseUrl = 'https://rupa.jagoflutter.com/api/v1';
 
   final http.Client _client;
   final AuthLocalDatasource _authLocal;

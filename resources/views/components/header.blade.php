@@ -3,6 +3,11 @@
     $buttonClass = $tc->button ?? 'bg-rose-500 hover:bg-rose-600';
     $accentClass = $tc->accentBg ?? 'bg-rose-500';
     $avatarGradient = $tc->gradient ?? 'from-rose-400 to-rose-500';
+    $currentOutlet = outlet();
+    $currentTenant = tenant();
+    $tenantOutlets = (auth()->user()?->isOwner() ?? false)
+        ? ($currentTenant?->outlets()->where('status', 'active')->orderBy('name')->get() ?? collect())
+        : collect();
 
     // Language data for mobile dropdown
     $currentLocale = app()->getLocale();
@@ -25,10 +30,58 @@
                 </svg>
             </button>
             <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">@yield('page-title', 'Dashboard')</h1>
+            @if($currentOutlet)
+                <span class="hidden sm:inline-flex items-center gap-2 rounded-full bg-rose-50 dark:bg-rose-900/30 px-3 py-1 text-xs font-bold text-rose-700 dark:text-rose-300 border border-rose-100 dark:border-rose-800/50">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    {{ $currentOutlet->name }}
+                </span>
+            @endif
         </div>
 
         <!-- Right: Actions -->
         <div class="flex items-center gap-3">
+            @if($tenantOutlets->count() > 1)
+                <div class="relative max-md:hidden" x-data="{ outletSwitcherOpen: false }">
+                    <button
+                        @click="outletSwitcherOpen = !outletSwitcherOpen"
+                        class="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    >
+                        <span class="max-w-[160px] truncate">{{ $currentOutlet?->name ?? 'Pilih Outlet' }}</span>
+                        <svg class="w-4 h-4 transition-transform" :class="outletSwitcherOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div
+                        x-show="outletSwitcherOpen"
+                        @click.away="outletSwitcherOpen = false"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="transform opacity-100 scale-100"
+                        x-transition:leave-end="transform opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-2 z-50"
+                        style="display: none;"
+                    >
+                        @foreach($tenantOutlets as $tenantOutlet)
+                            @if((int) $tenantOutlet->id === (int) $currentOutlet?->id)
+                                <div class="px-4 py-2.5 text-sm font-semibold text-rose-600 bg-rose-50 dark:bg-rose-900/20 dark:text-rose-300">
+                                    {{ $tenantOutlet->name }}
+                                </div>
+                            @else
+                                <form action="{{ route('tenant.outlets.switch', $tenantOutlet) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                        {{ $tenantOutlet->name }}
+                                    </button>
+                                </form>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             <!-- Language Switcher (Desktop Only) -->
             <div class="max-sm:hidden">
                 <x-language-switcher />

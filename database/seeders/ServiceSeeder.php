@@ -4,12 +4,17 @@ namespace Database\Seeders;
 
 use App\Models\Service;
 use App\Models\ServiceCategory;
+use Database\Seeders\Concerns\ResolvesDemoTenantOutlet;
 use Illuminate\Database\Seeder;
 
 class ServiceSeeder extends Seeder
 {
+    use ResolvesDemoTenantOutlet;
+
     public function run(): void
     {
+        [$tenant, $outlet] = $this->ensureDemoContextBound();
+
         $facial = ServiceCategory::where('name', 'Facial')->first();
         $body = ServiceCategory::where('name', 'Body Treatment')->first();
         $laser = ServiceCategory::where('name', 'Laser & Light')->first();
@@ -93,7 +98,22 @@ class ServiceSeeder extends Seeder
         ];
 
         foreach ($services as $service) {
-            Service::create($service);
+            if (! $service['category_id']) {
+                continue;
+            }
+
+            Service::updateOrCreate(
+                [
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
+                    'name' => $service['name'],
+                    'category_id' => $service['category_id'],
+                ],
+                array_merge($service, [
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
+                ])
+            );
         }
     }
 }

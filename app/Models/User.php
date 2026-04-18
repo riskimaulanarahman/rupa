@@ -3,6 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Support\Permissions\ModulePermissionResolver;
+use App\Traits\BelongsToOutlet;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,7 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use BelongsToOutlet, BelongsToTenant, HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -19,6 +22,8 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'tenant_id',
+        'outlet_id',
         'name',
         'email',
         'password',
@@ -26,6 +31,7 @@ class User extends Authenticatable
         'phone',
         'avatar',
         'is_active',
+        'can_view_revenue',
     ];
 
     /**
@@ -49,14 +55,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'can_view_revenue' => 'boolean',
         ];
     }
 
     public const ROLES = [
+        'superadmin' => 'Super Admin',
         'owner' => 'Owner',
         'admin' => 'Admin',
         'beautician' => 'Beautician',
     ];
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
+    }
 
     public function isOwner(): bool
     {
@@ -71,6 +84,23 @@ class User extends Authenticatable
     public function isBeautician(): bool
     {
         return $this->role === 'beautician';
+    }
+
+    public function canViewRevenue(): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        if ($this->isOwner()) {
+            return true;
+        }
+
+        if ($this->isAdmin()) {
+            return (bool) ($this->can_view_revenue ?? true);
+        }
+
+        return false;
     }
 
     public function hasRole(string|array $roles): bool
@@ -95,5 +125,18 @@ class User extends Authenticatable
     public function scopeBeauticians($query)
     {
         return $query->where('role', 'beautician');
+    }
+
+    public function canAccessModule(string $moduleKey): bool
+    {
+        return app(ModulePermissionResolver::class)->canAccessModuleForUser($this, $moduleKey);
+    }
+
+    /**
+     * @return array<string, bool>
+     */
+    public function moduleAccess(): array
+    {
+        return app(ModulePermissionResolver::class)->moduleAccessForUser($this);
     }
 }

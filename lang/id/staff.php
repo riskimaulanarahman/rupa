@@ -17,6 +17,8 @@ return [
     'password_help' => 'Kosongkan jika tidak ingin mengubah kata sandi',
     'role' => 'Peran',
     'is_active' => 'Status Aktif',
+    'can_view_revenue' => 'Boleh melihat revenue',
+    'can_view_revenue_help' => 'Jika aktif, admin bisa mengakses dashboard dan laporan revenue.',
 
     // Roles
     'role_owner' => 'Owner',

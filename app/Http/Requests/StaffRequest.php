@@ -25,6 +25,7 @@ class StaffRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:20'],
             'role' => ['required', Rule::in(['owner', 'admin', 'beautician'])],
             'is_active' => ['boolean'],
+            'can_view_revenue' => ['nullable', 'boolean'],
         ];
 
         if ($this->isMethod('POST')) {

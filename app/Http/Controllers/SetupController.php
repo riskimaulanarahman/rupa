@@ -161,7 +161,7 @@ class SetupController extends Controller
         // Login the user
         auth()->login($user);
 
-        return redirect()->route('dashboard')->with('success', __('Setup completed successfully! Welcome to GlowUp.'));
+        return redirect()->route('dashboard')->with('success', __('Setup completed successfully! Welcome to Rupa.'));
     }
 
     /**

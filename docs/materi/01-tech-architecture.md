@@ -1,4 +1,4 @@
-# Dokumentasi Teknis & Arsitektur GlowUp Clinic
+# Dokumentasi Teknis & Arsitektur Rupa Clinic
 
 ## Daftar Isi
 1. [Gambaran Umum](#1-gambaran-umum)
@@ -14,7 +14,7 @@
 
 ## 1. Gambaran Umum
 
-**GlowUp Clinic** adalah sistem manajemen klinik kecantikan berbasis web yang dibangun dengan Laravel 12. Aplikasi ini menyediakan solusi lengkap untuk mengelola operasional klinik kecantikan termasuk:
+**Rupa Clinic** adalah sistem manajemen klinik kecantikan berbasis web yang dibangun dengan Laravel 12. Aplikasi ini menyediakan solusi lengkap untuk mengelola operasional klinik kecantikan termasuk:
 
 - Manajemen pelanggan dengan profil kulit
 - Sistem appointment dengan kalender
@@ -69,7 +69,7 @@
 ### 3.1 Struktur Direktori
 
 ```
-clinic-glowup-web/
+clinic-rupa-web/
 ├── app/
 │   ├── Http/
 │   │   ├── Controllers/
@@ -681,7 +681,7 @@ points_expiry_months : Masa berlaku poin
 
 ## Kesimpulan
 
-GlowUp Clinic adalah aplikasi manajemen klinik kecantikan yang komprehensif dengan arsitektur modern berbasis Laravel 12. Aplikasi ini menerapkan:
+Rupa Clinic adalah aplikasi manajemen klinik kecantikan yang komprehensif dengan arsitektur modern berbasis Laravel 12. Aplikasi ini menerapkan:
 
 - **Clean Architecture** dengan pemisahan layer yang jelas
 - **RESTful API** untuk integrasi mobile

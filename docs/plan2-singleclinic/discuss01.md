@@ -1,4 +1,4 @@
-# Diskusi Strategi Bisnis GlowUp - Multi Business Type
+# Diskusi Strategi Bisnis Rupa - Multi Business Type
 
 ## Tanggal: 5 Februari 2026
 
@@ -19,7 +19,7 @@
 
 ### Sistem yang Dibutuhkan
 
-| Sistem | Deskripsi | Status GlowUp |
+| Sistem | Deskripsi | Status Rupa |
 |--------|-----------|---------------|
 | **Clinic Management System (CMS)** | Rekam medis elektronik, foto before/after, jadwal dokter | ✅ DONE |
 | **CRM & Loyalty** | Membership, poin reward, program referral | ✅ DONE (tanpa referral) |
@@ -37,11 +37,11 @@
 | Aoikumo | Rp 2-8 juta | Malaysia |
 | Neosoft | Rp 2-5 juta | - |
 
-**GlowUp Target: Rp 150.000/event (one-time) → sangat kompetitif!**
+**Rupa Target: Rp 150.000/event (one-time) → sangat kompetitif!**
 
 ---
 
-## 2. Analisis Fitur GlowUp (Current State)
+## 2. Analisis Fitur Rupa (Current State)
 
 ### ✅ FITUR YANG SUDAH ADA & LENGKAP
 
@@ -321,9 +321,9 @@ Untuk harga **Rp 150.000** (one-time/event), fitur yang ada sudah **SANGAT LENGK
 
 ### Verdict
 
-**Untuk harga Rp 150.000, fitur GlowUp sudah SANGAT KOMPETITIF!**
+**Untuk harga Rp 150.000, fitur Rupa sudah SANGAT KOMPETITIF!**
 
-Kompetitor charge Rp 2-10 juta/bulan, GlowUp one-time Rp 150.000 dengan fitur yang comparable.
+Kompetitor charge Rp 2-10 juta/bulan, Rupa one-time Rp 150.000 dengan fitur yang comparable.
 
 ### Next Action (Prioritas untuk 100%)
 

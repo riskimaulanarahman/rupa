@@ -1,4 +1,4 @@
-# GlowUp Single Clinic - Development Roadmap
+# Rupa Single Clinic - Development Roadmap
 
 **Model Bisnis:** Custom Solution (bukan SaaS)
 **Tech Stack:** Laravel 12 + Alpine.js + Tailwind CSS 4
@@ -7,7 +7,7 @@
 
 ## Overview
 
-GlowUp adalah sistem manajemen klinik kecantikan yang dijual sebagai **solusi custom** untuk single clinic.
+Rupa adalah sistem manajemen klinik kecantikan yang dijual sebagai **solusi custom** untuk single clinic.
 Klien mendapatkan:
 - Website booking custom dengan domain sendiri
 - Dashboard admin untuk manajemen operasional
@@ -98,7 +98,7 @@ Klien mendapatkan:
 
 ## File References
 
-- Main Documentation: `docs/GLOWUP_SINGLE_CLINIC_DOCUMENTATION.md`
+- Main Documentation: `docs/RUPA_SINGLE_CLINIC_DOCUMENTATION.md`
 - Design System: `docs/plan2-singleclinic/01-DESIGN-SYSTEM.md`
 - Phase Details: `docs/plan2-singleclinic/02-PHASE2-AUTH-DASHBOARD.md` dst
 - **Mobile API Documentation: `docs/plan2-singleclinic/07-PHASE11-MOBILE-API.md`**

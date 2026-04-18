@@ -202,11 +202,12 @@ class SetupWizardTest extends TestCase
         $this->assertAuthenticated();
     }
 
-    public function test_landing_page_redirects_to_setup_when_not_completed(): void
+    public function test_landing_page_shows_when_setup_not_completed(): void
     {
         $response = $this->get('/');
 
-        $response->assertRedirect(route('setup.index'));
+        $response->assertStatus(200);
+        $response->assertViewIs('landing.index');
     }
 
     public function test_landing_page_shows_when_setup_completed(): void
@@ -220,12 +221,12 @@ class SetupWizardTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_dashboard_redirects_to_setup_when_not_completed(): void
+    public function test_dashboard_is_forbidden_without_revenue_access_when_not_completed(): void
     {
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->get(route('dashboard'));
 
-        $response->assertRedirect(route('setup.index'));
+        $response->assertForbidden();
     }
 }

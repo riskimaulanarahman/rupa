@@ -67,14 +67,14 @@ Convert `docs/landing-page.html` ke Blade template.
 
 - [ ] **Laravel Fresh Install**
   ```bash
-  composer create-project laravel/laravel glowup-clinic
-  cd glowup-clinic
+  composer create-project laravel/laravel rupa-clinic
+  cd rupa-clinic
   ```
 
 - [ ] **Configure Database** (.env)
   ```env
   DB_CONNECTION=mysql
-  DB_DATABASE=glowup_clinic
+  DB_DATABASE=rupa_clinic
   DB_USERNAME=root
   DB_PASSWORD=
   ```
@@ -185,9 +185,9 @@ Convert `docs/landing-page.html` ke Blade template.
   php artisan make:seeder UserSeeder
   ```
   Default users:
-  - Owner: owner@glowup.com / password
-  - Admin: admin@glowup.com / password
-  - Beautician: maya@glowup.com / password
+  - Owner: owner@rupa.com / password
+  - Admin: admin@rupa.com / password
+  - Beautician: maya@rupa.com / password
 
 - [ ] **Create SettingSeeder**
   ```bash
@@ -268,7 +268,7 @@ Convert `docs/landing-page.html` ke Blade template.
   - Alpine.js untuk interactivity
 
 - [ ] **Create Login View** (resources/views/auth/login.blade.php)
-  - Logo GlowUp
+  - Logo Rupa
   - Email input
   - Password input dengan show/hide toggle
   - Remember me checkbox

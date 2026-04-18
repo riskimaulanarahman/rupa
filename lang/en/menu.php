@@ -14,6 +14,7 @@ return [
     'transactions' => 'Transactions',
     'loyalty' => 'Loyalty Program',
     'reports' => 'Reports',
+    'outlets' => 'Outlets',
     'import_data' => 'Import Data',
     'staff' => 'Staff',
     'settings' => 'Settings',

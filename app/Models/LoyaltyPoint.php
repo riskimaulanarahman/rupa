@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOutlet;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LoyaltyPoint extends Model
 {
+    use BelongsToOutlet, BelongsToTenant;
+
     public const TYPES = [
         'earn' => 'Dapat Poin',
         'redeem' => 'Tukar Poin',
@@ -15,6 +19,8 @@ class LoyaltyPoint extends Model
     ];
 
     protected $fillable = [
+        'tenant_id',
+        'outlet_id',
         'customer_id',
         'transaction_id',
         'type',

@@ -1,5 +1,11 @@
 @extends('layouts.landing')
 
+@php
+    $bookingRoutePrefix = $bookingRoutePrefix ?? 'booking';
+    $bookingRouteParams = $bookingRouteParams ?? [];
+    $bookingHomeUrl = $bookingHomeUrl ?? route('home');
+@endphp
+
 @section('title', __('booking.confirmation_title') . ' - ' . brand_name())
 
 @section('content')
@@ -109,12 +115,12 @@
 
         <!-- Actions -->
         <div class="mt-6 space-y-3">
-            <a href="{{ route('home') }}" class="block w-full text-center px-6 py-3 {{ $tc->button ?? 'bg-rose-500 hover:bg-rose-600' }} text-white font-medium rounded-xl transition">
+            <a href="{{ $bookingHomeUrl }}" class="block w-full text-center px-6 py-3 {{ $tc->button ?? 'bg-rose-500 hover:bg-rose-600' }} text-white font-medium rounded-xl transition">
                 {{ __('booking.back_to_home') }}
             </a>
 
             @if(in_array($appointment->status, ['pending', 'confirmed']))
-                <form action="{{ route('booking.cancel', $appointment) }}" method="POST" onsubmit="return confirm('{{ __('booking.cancel_confirm') }}')">
+                <form action="{{ route($bookingRoutePrefix . '.cancel', array_merge($bookingRouteParams, ['appointment' => $appointment])) }}" method="POST" onsubmit="return confirm('{{ __('booking.cancel_confirm') }}')">
                     @csrf
                     <button type="submit" class="w-full text-center px-6 py-3 border border-red-300 text-red-600 font-medium rounded-xl hover:bg-red-50 transition">
                         {{ __('booking.cancel_booking') }}

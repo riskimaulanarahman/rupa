@@ -1,6 +1,6 @@
-# GlowUp API Integration Guide for Flutter
+# Rupa API Integration Guide for Flutter
 
-Dokumentasi lengkap untuk integrasi Flutter app dengan backend GlowUp API v1.
+Dokumentasi lengkap untuk integrasi Flutter app dengan backend Rupa API v1.
 
 ## Overview
 
@@ -17,7 +17,7 @@ API telah diperbarui dengan fitur-fitur baru:
 ```dart
 // lib/core/constants/api_config.dart
 class ApiConfig {
-  static const String baseUrl = 'https://glowup.jagoflutter.com';
+  static const String baseUrl = 'https://rupa.jagoflutter.com';
   static const String apiVersion = 'v1';
   static const String apiBase = '$baseUrl/api/$apiVersion';
 
@@ -55,7 +55,7 @@ POST /api/v1/login
 **Request:**
 ```json
 {
-  "email": "admin@glowup.com",
+  "email": "admin@rupa.com",
   "password": "password123"
 }
 ```
@@ -67,7 +67,7 @@ POST /api/v1/login
     "user": {
       "id": 1,
       "name": "Admin",
-      "email": "admin@glowup.com",
+      "email": "admin@rupa.com",
       "phone": "081234567890",
       "role": "owner",
       "avatar": null,
@@ -168,13 +168,13 @@ GET /api/v1/settings
 {
   "data": {
     "clinic": {
-      "name": "GlowUp Clinic",
+      "name": "Rupa Clinic",
       "phone": "021-12345678",
-      "email": "info@glowup.com",
+      "email": "info@rupa.com",
       "address": "Jl. Sudirman No. 1",
       "city": "Jakarta",
       "whatsapp": "6281234567890",
-      "instagram": "@glowupclinic"
+      "instagram": "@rupaclinic"
     },
     "operating_hours": [
       {"day_of_week": 0, "day_name": "Sunday", "day_name_id": "Minggu", "is_closed": true},
@@ -564,7 +564,7 @@ Authorization: Bearer {token}
 {
   "data": {
     "referral_code": "REF-ABCD1234",
-    "referral_link": "https://glowup.com/?ref=REF-ABCD1234",
+    "referral_link": "https://rupa.com/?ref=REF-ABCD1234",
     "stats": {
       "total_referrals": 10,
       "pending_referrals": 2,
@@ -1056,7 +1056,7 @@ Authorization: Bearer {token}
   "data": {
     "transaction": {...},
     "clinic": {
-      "name": "GlowUp Clinic",
+      "name": "Rupa Clinic",
       "address": "Jl. Sudirman No. 1",
       "phone": "021-12345678"
     }
@@ -1081,7 +1081,7 @@ Authorization: Bearer {token}
     {
       "id": 1,
       "name": "Dr. Jane",
-      "email": "jane@glowup.com",
+      "email": "jane@rupa.com",
       "phone": "081234567890",
       "role": "beautician",
       "role_label": "Beautician",

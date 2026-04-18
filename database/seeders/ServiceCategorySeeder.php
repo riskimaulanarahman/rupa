@@ -3,12 +3,17 @@
 namespace Database\Seeders;
 
 use App\Models\ServiceCategory;
+use Database\Seeders\Concerns\ResolvesDemoTenantOutlet;
 use Illuminate\Database\Seeder;
 
 class ServiceCategorySeeder extends Seeder
 {
+    use ResolvesDemoTenantOutlet;
+
     public function run(): void
     {
+        [$tenant, $outlet] = $this->ensureDemoContextBound();
+
         $categories = [
             ['name' => 'Facial', 'icon' => '💆', 'sort_order' => 1],
             ['name' => 'Body Treatment', 'icon' => '🧴', 'sort_order' => 2],
@@ -19,7 +24,17 @@ class ServiceCategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            ServiceCategory::create($category);
+            ServiceCategory::updateOrCreate(
+                [
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
+                    'name' => $category['name'],
+                ],
+                array_merge($category, [
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
+                ])
+            );
         }
     }
 }

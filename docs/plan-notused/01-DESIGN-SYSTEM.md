@@ -1,4 +1,4 @@
-# GlowUp Design System
+# Rupa Design System
 
 **Tailwind CSS 4 + Alpine.js**
 
@@ -6,7 +6,7 @@
 
 ## Color Palette
 
-Warna yang menggambarkan **GlowUp** - elegan, profesional, dan fresh untuk klinik kecantikan.
+Warna yang menggambarkan **Rupa** - elegan, profesional, dan fresh untuk klinik kecantikan.
 
 ### Primary Colors (Rose - Soft & Elegant)
 

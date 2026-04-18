@@ -1,5 +1,11 @@
 @extends('layouts.landing')
 
+@php
+    $bookingRoutePrefix = $bookingRoutePrefix ?? 'booking';
+    $bookingRouteParams = $bookingRouteParams ?? [];
+    $bookingHomeUrl = $bookingHomeUrl ?? route('home');
+@endphp
+
 @section('title', __('booking.check_status') . ' - ' . brand_name())
 
 @section('content')
@@ -7,7 +13,7 @@
     <div class="max-w-2xl mx-auto relative z-10">
         <!-- Header -->
         <div class="text-center mb-8">
-            <a href="{{ route('home') }}" class="inline-flex items-center gap-2 mb-6">
+            <a href="{{ $bookingHomeUrl }}" class="inline-flex items-center gap-2 mb-6">
                 @if(brand_logo())
                     <img src="{{ brand_logo() }}" alt="{{ brand_name() }}" class="h-10 w-auto">
                 @else
@@ -25,7 +31,7 @@
 
         <!-- Search Form -->
         <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
-            <form action="{{ route('booking.status') }}" method="GET" class="flex gap-3 max-sm:flex-col">
+            <form action="{{ route($bookingRoutePrefix . '.status', $bookingRouteParams) }}" method="GET" class="flex gap-3 max-sm:flex-col">
                 <input type="tel" name="phone" value="{{ request('phone') }}"
                        placeholder="{{ __('booking.enter_phone') }}"
                        class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 {{ $tc->ring ?? 'focus:ring-rose-500/20' }} focus:border-{{ $tc->primary ?? 'rose' }}-400"
@@ -72,7 +78,7 @@
                                     </span>
 
                                     @if(in_array($appointment->status, ['pending', 'confirmed']))
-                                        <form action="{{ route('booking.cancel', $appointment) }}" method="POST" class="mt-2"
+                                        <form action="{{ route($bookingRoutePrefix . '.cancel', array_merge($bookingRouteParams, ['appointment' => $appointment])) }}" method="POST" class="mt-2"
                                               onsubmit="return confirm('{{ __('booking.cancel_confirm') }}')">
                                             @csrf
                                             <button type="submit" class="text-xs text-red-500 hover:text-red-700">
@@ -92,7 +98,7 @@
                     </svg>
                     <h3 class="text-lg font-medium text-gray-900 mb-1">{{ __('booking.no_appointments') }}</h3>
                     <p class="text-gray-500 mb-4">{{ __('booking.no_appointments_desc') }}</p>
-                    <a href="{{ route('booking.index') }}" class="inline-flex items-center px-4 py-2 {{ $tc->button ?? 'bg-rose-500 hover:bg-rose-600' }} text-white font-medium rounded-lg transition">
+                    <a href="{{ route($bookingRoutePrefix . '.index', $bookingRouteParams) }}" class="inline-flex items-center px-4 py-2 {{ $tc->button ?? 'bg-rose-500 hover:bg-rose-600' }} text-white font-medium rounded-lg transition">
                         {{ __('booking.make_booking') }}
                     </a>
                 </div>
@@ -101,7 +107,7 @@
 
         <!-- Back to Booking -->
         <div class="mt-8 text-center">
-            <a href="{{ route('booking.index') }}" class="{{ $tc->link ?? 'text-rose-500 hover:text-rose-600' }}">
+            <a href="{{ route($bookingRoutePrefix . '.index', $bookingRouteParams) }}" class="{{ $tc->link ?? 'text-rose-500 hover:text-rose-600' }}">
                 <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>

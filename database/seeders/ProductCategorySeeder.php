@@ -3,12 +3,17 @@
 namespace Database\Seeders;
 
 use App\Models\ProductCategory;
+use Database\Seeders\Concerns\ResolvesDemoTenantOutlet;
 use Illuminate\Database\Seeder;
 
 class ProductCategorySeeder extends Seeder
 {
+    use ResolvesDemoTenantOutlet;
+
     public function run(): void
     {
+        [$tenant, $outlet] = $this->ensureDemoContextBound();
+
         $categories = [
             [
                 'name' => 'Skincare',
@@ -37,9 +42,16 @@ class ProductCategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            ProductCategory::firstOrCreate(
-                ['name' => $category['name']],
-                $category
+            ProductCategory::updateOrCreate(
+                [
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
+                    'name' => $category['name'],
+                ],
+                array_merge($category, [
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
+                ])
             );
         }
     }

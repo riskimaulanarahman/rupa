@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\User;
+use App\Support\Permissions\ModulePermissionResolver;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,6 +25,8 @@ class UserResource extends JsonResource
             'role_label' => $this->role ? (User::ROLES[$this->role] ?? $this->role) : null,
             'avatar' => $this->avatar,
             'is_active' => $this->is_active,
+            'can_view_revenue' => $this->canViewRevenue(),
+            'module_access' => app(ModulePermissionResolver::class)->moduleAccessForUser($this->resource),
             'created_at' => $this->created_at?->toISOString(),
         ];
     }

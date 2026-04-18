@@ -1,4 +1,4 @@
-# Flutter Models - GlowUp API Integration
+# Flutter Models - Rupa API Integration
 
 Dart models untuk semua data types dari API.
 

@@ -3,26 +3,75 @@
 namespace Tests\Feature;
 
 use App\Models\Customer;
+use App\Models\Outlet;
+use App\Models\Plan;
 use App\Models\ReferralLog;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Setting;
+use App\Models\Tenant;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class ReferralTest extends TestCase
 {
     use RefreshDatabase;
 
+    private Outlet $outlet;
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        Setting::set('setup_completed', true, 'boolean');
-        Setting::set('business_type', 'clinic', 'string');
-        Setting::set('business_name', 'Test Clinic', 'string');
+        $plan = Plan::query()->create([
+            'name' => 'Starter',
+            'slug' => 'starter',
+            'price_monthly' => 100000,
+            'price_yearly' => 1000000,
+            'max_outlets' => 1,
+            'trial_days' => 14,
+            'sort_order' => 1,
+            'is_active' => true,
+            'is_featured' => false,
+        ]);
+
+        $tenant = Tenant::query()->create([
+            'name' => 'Tenant Referral Test',
+            'slug' => 'tenant-referral-test',
+            'plan_id' => $plan->id,
+            'owner_name' => 'Owner Referral',
+            'owner_email' => 'owner-referral@example.com',
+            'status' => 'active',
+            'subscription_ends_at' => now()->addMonth(),
+            'is_read_only' => false,
+        ]);
+
+        $this->outlet = Outlet::query()->create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Outlet Referral',
+            'slug' => 'outlet-referral',
+            'full_subdomain' => 'tenant-referral-test.rupa.test',
+            'business_type' => 'clinic',
+            'status' => 'active',
+            'address' => 'Jl. Referral',
+        ]);
+
+        Cache::forget('setup_completed');
+        Setting::withoutGlobalScopes()->updateOrCreate(
+            ['key' => 'setup_completed'],
+            ['tenant_id' => $tenant->id, 'outlet_id' => $this->outlet->id, 'value' => '1', 'type' => 'boolean']
+        );
+        Setting::withoutGlobalScopes()->updateOrCreate(
+            ['key' => 'business_type'],
+            ['tenant_id' => $tenant->id, 'outlet_id' => $this->outlet->id, 'value' => 'clinic', 'type' => 'string']
+        );
+        Setting::withoutGlobalScopes()->updateOrCreate(
+            ['key' => 'business_name'],
+            ['tenant_id' => $tenant->id, 'outlet_id' => $this->outlet->id, 'value' => 'Test Clinic', 'type' => 'string']
+        );
     }
 
     public function test_customer_gets_referral_code_on_creation(): void
@@ -43,18 +92,27 @@ class ReferralTest extends TestCase
 
     public function test_booking_with_valid_referral_code_links_customers(): void
     {
-        $referrer = Customer::factory()->create();
+        $referrer = Customer::factory()->create([
+            'tenant_id' => $this->outlet->tenant_id,
+            'outlet_id' => $this->outlet->id,
+        ]);
 
-        $category = ServiceCategory::factory()->create(['is_active' => true]);
+        $category = ServiceCategory::factory()->create([
+            'tenant_id' => $this->outlet->tenant_id,
+            'outlet_id' => $this->outlet->id,
+            'is_active' => true,
+        ]);
         $service = Service::factory()->create([
             'category_id' => $category->id,
+            'tenant_id' => $this->outlet->tenant_id,
+            'outlet_id' => $this->outlet->id,
             'is_active' => true,
             'duration_minutes' => 60,
         ]);
 
         $tomorrow = now()->addDay()->format('Y-m-d');
 
-        $response = $this->post(route('booking.store'), [
+        $response = $this->post($this->outletBookingRoute('store'), [
             'name' => 'New Customer',
             'phone' => '081234567899',
             'service_id' => $service->id,
@@ -74,16 +132,22 @@ class ReferralTest extends TestCase
 
     public function test_booking_with_invalid_referral_code_is_ignored(): void
     {
-        $category = ServiceCategory::factory()->create(['is_active' => true]);
+        $category = ServiceCategory::factory()->create([
+            'tenant_id' => $this->outlet->tenant_id,
+            'outlet_id' => $this->outlet->id,
+            'is_active' => true,
+        ]);
         $service = Service::factory()->create([
             'category_id' => $category->id,
+            'tenant_id' => $this->outlet->tenant_id,
+            'outlet_id' => $this->outlet->id,
             'is_active' => true,
             'duration_minutes' => 60,
         ]);
 
         $tomorrow = now()->addDay()->format('Y-m-d');
 
-        $response = $this->post(route('booking.store'), [
+        $response = $this->post($this->outletBookingRoute('store'), [
             'name' => 'New Customer',
             'phone' => '081234567888',
             'service_id' => $service->id,
@@ -103,12 +167,20 @@ class ReferralTest extends TestCase
     public function test_customer_cannot_use_own_referral_code(): void
     {
         $existingCustomer = Customer::factory()->create([
+            'tenant_id' => $this->outlet->tenant_id,
+            'outlet_id' => $this->outlet->id,
             'phone' => '081234567777',
         ]);
 
-        $category = ServiceCategory::factory()->create(['is_active' => true]);
+        $category = ServiceCategory::factory()->create([
+            'tenant_id' => $this->outlet->tenant_id,
+            'outlet_id' => $this->outlet->id,
+            'is_active' => true,
+        ]);
         $service = Service::factory()->create([
             'category_id' => $category->id,
+            'tenant_id' => $this->outlet->tenant_id,
+            'outlet_id' => $this->outlet->id,
             'is_active' => true,
             'duration_minutes' => 60,
         ]);
@@ -116,7 +188,7 @@ class ReferralTest extends TestCase
         $tomorrow = now()->addDay()->format('Y-m-d');
 
         // Existing customer tries to book with their own referral code
-        $response = $this->post(route('booking.store'), [
+        $response = $this->post($this->outletBookingRoute('store'), [
             'name' => $existingCustomer->name,
             'phone' => '081234567777',
             'service_id' => $service->id,
@@ -357,9 +429,14 @@ class ReferralTest extends TestCase
 
     public function test_portal_registration_with_referral_code(): void
     {
-        $referrer = Customer::factory()->create();
+        $referrer = Customer::factory()->create([
+            'tenant_id' => $this->outlet->tenant_id,
+            'outlet_id' => $this->outlet->id,
+        ]);
 
-        $response = $this->post(route('portal.register'), [
+        $response = $this->post(route('outlet.customer.register.submit', [
+            'outletSlug' => $this->outlet->slug,
+        ]), [
             'name' => 'New Portal User',
             'email' => 'newuser@test.com',
             'phone' => '081234567666',
@@ -368,11 +445,22 @@ class ReferralTest extends TestCase
             'referral_code' => $referrer->referral_code,
         ]);
 
-        $response->assertRedirect(route('portal.dashboard'));
+        $response->assertRedirect(route('outlet.customer.dashboard', [
+            'outletSlug' => $this->outlet->slug,
+        ]));
 
         $newCustomer = Customer::where('email', 'newuser@test.com')->first();
 
         $this->assertNotNull($newCustomer);
         $this->assertEquals($referrer->id, $newCustomer->referred_by_id);
+        $this->assertEquals($this->outlet->tenant_id, $newCustomer->tenant_id);
+        $this->assertEquals($this->outlet->id, $newCustomer->outlet_id);
+    }
+
+    private function outletBookingRoute(string $name, array $params = []): string
+    {
+        return route("outlet.booking.{$name}", array_merge([
+            'outletSlug' => $this->outlet->slug,
+        ], $params));
     }
 }

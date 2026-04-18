@@ -2,7 +2,7 @@
 
 return [
     'title' => 'Import Data',
-    'subtitle' => 'Import data dari file Excel untuk migrasi data ke GlowUp',
+    'subtitle' => 'Import data dari file Excel untuk migrasi data ke Rupa',
 
     // Entity types
     'customers' => 'Pelanggan',

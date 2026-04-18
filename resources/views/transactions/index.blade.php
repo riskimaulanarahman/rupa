@@ -6,6 +6,9 @@
 @include('components.theme-classes')
 
 @section('content')
+@php
+    $canViewRevenue = auth()->user()?->canViewRevenue() ?? false;
+@endphp
 <div class="space-y-6 max-sm:space-y-4">
     <!-- Header & Stats -->
     <div class="flex flex-row max-sm:flex-col items-center max-sm:items-start justify-between gap-4 max-sm:gap-3">
@@ -18,48 +21,50 @@
         </a>
     </div>
 
-    <!-- Today Stats -->
-    <div class="grid grid-cols-3 max-sm:grid-cols-3 gap-3 max-sm:gap-2">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 max-sm:p-3">
-            <div class="flex items-center gap-3 max-sm:flex-col max-sm:items-start max-sm:gap-2">
-                <div class="w-9 h-9 max-sm:w-8 max-sm:h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
+    @if($canViewRevenue)
+        <!-- Today Stats -->
+        <div class="grid grid-cols-3 max-sm:grid-cols-3 gap-3 max-sm:gap-2">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 max-sm:p-3">
+                <div class="flex items-center gap-3 max-sm:flex-col max-sm:items-start max-sm:gap-2">
+                    <div class="w-9 h-9 max-sm:w-8 max-sm:h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('transaction.today') }}</p>
+                        <p class="text-lg max-sm:text-base font-semibold text-gray-900 dark:text-gray-100">{{ $todayStats['total'] }}</p>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('transaction.today') }}</p>
-                    <p class="text-lg max-sm:text-base font-semibold text-gray-900 dark:text-gray-100">{{ $todayStats['total'] }}</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 max-sm:p-3">
+                <div class="flex items-center gap-3 max-sm:flex-col max-sm:items-start max-sm:gap-2">
+                    <div class="w-9 h-9 max-sm:w-8 max-sm:h-8 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('transaction.paid') }}</p>
+                        <p class="text-lg max-sm:text-base font-semibold text-gray-900 dark:text-gray-100">{{ $todayStats['paid'] }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 max-sm:p-3">
+                <div class="flex items-center gap-3 max-sm:flex-col max-sm:items-start max-sm:gap-2">
+                    <div class="w-9 h-9 max-sm:w-8 max-sm:h-8 {{ $themeBadgeBg }} rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 {{ $themeBadgeText }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('transaction.revenue') }}</p>
+                        <p class="text-lg max-sm:text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{{ format_currency($todayStats['revenue']) }}</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 max-sm:p-3">
-            <div class="flex items-center gap-3 max-sm:flex-col max-sm:items-start max-sm:gap-2">
-                <div class="w-9 h-9 max-sm:w-8 max-sm:h-8 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('transaction.paid') }}</p>
-                    <p class="text-lg max-sm:text-base font-semibold text-gray-900 dark:text-gray-100">{{ $todayStats['paid'] }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 max-sm:p-3">
-            <div class="flex items-center gap-3 max-sm:flex-col max-sm:items-start max-sm:gap-2">
-                <div class="w-9 h-9 max-sm:w-8 max-sm:h-8 {{ $themeBadgeBg }} rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 {{ $themeBadgeText }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div class="min-w-0">
-                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('transaction.revenue') }}</p>
-                    <p class="text-lg max-sm:text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{{ format_currency($todayStats['revenue']) }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    @endif
 
     <!-- Filters -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 max-sm:p-3">
@@ -162,7 +167,7 @@
                                 </td>
                                 <td class="px-5 py-3 whitespace-nowrap">
                                     <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $transaction->formatted_total_amount }}</p>
-                                    @if($transaction->status === 'partial')
+                                    @if($transaction->status === 'partial' && $canViewRevenue)
                                         <p class="text-xs text-orange-500 dark:text-orange-400">{{ __('transaction.paid') }}: {{ $transaction->formatted_paid_amount }}</p>
                                     @endif
                                 </td>

@@ -13,14 +13,28 @@ class AppointmentService
     /**
      * @return array<string>
      */
-    public function getAvailableSlots(Carbon $date, int $serviceId, ?int $staffId = null, ?int $excludeAppointmentId = null): array
-    {
+    public function getAvailableSlots(
+        Carbon $date,
+        int $serviceId,
+        ?int $outletId = null,
+        ?int $staffId = null,
+        ?int $excludeAppointmentId = null
+    ): array {
         $service = Service::find($serviceId);
         if (! $service) {
             return [];
         }
 
-        $operatingHours = OperatingHour::where('day_of_week', $date->dayOfWeek)->first();
+        if ($outletId && (int) $service->outlet_id !== (int) $outletId) {
+            return [];
+        }
+
+        $operatingHours = OperatingHour::query()
+            ->where('day_of_week', $date->dayOfWeek)
+            ->when($outletId, function ($query) use ($outletId) {
+                $query->where('outlet_id', $outletId);
+            })
+            ->first();
         if (! $operatingHours || $operatingHours->is_closed) {
             return [];
         }
@@ -37,6 +51,7 @@ class AppointmentService
                 $date,
                 $current,
                 $service->duration_minutes,
+                $outletId,
                 $staffId,
                 $excludeAppointmentId
             );
@@ -51,11 +66,21 @@ class AppointmentService
         return $slots;
     }
 
-    public function hasConflict(Carbon $date, Carbon $time, int $duration, ?int $staffId = null, ?int $excludeAppointmentId = null): bool
-    {
+    public function hasConflict(
+        Carbon $date,
+        Carbon $time,
+        int $duration,
+        ?int $outletId = null,
+        ?int $staffId = null,
+        ?int $excludeAppointmentId = null
+    ): bool {
         $endTime = $time->copy()->addMinutes($duration);
 
-        $query = Appointment::where('appointment_date', $date->toDateString())
+        $query = Appointment::query()
+            ->where('appointment_date', $date->toDateString())
+            ->when($outletId, function ($query) use ($outletId) {
+                $query->where('outlet_id', $outletId);
+            })
             ->whereNotIn('status', ['cancelled', 'no_show'])
             ->where(function ($q) use ($time, $endTime) {
                 $q->where(function ($q2) use ($time, $endTime) {

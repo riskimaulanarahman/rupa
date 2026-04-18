@@ -14,6 +14,7 @@ return [
     'transactions' => 'Transaksi',
     'loyalty' => 'Loyalty Program',
     'reports' => 'Laporan',
+    'outlets' => 'Outlets',
     'import_data' => 'Import Data',
     'staff' => 'Staf',
     'settings' => 'Pengaturan',

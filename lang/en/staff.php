@@ -17,6 +17,8 @@ return [
     'password_help' => 'Leave empty to keep current password',
     'role' => 'Role',
     'is_active' => 'Active Status',
+    'can_view_revenue' => 'Can view revenue',
+    'can_view_revenue_help' => 'When enabled, admin can access dashboard and revenue reports.',
 
     // Roles
     'role_owner' => 'Owner',

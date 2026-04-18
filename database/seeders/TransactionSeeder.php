@@ -10,17 +10,26 @@ use App\Models\Service;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
+use Database\Seeders\Concerns\ResolvesDemoTenantOutlet;
 use Illuminate\Database\Seeder;
 
 class TransactionSeeder extends Seeder
 {
+    use ResolvesDemoTenantOutlet;
+
     public function run(): void
     {
-        $customers = Customer::all();
-        $services = Service::all();
-        $packages = Package::all();
-        $cashiers = User::whereIn('role', ['owner', 'admin'])->get();
-        $completedAppointments = Appointment::where('status', 'completed')->get();
+        [$tenant, $outlet] = $this->ensureDemoContextBound();
+
+        if (Transaction::query()->exists()) {
+            return;
+        }
+
+        $customers = Customer::query()->get();
+        $services = Service::query()->get();
+        $packages = Package::query()->get();
+        $cashiers = User::query()->whereIn('role', ['owner', 'admin'])->get();
+        $completedAppointments = Appointment::query()->where('status', 'completed')->get();
 
         if ($customers->isEmpty() || $cashiers->isEmpty()) {
             return;
@@ -33,12 +42,20 @@ class TransactionSeeder extends Seeder
             $cashier = $cashiers->random();
             $service = $appointment->service;
             $customer = $appointment->customer;
+            if (! $service || ! $customer) {
+                continue;
+            }
 
             $discount = rand(0, 5) === 0 ? rand(1, 5) * 10000 : 0;
             $subtotal = $service->price;
             $total = $subtotal - $discount;
+            $paidAt = $appointment->appointment_date?->copy()->setTime(rand(10, 18), rand(0, 59)) ?? now();
+            $createdAt = $appointment->appointment_date?->copy()->setTime(rand(9, 17), rand(0, 59)) ?? now();
+            $updatedAt = $appointment->appointment_date?->copy()->setTime(rand(10, 18), rand(0, 59)) ?? now();
 
             $transaction = Transaction::create([
+                'tenant_id' => $tenant->id,
+                'outlet_id' => $outlet->id,
                 'customer_id' => $customer->id,
                 'appointment_id' => $appointment->id,
                 'cashier_id' => $cashier->id,
@@ -49,9 +66,9 @@ class TransactionSeeder extends Seeder
                 'total_amount' => $total,
                 'paid_amount' => $total,
                 'status' => 'paid',
-                'paid_at' => $appointment->appointment_date->setTime(rand(10, 18), rand(0, 59)),
-                'created_at' => $appointment->appointment_date->setTime(rand(9, 17), rand(0, 59)),
-                'updated_at' => $appointment->appointment_date->setTime(rand(10, 18), rand(0, 59)),
+                'paid_at' => $paidAt,
+                'created_at' => $createdAt,
+                'updated_at' => $updatedAt,
             ]);
 
             // Add transaction item
@@ -81,13 +98,15 @@ class TransactionSeeder extends Seeder
 
         // Create package sales (CustomerPackage)
         if ($packages->isNotEmpty()) {
-            foreach ($customers->take(8) as $index => $customer) {
+            foreach ($customers->take(8) as $customer) {
                 $package = $packages->random();
                 $cashier = $cashiers->random();
                 $purchaseDate = Carbon::today()->subDays(rand(5, 60));
 
                 // Create customer package
-                $customerPackage = CustomerPackage::create([
+                CustomerPackage::create([
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
                     'customer_id' => $customer->id,
                     'package_id' => $package->id,
                     'sold_by' => $cashier->id,
@@ -101,6 +120,8 @@ class TransactionSeeder extends Seeder
 
                 // Create transaction for package sale
                 $transaction = Transaction::create([
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
                     'customer_id' => $customer->id,
                     'cashier_id' => $cashier->id,
                     'subtotal' => $package->package_price,
@@ -147,6 +168,8 @@ class TransactionSeeder extends Seeder
             $transactionTime = now()->setTime(rand(9, 13), rand(0, 59));
 
             $transaction = Transaction::create([
+                'tenant_id' => $tenant->id,
+                'outlet_id' => $outlet->id,
                 'customer_id' => $customer->id,
                 'cashier_id' => $cashier->id,
                 'subtotal' => $subtotal,
@@ -190,6 +213,8 @@ class TransactionSeeder extends Seeder
             $cashier = $cashiers->random();
 
             $transaction = Transaction::create([
+                'tenant_id' => $tenant->id,
+                'outlet_id' => $outlet->id,
                 'customer_id' => $customer->id,
                 'cashier_id' => $cashier->id,
                 'subtotal' => $service->price,
@@ -218,6 +243,8 @@ class TransactionSeeder extends Seeder
         $cashier = $cashiers->random();
 
         $transaction = Transaction::create([
+            'tenant_id' => $tenant->id,
+            'outlet_id' => $outlet->id,
             'customer_id' => $customer->id,
             'cashier_id' => $cashier->id,
             'subtotal' => $service->price,

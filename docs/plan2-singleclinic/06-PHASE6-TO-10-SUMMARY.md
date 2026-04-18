@@ -1,6 +1,6 @@
 # Phase 6-10: Summary
 
-Detail lengkap ada di `docs/GLOWUP_SINGLE_CLINIC_DOCUMENTATION.md`
+Detail lengkap ada di `docs/RUPA_SINGLE_CLINIC_DOCUMENTATION.md`
 
 ---
 

@@ -38,7 +38,7 @@ if (! function_exists('brand_name')) {
      */
     function brand_name(): string
     {
-        return brand('app.name', 'GlowUp');
+        return brand('app.name', 'Rupa');
     }
 }
 
@@ -76,6 +76,44 @@ if (! function_exists('brand_logo')) {
      */
     function brand_logo(string $type = 'main'): ?string
     {
+        if ($type === 'favicon') {
+            $path = null;
+
+            try {
+                $globalFavicon = Setting::getGlobal('platform_brand_logo_favicon');
+                if (is_string($globalFavicon) && $globalFavicon !== '') {
+                    $path = $globalFavicon;
+                }
+            } catch (\Throwable) {
+                // Ignore and continue to config fallback.
+            }
+
+            if (! $path) {
+                $configFavicon = config('branding.logo.favicon');
+                if (is_string($configFavicon) && $configFavicon !== '') {
+                    $path = $configFavicon;
+                }
+            }
+
+            if (! $path) {
+                return null;
+            }
+
+            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+                return $path;
+            }
+
+            if (str_starts_with($path, 'branding/')) {
+                if (is_file(public_path($path))) {
+                    return asset($path);
+                }
+
+                return asset('storage/'.$path);
+            }
+
+            return asset($path);
+        }
+
         $key = match ($type) {
             'favicon' => 'logo.favicon',
             'email' => 'email.logo_url',

@@ -6,7 +6,7 @@
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6">
     <!-- Back Button -->
-    <a href="{{ route('portal.packages') }}" class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+    <a href="{{ customer_route('packages') }}" class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
         </svg>
@@ -92,7 +92,7 @@
                                 </p>
                             </div>
                             @if($usage->treatmentRecord)
-                                <a href="{{ route('portal.treatments.show', $usage->treatmentRecord) }}" class="text-sm text-primary-600 hover:text-primary-700">
+                                <a href="{{ customer_route('treatments.show', $usage->treatmentRecord) }}" class="text-sm text-primary-600 hover:text-primary-700">
                                     {{ __('portal.view_treatment') }}
                                 </a>
                             @endif

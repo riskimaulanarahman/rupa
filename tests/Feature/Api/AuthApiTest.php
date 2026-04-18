@@ -27,7 +27,7 @@ class AuthApiTest extends TestCase
             ->assertJsonStructure([
                 'message',
                 'data' => [
-                    'user' => ['id', 'name', 'email', 'role'],
+                    'user' => ['id', 'name', 'email', 'role', 'can_view_revenue'],
                     'token',
                 ],
             ]);
@@ -75,7 +75,7 @@ class AuthApiTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => ['id', 'name', 'email', 'role'],
+                'data' => ['id', 'name', 'email', 'role', 'can_view_revenue'],
             ]);
     }
 

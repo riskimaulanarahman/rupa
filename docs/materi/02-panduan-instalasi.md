@@ -1,4 +1,4 @@
-# Panduan Instalasi GlowUp Clinic
+# Panduan Instalasi Rupa Clinic
 
 ## Daftar Isi
 1. [Persyaratan Sistem](#1-persyaratan-sistem)
@@ -75,8 +75,8 @@ Laragon adalah development environment yang ringan dan mudah digunakan untuk Win
 ```cmd
 :: Buka terminal Laragon (klik kanan → Terminal)
 cd C:\laragon\www
-git clone https://github.com/username/clinic-glowup-web.git
-cd clinic-glowup-web
+git clone https://github.com/username/clinic-rupa-web.git
+cd clinic-rupa-web
 ```
 
 #### Langkah 4: Install Dependencies
@@ -102,14 +102,14 @@ php artisan key:generate
 #### Langkah 6: Setup Database
 
 1. Buka Laragon → Database → phpMyAdmin
-2. Buat database baru: `glowup_clinic`
+2. Buat database baru: `rupa_clinic`
 3. Edit file `.env`:
 
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=glowup_clinic
+DB_DATABASE=rupa_clinic
 DB_USERNAME=root
 DB_PASSWORD=
 ```
@@ -128,7 +128,7 @@ npm run build
 
 #### Langkah 9: Akses Aplikasi
 
-Buka browser: `http://clinic-glowup-web.test`
+Buka browser: `http://clinic-rupa-web.test`
 
 ---
 
@@ -160,8 +160,8 @@ npm --version
 
 ```cmd
 cd C:\xampp\htdocs
-git clone https://github.com/username/clinic-glowup-web.git
-cd clinic-glowup-web
+git clone https://github.com/username/clinic-rupa-web.git
+cd clinic-rupa-web
 
 composer install
 npm install
@@ -176,9 +176,9 @@ Edit `C:\xampp\apache\conf\extra\httpd-vhosts.conf`:
 
 ```apache
 <VirtualHost *:80>
-    DocumentRoot "C:/xampp/htdocs/clinic-glowup-web/public"
-    ServerName glowup.local
-    <Directory "C:/xampp/htdocs/clinic-glowup-web/public">
+    DocumentRoot "C:/xampp/htdocs/clinic-rupa-web/public"
+    ServerName rupa.local
+    <Directory "C:/xampp/htdocs/clinic-rupa-web/public">
         Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
@@ -188,13 +188,13 @@ Edit `C:\xampp\apache\conf\extra\httpd-vhosts.conf`:
 
 Edit `C:\Windows\System32\drivers\etc\hosts`:
 ```
-127.0.0.1    glowup.local
+127.0.0.1    rupa.local
 ```
 
 #### Langkah 6: Setup Database & Migrasi
 
 1. Buka phpMyAdmin: `http://localhost/phpmyadmin`
-2. Buat database `glowup_clinic`
+2. Buat database `rupa_clinic`
 3. Edit `.env` dengan kredensial database
 4. Jalankan: `php artisan migrate --seed`
 
@@ -240,8 +240,8 @@ brew install node
 
 ```bash
 cd ~/Herd
-git clone https://github.com/username/clinic-glowup-web.git
-cd clinic-glowup-web
+git clone https://github.com/username/clinic-rupa-web.git
+cd clinic-rupa-web
 ```
 
 #### Langkah 6: Install Dependencies
@@ -262,7 +262,7 @@ php artisan key:generate
 
 ```bash
 # Buat database
-mysql -u root -p -e "CREATE DATABASE glowup_clinic;"
+mysql -u root -p -e "CREATE DATABASE rupa_clinic;"
 ```
 
 Edit `.env`:
@@ -270,7 +270,7 @@ Edit `.env`:
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=glowup_clinic
+DB_DATABASE=rupa_clinic
 DB_USERNAME=root
 DB_PASSWORD=your_password
 ```
@@ -284,7 +284,7 @@ npm run build
 
 #### Langkah 10: Akses Aplikasi
 
-Buka browser: `http://clinic-glowup-web.test`
+Buka browser: `http://clinic-rupa-web.test`
 
 ---
 
@@ -330,8 +330,8 @@ valet park
 
 ```bash
 cd ~/Sites
-git clone https://github.com/username/clinic-glowup-web.git
-cd clinic-glowup-web
+git clone https://github.com/username/clinic-rupa-web.git
+cd clinic-rupa-web
 
 composer install
 npm install
@@ -343,7 +343,7 @@ php artisan key:generate
 #### Langkah 5: Setup Database dan Migrasi
 
 ```bash
-mysql -u root -e "CREATE DATABASE glowup_clinic;"
+mysql -u root -e "CREATE DATABASE rupa_clinic;"
 # Edit .env dengan kredensial database
 php artisan migrate --seed
 npm run build
@@ -351,7 +351,7 @@ npm run build
 
 #### Langkah 6: Akses Aplikasi
 
-Buka browser: `http://clinic-glowup-web.test`
+Buka browser: `http://clinic-rupa-web.test`
 
 ---
 
@@ -419,9 +419,9 @@ sudo mysql -u root -p
 ```
 
 ```sql
-CREATE DATABASE glowup_clinic;
-CREATE USER 'glowup'@'localhost' IDENTIFIED BY 'password_aman';
-GRANT ALL PRIVILEGES ON glowup_clinic.* TO 'glowup'@'localhost';
+CREATE DATABASE rupa_clinic;
+CREATE USER 'rupa'@'localhost' IDENTIFIED BY 'password_aman';
+GRANT ALL PRIVILEGES ON rupa_clinic.* TO 'rupa'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
 ```
@@ -436,8 +436,8 @@ sudo apt install -y git
 
 ```bash
 cd /var/www
-sudo git clone https://github.com/username/clinic-glowup-web.git
-cd clinic-glowup-web
+sudo git clone https://github.com/username/clinic-rupa-web.git
+cd clinic-rupa-web
 
 # Set ownership
 sudo chown -R $USER:www-data .
@@ -467,8 +467,8 @@ APP_URL=http://localhost
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=glowup_clinic
-DB_USERNAME=glowup
+DB_DATABASE=rupa_clinic
+DB_USERNAME=rupa
 DB_PASSWORD=password_aman
 ```
 
@@ -487,14 +487,14 @@ sudo apt install -y nginx
 
 Buat konfigurasi:
 ```bash
-sudo nano /etc/nginx/sites-available/glowup
+sudo nano /etc/nginx/sites-available/rupa
 ```
 
 ```nginx
 server {
     listen 80;
-    server_name glowup.local;
-    root /var/www/clinic-glowup-web/public;
+    server_name rupa.local;
+    root /var/www/clinic-rupa-web/public;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
@@ -525,14 +525,14 @@ server {
 ```
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/glowup /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/rupa /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
 
 Tambah ke `/etc/hosts`:
 ```
-127.0.0.1    glowup.local
+127.0.0.1    rupa.local
 ```
 
 #### Langkah 13: Akses Aplikasi
@@ -545,7 +545,7 @@ php artisan serve
 
 **Menggunakan Nginx:**
 ```
-http://glowup.local
+http://rupa.local
 ```
 
 ---
@@ -558,7 +558,7 @@ Berikut konfigurasi penting di file `.env`:
 
 ```env
 # Aplikasi
-APP_NAME="GlowUp Clinic"
+APP_NAME="Rupa Clinic"
 APP_ENV=local
 APP_KEY=base64:xxxxx
 APP_DEBUG=true
@@ -568,7 +568,7 @@ APP_URL=http://localhost
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=glowup_clinic
+DB_DATABASE=rupa_clinic
 DB_USERNAME=root
 DB_PASSWORD=
 
@@ -589,7 +589,7 @@ MAIL_PORT=2525
 MAIL_USERNAME=null
 MAIL_PASSWORD=null
 MAIL_ENCRYPTION=null
-MAIL_FROM_ADDRESS="noreply@glowup.com"
+MAIL_FROM_ADDRESS="noreply@rupa.com"
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 
@@ -652,9 +652,9 @@ Setelah menjalankan seeder, gunakan kredensial:
 
 | Role | Email | Password |
 |------|-------|----------|
-| Owner | owner@glowup.com | password |
-| Admin | admin@glowup.com | password |
-| Beautician | beautician@glowup.com | password |
+| Owner | owner@rupa.com | password |
+| Admin | admin@rupa.com | password |
+| Beautician | beautician@rupa.com | password |
 
 ---
 
@@ -760,8 +760,8 @@ php artisan migrate:rollback
 
 ```bash
 # Clone repository
-git clone https://github.com/username/clinic-glowup-web.git
-cd clinic-glowup-web
+git clone https://github.com/username/clinic-rupa-web.git
+cd clinic-rupa-web
 
 # Install dependencies
 composer install

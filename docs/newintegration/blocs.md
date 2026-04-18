@@ -1,4 +1,4 @@
-# Flutter BLoC Implementation - GlowUp Integration
+# Flutter BLoC Implementation - Rupa Integration
 
 Implementasi BLoC patterns untuk state management fitur-fitur baru.
 
@@ -1351,7 +1351,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => AppointmentBloc(appointmentDatasource: getIt())),
       ],
       child: MaterialApp(
-        title: 'GlowUp',
+        title: 'Rupa',
         // ...
       ),
     );

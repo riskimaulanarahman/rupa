@@ -108,40 +108,21 @@
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{{ __('setting.logo_settings') }}</h3>
 
             <div class="space-y-4">
-                <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-6">
-                    <!-- Main Logo -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('setting.main_logo') }}</label>
-                        @if($settings['brand_logo_path'])
-                            <div class="mb-3 flex items-center gap-4">
-                                <img src="{{ asset('storage/' . $settings['brand_logo_path']) }}" alt="Logo" class="h-12 w-auto">
-                                <button type="button" onclick="document.getElementById('remove-logo-form').submit()" class="text-red-500 text-sm hover:text-red-700 cursor-pointer">{{ __('common.remove') }}</button>
-                            </div>
-                        @endif
-                        <input type="file" name="brand_logo_path" id="brand_logo_path" accept="image/*"
-                               class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gray-100 dark:file:bg-gray-700 file:text-gray-700 dark:file:text-gray-300 hover:file:bg-gray-200 dark:hover:file:bg-gray-600">
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('setting.logo_hint') }}</p>
-                        @error('brand_logo_path')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Favicon -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('setting.favicon') }}</label>
-                        @if($settings['brand_logo_favicon'])
-                            <div class="mb-3 flex items-center gap-4">
-                                <img src="{{ asset('storage/' . $settings['brand_logo_favicon']) }}" alt="Favicon" class="h-8 w-8">
-                                <button type="button" onclick="document.getElementById('remove-favicon-form').submit()" class="text-red-500 text-sm hover:text-red-700 cursor-pointer">{{ __('common.remove') }}</button>
-                            </div>
-                        @endif
-                        <input type="file" name="brand_logo_favicon" id="brand_logo_favicon" accept="image/*"
-                               class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gray-100 dark:file:bg-gray-700 file:text-gray-700 dark:file:text-gray-300 hover:file:bg-gray-200 dark:hover:file:bg-gray-600">
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('setting.favicon_hint') }}</p>
-                        @error('brand_logo_favicon')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('setting.main_logo') }}</label>
+                    @if($settings['brand_logo_path'])
+                        <div class="mb-3 flex items-center gap-4">
+                            <img src="{{ asset('storage/' . $settings['brand_logo_path']) }}" alt="Logo" class="h-12 w-auto">
+                            <button type="button" onclick="document.getElementById('remove-logo-form').submit()" class="text-red-500 text-sm hover:text-red-700 cursor-pointer">{{ __('common.remove') }}</button>
+                        </div>
+                    @endif
+                    <input type="file" name="brand_logo_path" id="brand_logo_path" accept="image/*"
+                           class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gray-100 dark:file:bg-gray-700 file:text-gray-700 dark:file:text-gray-300 hover:file:bg-gray-200 dark:hover:file:bg-gray-600">
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('setting.logo_hint') }}</p>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Favicon hanya dapat diatur oleh superadmin platform.</p>
+                    @error('brand_logo_path')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="flex items-center">
@@ -297,7 +278,7 @@
                         <label for="brand_footer_powered_by_text" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('setting.powered_by_text') }}</label>
                         <input type="text" name="brand_footer_powered_by_text" id="brand_footer_powered_by_text"
                                value="{{ old('brand_footer_powered_by_text', $settings['brand_footer_powered_by_text']) }}"
-                               placeholder="GlowUp"
+                               placeholder="Rupa"
                                class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 {{ $tc->ring ?? 'focus:ring-rose-500/20' }} focus:border-{{ $tc->primary ?? 'rose' }}-400">
                         @error('brand_footer_powered_by_text')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -307,7 +288,7 @@
                         <label for="brand_footer_powered_by_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('setting.powered_by_url') }}</label>
                         <input type="url" name="brand_footer_powered_by_url" id="brand_footer_powered_by_url"
                                value="{{ old('brand_footer_powered_by_url', $settings['brand_footer_powered_by_url']) }}"
-                               placeholder="https://glowup.app"
+                               placeholder="https://rupa.app"
                                class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 {{ $tc->ring ?? 'focus:ring-rose-500/20' }} focus:border-{{ $tc->primary ?? 'rose' }}-400">
                         @error('brand_footer_powered_by_url')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -371,11 +352,5 @@
         </form>
     @endif
 
-    @if($settings['brand_logo_favicon'])
-        <form id="remove-favicon-form" action="{{ route('settings.branding.remove-logo') }}" method="POST" class="hidden">
-            @csrf
-            <input type="hidden" name="type" value="favicon">
-        </form>
-    @endif
 </div>
 @endsection

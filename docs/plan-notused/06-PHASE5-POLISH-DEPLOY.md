@@ -338,7 +338,7 @@ php artisan test --coverage
 
   DB_CONNECTION=mysql
   DB_HOST=127.0.0.1
-  DB_DATABASE=glowup_clinic
+  DB_DATABASE=rupa_clinic
   DB_USERNAME=production_user
   DB_PASSWORD=secure_password
 
@@ -394,7 +394,7 @@ server {
     listen 80;
     listen [::]:80;
     server_name yourdomain.com;
-    root /var/www/glowup/public;
+    root /var/www/rupa/public;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
@@ -440,13 +440,13 @@ sudo certbot --nginx -d yourdomain.com
 
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_DIR="/backups"
-DB_NAME="glowup_clinic"
+DB_NAME="rupa_clinic"
 
 # Database backup
 mysqldump -u root -p$DB_PASSWORD $DB_NAME | gzip > $BACKUP_DIR/db_${DATE}.sql.gz
 
 # Files backup
-tar -czf $BACKUP_DIR/files_${DATE}.tar.gz /var/www/glowup/storage/app/public
+tar -czf $BACKUP_DIR/files_${DATE}.tar.gz /var/www/rupa/storage/app/public
 
 # Keep only last 7 days
 find $BACKUP_DIR -name "*.gz" -mtime +7 -delete
@@ -456,7 +456,7 @@ find $BACKUP_DIR -name "*.gz" -mtime +7 -delete
 
 ```bash
 # /etc/crontab
-* * * * * www-data cd /var/www/glowup && php artisan schedule:run >> /dev/null 2>&1
+* * * * * www-data cd /var/www/rupa && php artisan schedule:run >> /dev/null 2>&1
 
 # Daily backup at 2 AM
 0 2 * * * root /scripts/backup.sh >> /var/log/backup.log 2>&1

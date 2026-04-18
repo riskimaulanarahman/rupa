@@ -4,14 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\OperatingHour;
 use App\Models\Setting;
+use App\Support\Branding\BrandIconGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class SettingController extends Controller
 {
+    public function __construct(private readonly BrandIconGenerator $brandIconGenerator) {}
+
     public function index(): View
     {
         return view('settings.index');
@@ -128,7 +131,6 @@ class SettingController extends Controller
 
             // Logo
             'brand_logo_path' => Setting::get('brand_logo_path', ''),
-            'brand_logo_favicon' => Setting::get('brand_logo_favicon', ''),
             'brand_logo_show_text' => Setting::get('brand_logo_show_text', true),
 
             // Contact
@@ -168,7 +170,7 @@ class SettingController extends Controller
             'brand_app_description' => ['nullable', 'string', 'max:1000'],
             'brand_app_description_id' => ['nullable', 'string', 'max:1000'],
             'brand_logo_path' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:2048'],
-            'brand_logo_favicon' => ['nullable', 'image', 'mimes:ico,png,jpg,webp', 'max:512'],
+            'brand_logo_favicon' => ['prohibited'],
             'brand_logo_show_text' => ['nullable', 'boolean'],
             'brand_contact_email' => ['nullable', 'email', 'max:255'],
             'brand_contact_phone' => ['nullable', 'string', 'max:50'],
@@ -210,6 +212,8 @@ class SettingController extends Controller
         Setting::set('brand_logo_show_text', $request->boolean('brand_logo_show_text'), 'boolean');
         Setting::set('brand_footer_show_powered_by', $request->boolean('brand_footer_show_powered_by'), 'boolean');
 
+        $shouldGenerateIcons = false;
+
         // Handle logo upload
         if ($request->hasFile('brand_logo_path')) {
             $oldLogo = Setting::get('brand_logo_path');
@@ -218,20 +222,26 @@ class SettingController extends Controller
             }
             $path = $request->file('brand_logo_path')->store('branding', 'public');
             Setting::set('brand_logo_path', $path);
-        }
-
-        // Handle favicon upload
-        if ($request->hasFile('brand_logo_favicon')) {
-            $oldFavicon = Setting::get('brand_logo_favicon');
-            if ($oldFavicon) {
-                Storage::disk('public')->delete($oldFavicon);
-            }
-            $path = $request->file('brand_logo_favicon')->store('branding', 'public');
-            Setting::set('brand_logo_favicon', $path);
+            $shouldGenerateIcons = true;
         }
 
         // Clear branding cache
         clear_brand_cache();
+
+        $platformFaviconConfigured = $this->hasPlatformGlobalFavicon();
+        if ($shouldGenerateIcons && ! $platformFaviconConfigured) {
+            try {
+                $this->brandIconGenerator->generate('auto', true);
+            } catch (\Throwable $e) {
+                Log::warning('Brand icon generation failed after branding update.', [
+                    'message' => $e->getMessage(),
+                ]);
+
+                return back()
+                    ->with('success', __('setting.branding_updated'))
+                    ->with('error', 'Branding disimpan, tetapi gagal generate favicon/icon. Jalankan perintah branding:generate-icons.');
+            }
+        }
 
         return back()->with('success', __('setting.branding_updated'));
     }
@@ -241,21 +251,24 @@ class SettingController extends Controller
         $type = $request->input('type', 'logo');
 
         if ($type === 'favicon') {
-            $oldFavicon = Setting::get('brand_logo_favicon');
-            if ($oldFavicon) {
-                Storage::disk('public')->delete($oldFavicon);
-                Setting::set('brand_logo_favicon', '');
-            }
-        } else {
-            $oldLogo = Setting::get('brand_logo_path');
-            if ($oldLogo) {
-                Storage::disk('public')->delete($oldLogo);
-                Setting::set('brand_logo_path', '');
-            }
+            abort(403, 'Favicon hanya dapat diubah oleh superadmin.');
+        }
+
+        $oldLogo = Setting::get('brand_logo_path');
+        if ($oldLogo) {
+            Storage::disk('public')->delete($oldLogo);
+            Setting::set('brand_logo_path', '');
         }
 
         clear_brand_cache();
 
         return back()->with('success', __('setting.logo_removed'));
+    }
+
+    private function hasPlatformGlobalFavicon(): bool
+    {
+        $platformFavicon = Setting::getGlobal('platform_brand_logo_favicon');
+
+        return is_string($platformFavicon) && $platformFavicon !== '';
     }
 }

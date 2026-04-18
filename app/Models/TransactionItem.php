@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOutlet;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TransactionItem extends Model
 {
+    use BelongsToOutlet, BelongsToTenant;
+
     public const ITEM_TYPES = [
         'service' => 'Layanan',
         'package' => 'Paket',
@@ -15,6 +19,8 @@ class TransactionItem extends Model
     ];
 
     protected $fillable = [
+        'tenant_id',
+        'outlet_id',
         'transaction_id',
         'item_type',
         'service_id',

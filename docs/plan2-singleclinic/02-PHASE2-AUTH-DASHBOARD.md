@@ -32,7 +32,7 @@ database/migrations/xxxx_add_role_to_users_table.php
 ┌────────────────────────────────────────────────────────────┐
 │                                                            │
 │                     ┌─────────────────────┐               │
-│                     │     GlowUp Logo     │               │
+│                     │     Rupa Logo     │               │
 │                     └─────────────────────┘               │
 │                                                            │
 │                     Masuk ke Dashboard                     │
@@ -204,7 +204,7 @@ Schema::table('users', function (Blueprint $table) {
 // UserSeeder.php
 User::create([
     'name' => 'Owner',
-    'email' => 'owner@glowup.test',
+    'email' => 'owner@rupa.test',
     'password' => bcrypt('password'),
     'role' => 'owner',
     'is_active' => true,
@@ -212,7 +212,7 @@ User::create([
 
 User::create([
     'name' => 'Admin',
-    'email' => 'admin@glowup.test',
+    'email' => 'admin@rupa.test',
     'password' => bcrypt('password'),
     'role' => 'admin',
     'is_active' => true,

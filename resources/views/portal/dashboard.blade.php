@@ -85,7 +85,7 @@
             <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('portal.upcoming_appointments') }}</h3>
-                    <a href="{{ route('portal.appointments') }}" class="text-sm text-primary-600 hover:text-primary-700">{{ __('portal.view_all') }}</a>
+                    <a href="{{ customer_route('appointments') }}" class="text-sm text-primary-600 hover:text-primary-700">{{ __('portal.view_all') }}</a>
                 </div>
             </div>
             <div class="p-6">
@@ -129,14 +129,14 @@
             <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('portal.recent_treatments') }}</h3>
-                    <a href="{{ route('portal.treatments') }}" class="text-sm text-primary-600 hover:text-primary-700">{{ __('portal.view_all') }}</a>
+                    <a href="{{ customer_route('treatments') }}" class="text-sm text-primary-600 hover:text-primary-700">{{ __('portal.view_all') }}</a>
                 </div>
             </div>
             <div class="p-6">
                 @if($recentTreatments->count() > 0)
                     <div class="space-y-4">
                         @foreach($recentTreatments as $treatment)
-                            <a href="{{ route('portal.treatments.show', $treatment) }}" class="block p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <a href="{{ customer_route('treatments.show', $treatment) }}" class="block p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-sm font-medium text-gray-900 dark:text-white">
@@ -171,13 +171,13 @@
             <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('portal.active_packages') }}</h3>
-                    <a href="{{ route('portal.packages') }}" class="text-sm text-primary-600 hover:text-primary-700">{{ __('portal.view_all') }}</a>
+                    <a href="{{ customer_route('packages') }}" class="text-sm text-primary-600 hover:text-primary-700">{{ __('portal.view_all') }}</a>
                 </div>
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($activePackages as $customerPackage)
-                        <a href="{{ route('portal.packages.show', $customerPackage) }}" class="block p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-primary-500 transition-colors">
+                        <a href="{{ customer_route('packages.show', $customerPackage) }}" class="block p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-primary-500 transition-colors">
                             <h4 class="font-medium text-gray-900 dark:text-white">{{ $customerPackage->package?->name }}</h4>
                             <div class="mt-2">
                                 <div class="flex items-center justify-between text-sm">

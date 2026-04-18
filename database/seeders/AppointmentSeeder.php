@@ -7,15 +7,24 @@ use App\Models\Customer;
 use App\Models\Service;
 use App\Models\User;
 use Carbon\Carbon;
+use Database\Seeders\Concerns\ResolvesDemoTenantOutlet;
 use Illuminate\Database\Seeder;
 
 class AppointmentSeeder extends Seeder
 {
+    use ResolvesDemoTenantOutlet;
+
     public function run(): void
     {
-        $customers = Customer::all();
-        $services = Service::all();
-        $beauticians = User::where('role', 'beautician')->get();
+        [$tenant, $outlet] = $this->ensureDemoContextBound();
+
+        if (Appointment::query()->exists()) {
+            return;
+        }
+
+        $customers = Customer::query()->get();
+        $services = Service::query()->get();
+        $beauticians = User::query()->where('role', 'beautician')->get();
 
         if ($customers->isEmpty() || $services->isEmpty() || $beauticians->isEmpty()) {
             return;
@@ -55,6 +64,8 @@ class AppointmentSeeder extends Seeder
                 }
 
                 Appointment::create([
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
                     'customer_id' => $customer->id,
                     'service_id' => $service->id,
                     'staff_id' => $beautician->id,
@@ -62,6 +73,7 @@ class AppointmentSeeder extends Seeder
                     'start_time' => $startTime,
                     'end_time' => $endTime,
                     'status' => $status,
+                    'source' => ['walk_in', 'phone', 'whatsapp', 'online'][rand(0, 3)],
                     'notes' => rand(0, 4) === 0 ? 'Customer reguler' : null,
                     'created_at' => $date->copy()->setTime(rand(8, 12), rand(0, 59)),
                     'updated_at' => $date->copy()->setTime(rand(8, 12), rand(0, 59)),
@@ -85,6 +97,8 @@ class AppointmentSeeder extends Seeder
                 $endTime = Carbon::parse($startTime)->addMinutes($service->duration_minutes)->format('H:i:s');
 
                 Appointment::create([
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
                     'customer_id' => $customer->id,
                     'service_id' => $service->id,
                     'staff_id' => $beautician->id,
@@ -92,6 +106,7 @@ class AppointmentSeeder extends Seeder
                     'start_time' => $startTime,
                     'end_time' => $endTime,
                     'status' => ['pending', 'confirmed'][rand(0, 1)],
+                    'source' => ['walk_in', 'phone', 'whatsapp', 'online'][rand(0, 3)],
                     'notes' => null,
                 ]);
             }

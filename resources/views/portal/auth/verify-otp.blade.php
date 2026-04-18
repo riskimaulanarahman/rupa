@@ -26,7 +26,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('portal.verify-otp.submit') }}" method="POST" x-data="otpForm()">
+            <form action="{{ customer_route('verify-otp.submit') }}" method="POST" x-data="otpForm()">
                 @csrf
                 <input type="hidden" name="email" value="{{ $email }}">
 
@@ -59,7 +59,7 @@
             <!-- Resend OTP -->
             <div class="mt-6 text-center">
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ __('portal.didnt_receive_otp') }}</p>
-                <form action="{{ route('portal.resend-otp') }}" method="POST" class="inline">
+                <form action="{{ customer_route('resend-otp') }}" method="POST" class="inline">
                     @csrf
                     <input type="hidden" name="email" value="{{ $email }}">
                     <button type="submit" class="text-primary-600 hover:text-primary-700 font-medium text-sm">
@@ -70,7 +70,7 @@
 
             <!-- Change Email -->
             <div class="mt-4 text-center">
-                <a href="{{ route('portal.login') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600">
+                <a href="{{ customer_route('login') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600">
                     {{ __('portal.use_different_email') }}
                 </a>
             </div>

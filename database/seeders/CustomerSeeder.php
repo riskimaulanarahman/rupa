@@ -3,12 +3,17 @@
 namespace Database\Seeders;
 
 use App\Models\Customer;
+use Database\Seeders\Concerns\ResolvesDemoTenantOutlet;
 use Illuminate\Database\Seeder;
 
 class CustomerSeeder extends Seeder
 {
+    use ResolvesDemoTenantOutlet;
+
     public function run(): void
     {
+        [$tenant, $outlet] = $this->ensureDemoContextBound();
+
         $customers = [
             [
                 'name' => 'Rina Wijaya',
@@ -145,7 +150,13 @@ class CustomerSeeder extends Seeder
         ];
 
         foreach ($customers as $customer) {
-            Customer::create($customer);
+            Customer::withoutGlobalScopes()->updateOrCreate(
+                ['phone' => $customer['phone']],
+                array_merge($customer, [
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
+                ])
+            );
         }
     }
 }

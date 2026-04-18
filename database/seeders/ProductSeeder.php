@@ -4,12 +4,17 @@ namespace Database\Seeders;
 
 use App\Models\Product;
 use App\Models\ProductCategory;
+use Database\Seeders\Concerns\ResolvesDemoTenantOutlet;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
+    use ResolvesDemoTenantOutlet;
+
     public function run(): void
     {
+        [$tenant, $outlet] = $this->ensureDemoContextBound();
+
         $skincare = ProductCategory::where('name', 'Skincare')->first();
         $bodycare = ProductCategory::where('name', 'Body Care')->first();
         $makeup = ProductCategory::where('name', 'Makeup')->first();
@@ -179,9 +184,16 @@ class ProductSeeder extends Seeder
         ];
 
         foreach ($products as $product) {
-            Product::firstOrCreate(
+            if (! $product['category_id']) {
+                continue;
+            }
+
+            Product::withoutGlobalScopes()->updateOrCreate(
                 ['sku' => $product['sku']],
-                $product
+                array_merge($product, [
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
+                ])
             );
         }
     }

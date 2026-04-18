@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOutlet;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class LoyaltyRedemption extends Model
 {
+    use BelongsToOutlet, BelongsToTenant;
+
     public const STATUSES = [
         'pending' => 'Menunggu',
         'used' => 'Digunakan',
@@ -16,6 +20,8 @@ class LoyaltyRedemption extends Model
     ];
 
     protected $fillable = [
+        'tenant_id',
+        'outlet_id',
         'customer_id',
         'loyalty_reward_id',
         'transaction_id',

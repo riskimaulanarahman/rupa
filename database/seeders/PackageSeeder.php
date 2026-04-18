@@ -4,12 +4,17 @@ namespace Database\Seeders;
 
 use App\Models\Package;
 use App\Models\Service;
+use Database\Seeders\Concerns\ResolvesDemoTenantOutlet;
 use Illuminate\Database\Seeder;
 
 class PackageSeeder extends Seeder
 {
+    use ResolvesDemoTenantOutlet;
+
     public function run(): void
     {
+        [$tenant, $outlet] = $this->ensureDemoContextBound();
+
         $facialBrightening = Service::where('name', 'Facial Brightening')->first();
         $facialAcne = Service::where('name', 'Facial Acne Treatment')->first();
         $facialAntiAging = Service::where('name', 'Facial Anti Aging')->first();
@@ -86,7 +91,21 @@ class PackageSeeder extends Seeder
         ];
 
         foreach ($packages as $package) {
-            Package::create($package);
+            if (! $package['service_id']) {
+                continue;
+            }
+
+            Package::updateOrCreate(
+                [
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
+                    'name' => $package['name'],
+                ],
+                array_merge($package, [
+                    'tenant_id' => $tenant->id,
+                    'outlet_id' => $outlet->id,
+                ])
+            );
         }
     }
 }

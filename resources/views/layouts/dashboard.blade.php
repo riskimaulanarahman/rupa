@@ -30,11 +30,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="{{ brand_name() }}">
     <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png">
-
-    @if(brand_logo('favicon'))
-        <link rel="icon" type="image/x-icon" href="{{ brand_logo('favicon') }}">
-    @endif
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ brand_logo('favicon') ?? asset('favicon.ico') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
@@ -72,11 +69,25 @@
 
         <!-- Main Content -->
         <div class="flex-1">
+            <x-subscription-banner />
+            
             <!-- Header -->
             @include('components.header')
 
             <!-- Page Content -->
             <main class="p-6 max-md:p-4">
+                @if(session('success'))
+                    <div class="mb-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4">
+                        <p class="text-sm font-medium text-green-800 dark:text-green-200">{{ session('success') }}</p>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="mb-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">
+                        <p class="text-sm font-medium text-red-800 dark:text-red-200">{{ session('error') }}</p>
+                    </div>
+                @endif
+
                 @yield('content')
             </main>
         </div>

@@ -1,13 +1,13 @@
-# GlowUp - Sistem Manajemen Klinik, Salon & Barbershop
+# Rupa - Sistem Manajemen Klinik, Salon & Barbershop
 
 <p align="center">
   <strong>Aplikasi manajemen bisnis kecantikan all-in-one</strong><br>
   Klinik Kecantikan &bull; Salon &bull; Barbershop
 </p>
 
-## Tentang GlowUp
+## Tentang Rupa
 
-GlowUp adalah aplikasi web manajemen bisnis kecantikan yang mendukung berbagai tipe usaha: **Klinik Kecantikan**, **Salon**, dan **Barbershop**. Dibangun dengan Laravel 12, aplikasi ini menyediakan fitur lengkap mulai dari manajemen pelanggan, appointment, POS, loyalty program, hingga customer portal dan mobile API.
+Rupa adalah aplikasi web manajemen bisnis kecantikan yang mendukung berbagai tipe usaha: **Klinik Kecantikan**, **Salon**, dan **Barbershop**. Dibangun dengan Laravel 12, aplikasi ini menyediakan fitur lengkap mulai dari manajemen pelanggan, appointment, POS, loyalty program, hingga customer portal dan mobile API.
 
 ## Tech Stack
 
@@ -224,7 +224,7 @@ Setiap tipe bisnis memiliki konfigurasi fitur (feature toggle), profil pelanggan
 ```bash
 # Clone repository
 git clone <repository-url>
-cd clinic-glowup-web
+cd clinic-rupa-web
 
 # Install dependencies
 composer install

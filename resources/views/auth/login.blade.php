@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ __('auth.login') }} - {{ brand_name() }}</title>
-    @if(brand_logo('favicon'))
-        <link rel="icon" type="image/x-icon" href="{{ brand_logo('favicon') }}">
-    @endif
+    <link rel="icon" type="image/x-icon" href="{{ brand_logo('favicon') ?? asset('favicon.ico') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
@@ -65,7 +63,7 @@
                             type="email"
                             id="email"
                             name="email"
-                            value="{{ old('email', 'owner@jagoflutter.com') }}"
+                            value="{{ old('email') }}"
                             class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition @error('email') border-red-400 @enderror"
                             placeholder="email@example.com"
                             required
@@ -84,7 +82,6 @@
                                 :type="showPassword ? 'text' : 'password'"
                                 id="password"
                                 name="password"
-                                value="password"
                                 class="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition @error('password') border-red-400 @enderror"
                                 placeholder="{{ __('auth.enter_password') }}"
                                 required
@@ -126,22 +123,21 @@
                     >
                         {{ __('auth.login') }}
                     </button>
+                    
+                    <div class="mt-6 text-center">
+                        <p class="text-sm text-gray-600">
+                            {{ __('auth.dont_have_account') }} 
+                            <a href="{{ route('register.index') }}" class="font-bold text-rose-600 hover:text-rose-700 transition">
+                                {{ __('auth.register_now') }}
+                            </a>
+                        </p>
+                    </div>
                 </form>
-            </div>
-
-            <!-- Demo Credentials -->
-            <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                <p class="text-sm font-medium text-amber-800 mb-2">{{ __('auth.demo_credentials') }}:</p>
-                <div class="text-xs text-amber-700 space-y-1">
-                    <p><span class="font-medium">{{ __('auth.owner') }}:</span> owner@jagoflutter.com</p>
-                    <p><span class="font-medium">{{ __('auth.admin') }}:</span> admin@jagoflutter.com</p>
-                    <p><span class="font-medium">{{ __('auth.password') }}:</span> password</p>
-                </div>
             </div>
 
             <!-- Footer -->
             <p class="text-center text-sm text-gray-500 mt-6">
-                {{ brand_copyright() }} @if(brand('footer.show_powered_by', true)) Powered by <a href="{{ brand('footer.powered_by_url', 'https://glowup.app') }}" target="_blank" class="{{ $tc->link ?? 'text-rose-500 hover:text-rose-600' }}">{{ brand('footer.powered_by_text', 'GlowUp') }}</a>@endif
+                {{ brand_copyright() }} @if(brand('footer.show_powered_by', true)) Powered by <a href="{{ brand('footer.powered_by_url', 'https://rupa.app') }}" target="_blank" class="{{ $tc->link ?? 'text-rose-500 hover:text-rose-600' }}">{{ brand('footer.powered_by_text', 'Rupa') }}</a>@endif
             </p>
         </div>
     </div>

@@ -51,6 +51,21 @@
                 </div>
             </div>
         </a>
+
+        <!-- Outlet Landing -->
+        <a href="{{ route('settings.landing.edit') }}" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:border-emerald-200 dark:hover:border-gray-600 hover:shadow-md transition group">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl flex items-center justify-center group-hover:bg-emerald-200 dark:group-hover:bg-emerald-900/70 transition">
+                    <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h10a4 4 0 004-4M7 9l5-5 5 5M12 4v12" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-gray-100">Landing Outlet</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Edit halaman publik outlet dan link booking online.</p>
+                </div>
+            </div>
+        </a>
     </div>
 </div>
 @endsection

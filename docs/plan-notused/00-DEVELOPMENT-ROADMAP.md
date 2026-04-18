@@ -1,4 +1,4 @@
-# GlowUp Development Roadmap
+# Rupa Development Roadmap
 
 **Tech Stack:** Laravel 12 + Alpine.js + Tailwind CSS 4
 **Created:** January 2026
@@ -7,7 +7,7 @@
 
 ## Ringkasan Project
 
-GlowUp adalah sistem manajemen klinik kecantikan dengan fitur:
+Rupa adalah sistem manajemen klinik kecantikan dengan fitur:
 - Booking Management
 - Customer & Skin Profile Management
 - Treatment Records dengan foto Before/After

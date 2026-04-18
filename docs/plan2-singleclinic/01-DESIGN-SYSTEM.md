@@ -1,4 +1,4 @@
-# GlowUp - Design System
+# Rupa - Design System
 
 ## Color Palette
 

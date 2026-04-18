@@ -1,4 +1,4 @@
-# Panduan Deploy GlowUp Clinic
+# Panduan Deploy Rupa Clinic
 
 ## Daftar Isi
 1. [Persiapan Deployment](#1-persiapan-deployment)
@@ -26,7 +26,7 @@
 
 ```env
 # Application
-APP_NAME="GlowUp Clinic"
+APP_NAME="Rupa Clinic"
 APP_ENV=production
 APP_KEY=base64:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 APP_DEBUG=false
@@ -40,8 +40,8 @@ LOG_LEVEL=error
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=glowup_production
-DB_USERNAME=glowup_user
+DB_DATABASE=rupa_production
+DB_USERNAME=rupa_user
 DB_PASSWORD=strong_password_here
 
 # Session & Cache
@@ -154,9 +154,9 @@ sudo mysql -u root -p
 ```
 
 ```sql
-CREATE DATABASE glowup_production CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'glowup_user'@'localhost' IDENTIFIED BY 'strong_password_here';
-GRANT ALL PRIVILEGES ON glowup_production.* TO 'glowup_user'@'localhost';
+CREATE DATABASE rupa_production CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'rupa_user'@'localhost' IDENTIFIED BY 'strong_password_here';
+GRANT ALL PRIVILEGES ON rupa_production.* TO 'rupa_user'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
 ```
@@ -165,12 +165,12 @@ EXIT;
 
 ```bash
 # Buat direktori aplikasi
-sudo mkdir -p /var/www/glowup
-sudo chown deploy:www-data /var/www/glowup
+sudo mkdir -p /var/www/rupa
+sudo chown deploy:www-data /var/www/rupa
 
 # Clone repository
-cd /var/www/glowup
-git clone https://github.com/username/clinic-glowup-web.git .
+cd /var/www/rupa
+git clone https://github.com/username/clinic-rupa-web.git .
 
 # Set permissions
 sudo chown -R deploy:www-data .
@@ -194,7 +194,7 @@ php artisan migrate --force --seed
 #### Langkah 5: Konfigurasi Nginx
 
 ```bash
-sudo nano /etc/nginx/sites-available/glowup
+sudo nano /etc/nginx/sites-available/rupa
 ```
 
 ```nginx
@@ -202,7 +202,7 @@ server {
     listen 80;
     listen [::]:80;
     server_name yourdomain.com www.yourdomain.com;
-    root /var/www/glowup/public;
+    root /var/www/rupa/public;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
@@ -256,7 +256,7 @@ server {
 
 ```bash
 # Enable site
-sudo ln -s /etc/nginx/sites-available/glowup /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/rupa /etc/nginx/sites-enabled/
 sudo rm /etc/nginx/sites-enabled/default
 
 # Test dan restart
@@ -294,27 +294,27 @@ sudo systemctl restart php8.3-fpm
 Buat service untuk queue worker:
 
 ```bash
-sudo nano /etc/systemd/system/glowup-worker.service
+sudo nano /etc/systemd/system/rupa-worker.service
 ```
 
 ```ini
 [Unit]
-Description=GlowUp Queue Worker
+Description=Rupa Queue Worker
 After=network.target
 
 [Service]
 User=deploy
 Group=www-data
 Restart=always
-ExecStart=/usr/bin/php /var/www/glowup/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+ExecStart=/usr/bin/php /var/www/rupa/artisan queue:work --sleep=3 --tries=3 --max-time=3600
 
 [Install]
 WantedBy=multi-user.target
 ```
 
 ```bash
-sudo systemctl enable glowup-worker
-sudo systemctl start glowup-worker
+sudo systemctl enable rupa-worker
+sudo systemctl start rupa-worker
 ```
 
 #### Langkah 8: Setup Cron untuk Scheduler
@@ -325,7 +325,7 @@ crontab -e
 
 Tambahkan:
 ```cron
-* * * * * cd /var/www/glowup && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /var/www/rupa && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 ---
@@ -359,7 +359,7 @@ set -e
 
 echo "Starting deployment..."
 
-cd /var/www/glowup
+cd /var/www/rupa
 
 # Pull latest code
 git pull origin main
@@ -381,7 +381,7 @@ php artisan view:cache
 # npm run build
 
 # Restart queue workers
-sudo systemctl restart glowup-worker
+sudo systemctl restart rupa-worker
 
 # Set permissions
 sudo chown -R deploy:www-data storage bootstrap/cache
@@ -423,7 +423,7 @@ chmod +x deploy.sh
 npm run build
 
 # Buat zip untuk upload (exclude node_modules & vendor)
-zip -r glowup.zip . -x "node_modules/*" -x "vendor/*" -x ".git/*"
+zip -r rupa.zip . -x "node_modules/*" -x "vendor/*" -x ".git/*"
 ```
 
 #### Langkah 2: Upload dan Extract
@@ -433,11 +433,11 @@ zip -r glowup.zip . -x "node_modules/*" -x "vendor/*" -x ".git/*"
 ssh username@yourdomain.com
 
 # Upload file (via SCP dari local)
-scp glowup.zip username@yourdomain.com:~/
+scp rupa.zip username@yourdomain.com:~/
 
 # Di server, pindah ke folder dan extract
 cd ~/
-unzip glowup.zip -d glowup_temp
+unzip rupa.zip -d rupa_temp
 ```
 
 #### Langkah 3: Setup Struktur Folder
@@ -446,19 +446,19 @@ Shared hosting biasanya punya struktur:
 ```
 /home/username/
 ├── public_html/          # Document root
-└── glowup/               # Application files
+└── rupa/               # Application files
 ```
 
 **Pindahkan file:**
 ```bash
 # Buat folder aplikasi
-mkdir -p ~/glowup
+mkdir -p ~/rupa
 
 # Pindahkan semua file kecuali public
-mv ~/glowup_temp/* ~/glowup/
+mv ~/rupa_temp/* ~/rupa/
 
 # Pindahkan isi public ke public_html
-cp -r ~/glowup/public/* ~/public_html/
+cp -r ~/rupa/public/* ~/public_html/
 
 # Edit index.php di public_html
 nano ~/public_html/index.php
@@ -473,13 +473,13 @@ use Illuminate\Http\Request;
 define('LARAVEL_START', microtime(true));
 
 // Tentukan path ke aplikasi Laravel
-if (file_exists($maintenance = __DIR__.'/../glowup/storage/framework/maintenance.php')) {
+if (file_exists($maintenance = __DIR__.'/../rupa/storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
-require __DIR__.'/../glowup/vendor/autoload.php';
+require __DIR__.'/../rupa/vendor/autoload.php';
 
-$app = require_once __DIR__.'/../glowup/bootstrap/app.php';
+$app = require_once __DIR__.'/../rupa/bootstrap/app.php';
 
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
@@ -493,7 +493,7 @@ $kernel->terminate($request, $response);
 #### Langkah 4: Install Dependencies
 
 ```bash
-cd ~/glowup
+cd ~/rupa
 composer install --no-dev --optimize-autoloader
 ```
 
@@ -511,8 +511,8 @@ APP_DEBUG=false
 APP_URL=https://yourdomain.com
 
 DB_HOST=localhost
-DB_DATABASE=username_glowup
-DB_USERNAME=username_glowup
+DB_DATABASE=username_rupa
+DB_USERNAME=username_rupa
 DB_PASSWORD=database_password
 ```
 
@@ -527,15 +527,15 @@ php artisan storage:link
 **Catatan:** Untuk storage link di shared hosting, mungkin perlu manual:
 ```bash
 # Di public_html
-ln -s ~/glowup/storage/app/public storage
+ln -s ~/rupa/storage/app/public storage
 ```
 
 #### Langkah 7: Set Permissions
 
 ```bash
-chmod -R 755 ~/glowup
-chmod -R 775 ~/glowup/storage
-chmod -R 775 ~/glowup/bootstrap/cache
+chmod -R 755 ~/rupa
+chmod -R 775 ~/rupa/storage
+chmod -R 775 ~/rupa/bootstrap/cache
 ```
 
 ---
@@ -550,7 +550,7 @@ npm run build
 composer install --no-dev
 
 # Compress semua file
-zip -r glowup.zip .
+zip -r rupa.zip .
 ```
 
 #### Langkah 2: Upload via cPanel
@@ -558,7 +558,7 @@ zip -r glowup.zip .
 1. Login ke cPanel
 2. Buka File Manager
 3. Navigate ke folder home (di luar public_html)
-4. Upload `glowup.zip`
+4. Upload `rupa.zip`
 5. Extract file
 
 #### Langkah 3: Setup public_html
@@ -569,21 +569,21 @@ zip -r glowup.zip .
 ```php
 <?php
 // Ubah path ke lokasi aplikasi yang benar
-require __DIR__.'/../glowup/vendor/autoload.php';
-$app = require_once __DIR__.'/../glowup/bootstrap/app.php';
+require __DIR__.'/../rupa/vendor/autoload.php';
+$app = require_once __DIR__.'/../rupa/bootstrap/app.php';
 // ... sisanya sama
 ```
 
 #### Langkah 4: Setup Database via cPanel
 
 1. Buka MySQL Databases di cPanel
-2. Create New Database: `username_glowup`
-3. Create New User: `username_glowupuser`
+2. Create New Database: `username_rupa`
+3. Create New User: `username_rupauser`
 4. Add User to Database dengan ALL PRIVILEGES
 
 #### Langkah 5: Setup Environment
 
-1. Di File Manager, navigate ke folder `glowup`
+1. Di File Manager, navigate ke folder `rupa`
 2. Copy `.env.example` menjadi `.env`
 3. Edit `.env` dengan kredensial database
 
@@ -592,7 +592,7 @@ $app = require_once __DIR__.'/../glowup/bootstrap/app.php';
 1. Buka Terminal di cPanel
 2. Jalankan:
 ```bash
-cd ~/glowup
+cd ~/rupa
 php artisan key:generate
 php artisan migrate --force --seed
 ```
@@ -602,7 +602,7 @@ php artisan migrate --force --seed
 1. Buka Cron Jobs di cPanel
 2. Tambah cron baru:
    - Minute: * (every minute)
-   - Command: `cd ~/glowup && php artisan schedule:run >> /dev/null 2>&1`
+   - Command: `cd ~/rupa && php artisan schedule:run >> /dev/null 2>&1`
 
 ---
 
@@ -846,8 +846,8 @@ mysql -u username -p database_name < backup_file.sql
 # backup.sh
 
 BACKUP_DIR="/home/deploy/backups"
-DB_NAME="glowup_production"
-DB_USER="glowup_user"
+DB_NAME="rupa_production"
+DB_USER="rupa_user"
 DB_PASS="password"
 DATE=$(date +%Y%m%d_%H%M%S)
 
@@ -858,7 +858,7 @@ mkdir -p $BACKUP_DIR
 mysqldump -u$DB_USER -p$DB_PASS $DB_NAME | gzip > $BACKUP_DIR/db_$DATE.sql.gz
 
 # Backup files (storage)
-tar -czf $BACKUP_DIR/storage_$DATE.tar.gz /var/www/glowup/storage/app
+tar -czf $BACKUP_DIR/storage_$DATE.tar.gz /var/www/rupa/storage/app
 
 # Hapus backup lebih dari 7 hari
 find $BACKUP_DIR -type f -mtime +7 -delete
@@ -881,7 +881,7 @@ crontab -e
 tar -czvf storage_backup.tar.gz storage/app/public
 
 # Backup seluruh aplikasi
-tar -czvf app_backup.tar.gz /var/www/glowup --exclude='vendor' --exclude='node_modules'
+tar -czvf app_backup.tar.gz /var/www/rupa --exclude='vendor' --exclude='node_modules'
 ```
 
 ### 7.3 Offsite Backup
@@ -896,7 +896,7 @@ curl https://rclone.org/install.sh | sudo bash
 rclone config
 
 # Sync backup ke cloud
-rclone sync /home/deploy/backups remote:glowup-backups
+rclone sync /home/deploy/backups remote:rupa-backups
 ```
 
 ### 7.4 Recovery Plan
@@ -913,13 +913,13 @@ mysql -u username -p database_name < backup.sql
 2. **File Recovery:**
 ```bash
 # Extract file backup
-tar -xzvf storage_backup.tar.gz -C /var/www/glowup/
+tar -xzvf storage_backup.tar.gz -C /var/www/rupa/
 ```
 
 3. **Full Recovery:**
 ```bash
 # Clone fresh dari repository
-git clone https://github.com/username/clinic-glowup-web.git
+git clone https://github.com/username/clinic-rupa-web.git
 
 # Restore .env
 # Restore database
@@ -988,8 +988,8 @@ composer global require laravel/installer
 
 # Deploy
 cd /var/www
-git clone your-repo glowup
-cd glowup
+git clone your-repo rupa
+cd rupa
 composer install --no-dev --optimize-autoloader
 cp .env.example .env
 # Edit .env
@@ -1003,7 +1003,7 @@ php artisan config:cache && php artisan route:cache && php artisan view:cache
 ```bash
 # Di local
 npm run build
-zip -r glowup.zip . -x "node_modules/*" -x ".git/*"
+zip -r rupa.zip . -x "node_modules/*" -x ".git/*"
 
 # Upload via SSH/FTP
 # Setup index.php di public_html

@@ -297,7 +297,7 @@ Mobile API sudah diimplementasikan dengan fitur:
 - Tests: `tests/Feature/Api/`
 
 ### Phase 12: Import Data (Implemented)
-Fitur import data untuk migrasi klinik ke GlowUp:
+Fitur import data untuk migrasi klinik ke Rupa:
 
 #### Jenis Import yang Tersedia:
 1. **Import Pelanggan** - Import data customer dari CSV

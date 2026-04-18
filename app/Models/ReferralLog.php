@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOutlet;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ReferralLog extends Model
 {
+    use BelongsToOutlet, BelongsToTenant;
+
     public const STATUSES = [
         'pending' => 'Menunggu',
         'rewarded' => 'Diberikan',
@@ -14,6 +18,8 @@ class ReferralLog extends Model
     ];
 
     protected $fillable = [
+        'tenant_id',
+        'outlet_id',
         'referrer_id',
         'referee_id',
         'referrer_points',

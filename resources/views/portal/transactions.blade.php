@@ -15,7 +15,7 @@
         @if($transactions->count() > 0)
             <div class="divide-y divide-gray-200 dark:divide-gray-700">
                 @foreach($transactions as $transaction)
-                    <a href="{{ route('portal.transactions.show', $transaction) }}" class="block p-4 max-sm:p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <a href="{{ customer_route('transactions.show', $transaction) }}" class="block p-4 max-sm:p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <div class="flex items-center justify-between gap-3">
                             <div class="flex items-center gap-3 max-sm:gap-2 min-w-0">
                                 <div class="w-10 h-10 max-sm:w-8 max-sm:h-8 bg-green-100 dark:bg-green-900/50 rounded-xl flex items-center justify-center flex-shrink-0">

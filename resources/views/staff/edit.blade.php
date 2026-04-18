@@ -86,6 +86,32 @@
                 @enderror
             </div>
 
+            @php
+                $showRevenueOption = old('role', $staff->role) === 'admin';
+            @endphp
+            <div id="revenuePermissionWrapper" class="{{ $showRevenueOption ? '' : 'hidden' }}">
+                <div class="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-lg">
+                    <input type="hidden" name="can_view_revenue" value="0">
+                    <input
+                        type="checkbox"
+                        id="can_view_revenue"
+                        name="can_view_revenue"
+                        value="1"
+                        class="w-4 h-4 mt-0.5 text-rose-500 border-gray-300 rounded focus:ring-rose-500/20"
+                        {{ old('can_view_revenue', $staff->can_view_revenue ?? true) ? 'checked' : '' }}
+                    >
+                    <div>
+                        <label for="can_view_revenue" class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300">
+                            {{ __('staff.can_view_revenue') }}
+                        </label>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('staff.can_view_revenue_help') }}</p>
+                    </div>
+                </div>
+                @error('can_view_revenue')
+                    <p class="mt-1 text-sm max-sm:text-xs text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Password -->
             <div>
                 <label for="password" class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 max-sm:mb-1.5">{{ __('staff.new_password') }}</label>
@@ -138,3 +164,23 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const roleSelect = document.getElementById('role');
+    const revenuePermissionWrapper = document.getElementById('revenuePermissionWrapper');
+
+    if (!roleSelect || !revenuePermissionWrapper) {
+        return;
+    }
+
+    const toggleRevenueOption = () => {
+        revenuePermissionWrapper.classList.toggle('hidden', roleSelect.value !== 'admin');
+    };
+
+    roleSelect.addEventListener('change', toggleRevenueOption);
+    toggleRevenueOption();
+});
+</script>
+@endpush

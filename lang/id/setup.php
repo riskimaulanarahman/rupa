@@ -2,7 +2,7 @@
 
 return [
     'title' => 'Setup',
-    'welcome' => 'Selamat Datang di GlowUp',
+    'welcome' => 'Selamat Datang di Rupa',
     'select_business_type' => 'Pilih jenis bisnis Anda untuk memulai',
     'business_type' => 'Jenis Bisnis',
     'details' => 'Detail',
@@ -30,7 +30,7 @@ return [
     'complete_setup' => 'Selesaikan Setup',
     'terms_agreement' => 'Dengan menyelesaikan setup, Anda menyetujui syarat dan ketentuan kami',
     'can_change_later' => 'Anda dapat mengubah pengaturan ini nanti di halaman pengaturan',
-    'setup_completed' => 'Setup berhasil! Selamat datang di GlowUp.',
+    'setup_completed' => 'Setup berhasil! Selamat datang di Rupa.',
 
     // Business types
     'clinic' => 'Klinik Kecantikan',

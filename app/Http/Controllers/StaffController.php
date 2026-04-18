@@ -29,6 +29,9 @@ class StaffController extends Controller
     {
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
+        $data['can_view_revenue'] = $data['role'] === 'admin'
+            ? $request->boolean('can_view_revenue', true)
+            : false;
 
         User::create($data);
 
@@ -44,8 +47,13 @@ class StaffController extends Controller
     public function update(StaffRequest $request, User $staff): RedirectResponse
     {
         $data = $request->validated();
+        $data['can_view_revenue'] = $data['role'] === 'admin'
+            ? ($request->has('can_view_revenue')
+                ? $request->boolean('can_view_revenue')
+                : (bool) $staff->can_view_revenue)
+            : false;
 
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         } else {
             unset($data['password']);

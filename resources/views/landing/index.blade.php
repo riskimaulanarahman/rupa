@@ -100,7 +100,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
                         </svg>
                     </div>
-                    <span class="text-2xl font-display font-bold text-gray-900">{{ brand_name() ?: 'GlowUp' }}</span>
+                    <span class="text-2xl font-display font-bold text-gray-900">{{ brand_name() ?: 'Rupa' }}</span>
                 </a>
 
                 <!-- Desktop Menu (Left aligned) -->
@@ -113,37 +113,42 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute left-0 mt-3 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50" style="display: none;">
-                            <a href="#features" @click="open = false" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 {{ $lt->hover_bg }} {{ $lt->hover_text }} transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                </svg>
-                                {{ __('landing.nav_features') }}
+                        <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2" class="absolute left-0 mt-3 w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100 py-3 z-50 overflow-hidden" style="display: none;">
+                            <div class="px-4 py-2 mb-2 border-b border-gray-50">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Platform Explorer</span>
+                            </div>
+                            <a href="#features" @click="open = false" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-rose-50 hover:text-rose-600 transition-all rounded-lg mx-2">
+                                <div class="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                    </svg>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="font-semibold">{{ __('landing.nav_features') }}</span>
+                                    <span class="text-[10px] text-gray-400">Semua fitur operasional</span>
+                                </div>
                             </a>
-                            <a href="#solutions" @click="open = false" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 {{ $lt->hover_bg }} {{ $lt->hover_text }} transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                                </svg>
-                                {{ __('landing.nav_solutions') }}
+                            <a href="#solutions" @click="open = false" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-600 transition-all rounded-lg mx-2">
+                                <div class="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                    </svg>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="font-semibold">{{ __('landing.nav_solutions') }}</span>
+                                    <span class="text-[10px] text-gray-400">Solusi per segmen bisnis</span>
+                                </div>
                             </a>
-                            <a href="#mobile-apps" @click="open = false" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 {{ $lt->hover_bg }} {{ $lt->hover_text }} transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                </svg>
-                                {{ __('landing.nav_mobile_apps') }}
-                            </a>
-                            <div class="my-1 border-t border-gray-100"></div>
-                            <a href="#testimonials" @click="open = false" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 {{ $lt->hover_bg }} {{ $lt->hover_text }} transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                </svg>
-                                {{ __('landing.nav_testimonials') }}
-                            </a>
-                            <a href="#faq" @click="open = false" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 {{ $lt->hover_bg }} {{ $lt->hover_text }} transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                {{ __('landing.nav_faq') }}
+                            <a href="#mobile-apps" @click="open = false" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-600 transition-all rounded-lg mx-2">
+                                <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="font-semibold">{{ __('landing.nav_mobile_apps') }}</span>
+                                    <span class="text-[10px] text-gray-400">Smartphone & Tablet</span>
+                                </div>
                             </a>
                         </div>
                     </div>
@@ -166,12 +171,6 @@
                             </svg>
                         </button>
                         <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50" style="display: none;">
-                            <a href="{{ route('portal.login') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 {{ $lt->hover_bg }} {{ $lt->hover_text }} transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                                {{ __('landing.nav_customer_portal') }}
-                            </a>
                             <a href="{{ route('login') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 {{ $lt->hover_bg }} {{ $lt->hover_text }} transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -184,7 +183,7 @@
                     <a href="{{ route('booking.index') }}" class="px-5 py-2.5 border-2 {{ $lt->border_400 }} {{ $lt->text }} font-medium text-sm rounded-full {{ $lt->hover_bg }} transition-all whitespace-nowrap">
                         {{ __('landing.nav_book_now') }}
                     </a>
-                    <a href="https://jagoflutter.com/glowupclinic" target="_blank" class="px-5 py-2.5 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold text-sm rounded-full hover:shadow-lg {{ $lt->hover_shadow }} transition-all hover:-translate-y-0.5 whitespace-nowrap">
+                    <a href="{{ route('register.index') }}" class="px-5 py-2.5 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold text-sm rounded-full hover:shadow-lg {{ $lt->hover_shadow }} transition-all hover:-translate-y-0.5 whitespace-nowrap">
                         {{ __('landing.nav_get_sourcecode') }}
                     </a>
                 </div>
@@ -213,9 +212,8 @@
                 </div>
                 <div class="pt-4 border-t {{ $lt->border }} space-y-3">
                     <a href="{{ route('booking.index') }}" class="block text-center px-6 py-3 border-2 {{ $lt->border_400 }} {{ $lt->text }} font-semibold rounded-full">{{ __('landing.nav_book_now') }}</a>
-                    <a href="{{ route('portal.login') }}" class="block text-center text-gray-700 font-medium py-2">{{ __('landing.nav_customer_portal') }}</a>
                     <a href="{{ route('login') }}" class="block text-center text-gray-700 font-medium py-2">{{ __('landing.nav_login') }}</a>
-                    <a href="https://jagoflutter.com/glowupclinic" target="_blank" class="block text-center px-6 py-3 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold rounded-full">{{ __('landing.nav_get_sourcecode') }}</a>
+                    <a href="{{ route('register.index') }}" class="block text-center px-6 py-3 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold rounded-full">{{ __('landing.nav_get_sourcecode') }}</a>
                 </div>
             </div>
         </div>
@@ -227,7 +225,15 @@
             <div class="grid grid-cols-2 max-lg:grid-cols-1 gap-12 max-lg:gap-8 items-center">
                 <!-- Left Content -->
                 <div class="relative z-10">
-                    <div class="animate-fade-in-up stagger-1">
+                    <div class="animate-fade-in-up stagger-1 flex flex-col items-start">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="flex -space-x-2">
+                                @for($i = 1; $i <= 4; $i++)
+                                    <img src="https://i.pravatar.cc/100?u={{ $i }}" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" alt="Avatar">
+                                @endfor
+                            </div>
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Trusted by 500+ Businesses</span>
+                        </div>
                         <span class="inline-flex items-center px-4 py-1.5 rounded-full {{ $lt->bg_light }} {{ $lt->text_700 }} text-sm font-medium mb-4">
                             <span class="w-2 h-2 {{ $lt->bg_500 }} rounded-full mr-2 animate-pulse"></span>
                             {{ landing_text('hero_badge') }}
@@ -243,7 +249,7 @@
                     </p>
 
                     <div class="mt-6 flex flex-row max-sm:flex-col gap-4 animate-fade-in-up stagger-4">
-                        <a href="https://jagoflutter.com/glowupclinic" target="_blank" class="group inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold rounded-full hover:shadow-xl {{ $lt->hover_shadow }}/50 transition-all hover:-translate-y-1">
+                        <a href="{{ route('register.index') }}" class="group inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold rounded-full hover:shadow-xl {{ $lt->hover_shadow }}/50 transition-all hover:-translate-y-1">
                             {{ __('landing.hero_cta') }}
                             <svg class="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
@@ -292,7 +298,7 @@
                                 <div class="relative w-72 max-lg:w-56 max-sm:w-40 transform -rotate-3">
                                     <div class="bg-gray-900 rounded-[1.5rem] max-lg:rounded-[1.2rem] max-sm:rounded-[0.8rem] p-1.5 max-sm:p-1 shadow-2xl shadow-gray-900/30">
                                         <div class="bg-black rounded-[1.2rem] max-lg:rounded-[1rem] max-sm:rounded-[0.6rem] overflow-hidden">
-                                            <img src="{{ asset('images/tablet/2.png') }}" alt="GlowUp Tablet App - Dashboard" class="w-full">
+                                            <img src="{{ asset('images/tablet/2.png') }}" alt="Rupa Tablet App - Dashboard" class="w-full">
                                         </div>
                                     </div>
                                     <!-- Tablet Label -->
@@ -307,7 +313,7 @@
                                 <div class="relative w-44 max-lg:w-36 max-sm:w-28">
                                     <div class="bg-gray-900 rounded-[2.5rem] max-lg:rounded-[2rem] max-sm:rounded-[1.5rem] p-2 max-sm:p-1.5 shadow-2xl shadow-gray-900/40 ring-2 ring-rose-500/20">
                                         <div class="bg-black rounded-[2rem] max-lg:rounded-[1.6rem] max-sm:rounded-[1.2rem] overflow-hidden">
-                                            <img src="{{ asset('images/phone/2.png') }}" alt="GlowUp Mobile App - Dashboard" class="w-full">
+                                            <img src="{{ asset('images/phone/2.png') }}" alt="Rupa Mobile App - Dashboard" class="w-full">
                                         </div>
                                     </div>
                                     <!-- Phone Label -->
@@ -374,6 +380,79 @@
         </div>
     </section>
 
+    <!-- Business Type Selector Section -->
+    <section class="py-20 relative z-10 overflow-hidden bg-white">
+        <div class="max-w-7xl mx-auto px-8 max-lg:px-6 max-sm:px-4">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+                    Satu Platform untuk Berbagai Jenis Bisnis
+                </h2>
+                <p class="text-gray-500 text-lg">
+                    Rupa dirancang dengan fitur spesifik untuk kebutuhan unik operasional bisnis kecantikan dan gaya hidup Anda.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-3 max-md:grid-cols-1 gap-8">
+                <!-- Clinic -->
+                <div class="group relative p-8 rounded-3xl border border-gray-100 bg-rose-50/30 hover:bg-rose-50 transition-all duration-300 hover:shadow-xl hover:shadow-rose-100">
+                    <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a2 2 0 00-1.96 1.414l-.722 2.89a2 2 0 00.547 2.108l1.592 1.592a2 2 0 002.978 0l1.592-1.592a2 2 0 00.547-2.108l-.722-2.89z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Klinik Kecantikan</h3>
+                    <p class="text-gray-500 text-sm mb-6">Fokus pada rekam medis digital, analisis kulit, dan manajemen janji temu medis yang presisi.</p>
+                    <ul class="space-y-3 mb-8">
+                        @foreach(['Rekam Medis Digital', 'Analisis Kulit', 'Manajemen Treatment'] as $f)
+                        <li class="flex items-center gap-2 text-sm text-gray-600">
+                            <div class="w-1.5 h-1.5 rounded-full bg-rose-500"></div>
+                            {{ $f }}
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <!-- Salon -->
+                <div class="group relative p-8 rounded-3xl border border-gray-100 bg-violet-50/30 hover:bg-violet-50 transition-all duration-300 hover:shadow-xl hover:shadow-violet-100">
+                    <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.828 2.828-5.656-5.656 2.828-2.828 5.656 5.656z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Salon Kecantikan</h3>
+                    <p class="text-gray-500 text-sm mb-6">Manajemen hairstylist, komisi staff, dan loyalitas pelanggan dengan program membership.</p>
+                    <ul class="space-y-3 mb-8">
+                        @foreach(['Manajemen Stylist', 'Program Membership', 'Inventory Produk'] as $f)
+                        <li class="flex items-center gap-2 text-sm text-gray-600">
+                            <div class="w-1.5 h-1.5 rounded-full bg-violet-500"></div>
+                            {{ $f }}
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <!-- Barbershop -->
+                <div class="group relative p-8 rounded-3xl border border-gray-100 bg-blue-50/30 hover:bg-blue-50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-100">
+                    <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Barbershop</h3>
+                    <p class="text-gray-500 text-sm mb-6">Sistem antrian walk-in yang efisien, manajemen barber, dan laporan harian ringkas.</p>
+                    <ul class="space-y-3 mb-8">
+                        @foreach(['Antrian Walk-in', 'Manajemen Barber', 'Laporan Kasir Cepat'] as $f)
+                        <li class="flex items-center gap-2 text-sm text-gray-600">
+                            <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                            {{ $f }}
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Features Section -->
     <section id="features" class="py-24 relative z-10">
         <div class="max-w-7xl mx-auto px-8 max-lg:px-6 max-sm:px-4">
@@ -388,118 +467,165 @@
                 </p>
             </div>
 
-            <!-- Features Grid - Mixed Layout -->
-            <div class="grid grid-cols-12 max-lg:grid-cols-1 gap-6">
-                <!-- Feature 1 - Large -->
-                <div class="col-span-7 max-lg:col-span-1 group bg-white rounded-2xl p-8 border border-gray-100 {{ $lt->border_200 }} hover:shadow-lg transition-all duration-300">
-                    <div class="flex items-start justify-between mb-6">
-                        <div class="w-12 h-12 {{ $lt->bg_50 }} rounded-xl flex items-center justify-center">
-                            <svg class="w-6 h-6 {{ $lt->text }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                        </div>
-                        <span class="text-xs font-medium {{ $lt->text }} {{ $lt->bg_50 }} px-2 py-1 rounded-full">{{ __('landing.features_popular') }}</span>
+            <!-- Features Grid - Smart Blocks -->
+            <div class="grid grid-cols-4 max-lg:grid-cols-2 max-sm:grid-cols-1 gap-6">
+                <!-- Smart Booking -->
+                <div class="group bg-white rounded-3xl p-8 border border-gray-100 hover:border-rose-200 hover:shadow-xl hover:shadow-rose-100/50 transition-all duration-300">
+                    <div class="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ __('landing.feature_appointment_title') }}</h3>
-                    <p class="text-gray-500 mb-6">
-                        {{ __('landing.feature_appointment_desc') }}
-                    </p>
-                    <div class="flex items-center gap-4 text-sm text-gray-400">
-                        <span class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            {{ __('landing.feature_appointment_calendar') }}
-                        </span>
-                        <span class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            {{ __('landing.feature_appointment_prevent') }}
-                        </span>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Smart Booking</h3>
+                    <p class="text-gray-500 text-sm mb-6">Manajemen jadwal 24/7 dengan sinkronisasi kalender real-time dan pencegahan bentrok otomatis.</p>
+                    <div class="pt-4 border-t border-gray-50 flex items-center gap-2 text-[10px] font-bold text-rose-500 uppercase tracking-widest">
+                        <span>Lihat Detail</span>
+                        <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </div>
                 </div>
 
-                <!-- Feature 2 - Treatment Records (clinic only) or Customer Management (salon/barbershop) -->
-                <div class="col-span-5 max-lg:col-span-1 group bg-white rounded-2xl p-8 border border-gray-100 {{ $lt->border_200 }} hover:shadow-lg transition-all duration-300">
-                    @if(has_feature('treatment_records'))
-                    <div class="w-12 h-12 bg-violet-50 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ landing_text('feature_medical_title') }}</h3>
-                    <p class="text-gray-500">
-                        {{ landing_text('feature_medical_desc') }}
-                    </p>
-                    @else
-                    <div class="w-12 h-12 bg-violet-50 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ landing_text('feature_customer_title') }}</h3>
-                    <p class="text-gray-500">
-                        {{ landing_text('feature_customer_desc') }}
-                    </p>
-                    @endif
-                </div>
-
-                <!-- Feature 3 - Small -->
-                <div class="col-span-4 max-lg:col-span-1 group bg-white rounded-2xl p-8 border border-gray-100 {{ $lt->border_200 }} hover:shadow-lg transition-all duration-300">
-                    <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ __('landing.feature_cashier_title') }}</h3>
-                    <p class="text-gray-500">
-                        {{ __('landing.feature_cashier_desc') }}
-                    </p>
-                </div>
-
-                <!-- Feature 4 - Packages (clinic/salon) or Walk-in Queue (barbershop) -->
-                <div class="col-span-4 max-lg:col-span-1 group bg-white rounded-2xl p-8 border border-gray-100 {{ $lt->border_200 }} hover:shadow-lg transition-all duration-300">
-                    @if(has_feature('packages'))
-                    <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Customer Loyalty -->
+                <div class="group bg-white rounded-3xl p-8 border border-gray-100 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-100/50 transition-all duration-300">
+                    <div class="w-14 h-14 bg-violet-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ landing_text('feature_package_title') }}</h3>
-                    <p class="text-gray-500">
-                        {{ landing_text('feature_package_desc') }}
-                    </p>
-                    @elseif(has_feature('walk_in_queue'))
-                    <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Loyalty & CRM</h3>
+                    <p class="text-gray-500 text-sm mb-6">Tingkatkan repeat order dengan program poin, membership, dan promo khusus pelanggan setia.</p>
+                    <div class="pt-4 border-t border-gray-50 flex items-center gap-2 text-[10px] font-bold text-violet-500 uppercase tracking-widest">
+                        <span>Lihat Detail</span>
+                        <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ landing_text('feature_walkin_title') }}</h3>
-                    <p class="text-gray-500">
-                        {{ landing_text('feature_walkin_desc') }}
-                    </p>
-                    @else
-                    <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ landing_text('feature_loyalty_title') }}</h3>
-                    <p class="text-gray-500">
-                        {{ landing_text('feature_loyalty_desc') }}
-                    </p>
-                    @endif
                 </div>
 
-                <!-- Feature 5 - Small -->
-                <div class="col-span-4 max-lg:col-span-1 group bg-white rounded-2xl p-8 border border-gray-100 {{ $lt->border_200 }} hover:shadow-lg transition-all duration-300">
-                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Advanced Analytics -->
+                <div class="group bg-white rounded-3xl p-8 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300">
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ __('landing.feature_report_title') }}</h3>
-                    <p class="text-gray-500">
-                        {{ __('landing.feature_report_desc') }}
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Advanced Insights</h3>
+                    <p class="text-gray-500 text-sm mb-6">Laporan keuangan detail, statistik treatment terlaris, dan performa staff secara harian.</p>
+                    <div class="pt-4 border-t border-gray-50 flex items-center gap-2 text-[10px] font-bold text-blue-500 uppercase tracking-widest">
+                        <span>Lihat Detail</span>
+                        <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </div>
+                </div>
+
+                <!-- Multi-outlet -->
+                <div class="group bg-white rounded-3xl p-8 border border-gray-100 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-100/50 transition-all duration-300">
+                    <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Multi-Outlet</h3>
+                    <p class="text-gray-500 text-sm mb-6">Pantau dan kelola banyak cabang dari satu akun pusat (HQ) dengan data yang tersinkronisasi.</p>
+                    <div class="pt-4 border-t border-gray-50 flex items-center gap-2 text-[10px] font-bold text-emerald-500 uppercase tracking-widest">
+                        <span>Lihat Detail</span>
+                        <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Integration Section -->
+    <section class="py-24 relative z-10 overflow-hidden bg-cream/30">
+        <div class="max-w-7xl mx-auto px-8 max-lg:px-6 max-sm:px-4">
+            <div class="flex flex-col md:flex-row items-center gap-16">
+                <div class="flex-1">
+                    <h2 class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-6">
+                        Terintegrasi dengan Ekosistem Digital Favorit Anda
+                    </h2>
+                    <p class="text-gray-500 text-lg mb-8 leading-relaxed">
+                        Rupa terhubung dengan berbagai layanan untuk memudahkan operasional harian Anda. Mulai dari pembayaran instan hingga komunikasi pelanggan otomatis.
                     </p>
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                            <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5l-1.011 2h3.012l-1.011-2H12.751z"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">WhatsApp</h4>
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Notifikasi Otomatis</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                            <div class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">QRIS</h4>
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Pembayaran Instan</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Cloud Backup</h4>
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Data Aman 100%</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                            <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Laporan Pajak</h4>
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Ekspor CSV/Excel</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex-1 relative">
+                    <div class="relative w-full max-w-sm mx-auto">
+                        <div class="absolute -top-10 -left-10 w-32 h-32 bg-rose-200/50 blur-3xl rounded-full"></div>
+                        <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-violet-200/50 blur-3xl rounded-full"></div>
+                        <div class="bg-white/80 backdrop-blur-xl p-8 rounded-[2.5rem] shadow-2xl relative z-10 border border-white">
+                            <div class="space-y-6">
+                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7"/></svg>
+                                        </div>
+                                        <span class="font-bold text-gray-900 text-sm italic">Connect WhatsApp?</span>
+                                    </div>
+                                    <div class="w-10 h-5 bg-green-500 rounded-full relative">
+                                        <div class="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                                            <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2"/></svg>
+                                        </div>
+                                        <span class="font-bold text-gray-900 text-sm italic">Sync QRIS Payment</span>
+                                    </div>
+                                    <div class="w-10 h-5 bg-rose-500 rounded-full relative">
+                                        <div class="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl opacity-50">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903"/></svg>
+                                        </div>
+                                        <span class="font-bold text-gray-900 text-sm italic">Cloud Storage Sync</span>
+                                    </div>
+                                    <div class="w-10 h-5 bg-gray-300 rounded-full relative">
+                                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -705,8 +831,8 @@
 
             <!-- CTA -->
             <div class="text-center mt-12">
-                <a href="https://jagoflutter.com/glowupclinic" target="_blank" class="inline-flex items-center px-8 py-4 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold rounded-full hover:shadow-xl {{ $lt->hover_shadow_xl }} transition-all hover:-translate-y-1">
-                    Dapatkan Full Sourcecode
+                <a href="{{ route('register.index') }}" class="inline-flex items-center px-8 py-4 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold rounded-full hover:shadow-xl {{ $lt->hover_shadow_xl }} transition-all hover:-translate-y-1">
+                    {{ __('landing.mobile_cta') }}
                     <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                     </svg>
@@ -719,9 +845,9 @@
     <section class="py-24 bg-gray-50/50 relative z-10">
         <div class="max-w-6xl mx-auto px-8 max-lg:px-6 max-sm:px-4">
             <div class="text-center max-w-2xl mx-auto mb-16">
-                <p class="{{ $lt->text }} font-medium mb-3 tracking-wide uppercase text-sm">Proses</p>
+                <p class="{{ $lt->text }} font-medium mb-3 tracking-wide uppercase text-sm">{{ __('landing.process_badge') }}</p>
                 <h2 class="text-4xl max-sm:text-3xl font-display font-bold text-gray-900 leading-tight">
-                    Bagaimana cara mendapatkan sistem ini?
+                    {{ __('landing.process_title') }}
                 </h2>
             </div>
 
@@ -732,8 +858,8 @@
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl {{ $lt->bg_light }} {{ $lt->text }} font-bold text-2xl mb-6">
                         1
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Konsultasi</h3>
-                    <p class="text-gray-500 leading-relaxed">Hubungi kami dan ceritakan kebutuhan klinik Anda. Kami akan memberikan solusi yang tepat.</p>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ __('landing.process_step1_title') }}</h3>
+                    <p class="text-gray-500 leading-relaxed">{{ __('landing.process_step1_desc') }}</p>
                 </div>
 
                 <!-- Step 2 -->
@@ -741,8 +867,8 @@
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl {{ $lt->bg_light }} {{ $lt->text }} font-bold text-2xl mb-6">
                         2
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Setup & Kustomisasi</h3>
-                    <p class="text-gray-500 leading-relaxed">Tim kami akan setup sistem sesuai kebutuhan, termasuk branding, fitur, dan migrasi data.</p>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ __('landing.process_step2_title') }}</h3>
+                    <p class="text-gray-500 leading-relaxed">{{ __('landing.process_step2_desc') }}</p>
                 </div>
 
                 <!-- Step 3 -->
@@ -750,8 +876,8 @@
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl {{ $lt->bg_light }} {{ $lt->text }} font-bold text-2xl mb-6">
                         3
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Training & Go Live</h3>
-                    <p class="text-gray-500 leading-relaxed">Kami training tim Anda sampai mahir. Setelah siap, sistem langsung bisa digunakan.</p>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ __('landing.process_step3_title') }}</h3>
+                    <p class="text-gray-500 leading-relaxed">{{ __('landing.process_step3_desc') }}</p>
                 </div>
             </div>
         </div>
@@ -873,7 +999,7 @@
             </div>
 
             <div class="text-center mt-12">
-                <a href="https://jagoflutter.com/glowupclinic" target="_blank" class="inline-flex items-center px-8 py-4 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold rounded-full hover:shadow-xl {{ $lt->hover_shadow_xl }} transition-all hover:-translate-y-1">
+                <a href="{{ route('register.index') }}" class="inline-flex items-center px-8 py-4 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold rounded-full hover:shadow-xl {{ $lt->hover_shadow_xl }} transition-all hover:-translate-y-1">
                     {{ __('landing.solutions_cta') }}
                     <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
@@ -959,70 +1085,19 @@
             </div>
 
             <div class="space-y-3">
-                <!-- FAQ 1 -->
+                @foreach(range(1, 7) as $i)
                 <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                    <button @click="openFaq = openFaq === 1 ? null : 1" class="w-full flex items-center justify-between p-5 text-left">
-                        <span class="font-medium text-gray-900">Bagaimana proses implementasinya?</span>
-                        <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0" :class="{ 'rotate-180': openFaq === 1 }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button @click="openFaq = openFaq === {{ $i }} ? null : {{ $i }}" class="w-full flex items-center justify-between p-5 text-left">
+                        <span class="font-medium text-gray-900">{{ __('landing.faq'.$i.'_question') }}</span>
+                        <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0" :class="{ 'rotate-180': openFaq === {{ $i }} }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
-                    <div x-show="openFaq === 1" x-collapse class="px-5 pb-5">
-                        <p class="text-gray-500 leading-relaxed">Setelah konsultasi, tim kami akan melakukan setup sistem sesuai kebutuhan klinik Anda. Proses biasanya memakan waktu 1-2 minggu tergantung kompleksitas. Kami juga menyediakan training untuk tim Anda.</p>
+                    <div x-show="openFaq === {{ $i }}" x-collapse class="px-5 pb-5">
+                        <p class="text-gray-500 leading-relaxed">{{ __('landing.faq'.$i.'_answer') }}</p>
                     </div>
                 </div>
-
-                <!-- FAQ 2 -->
-                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                    <button @click="openFaq = openFaq === 2 ? null : 2" class="w-full flex items-center justify-between p-5 text-left">
-                        <span class="font-medium text-gray-900">Berapa biaya untuk mendapatkan sistem ini?</span>
-                        <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0" :class="{ 'rotate-180': openFaq === 2 }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div x-show="openFaq === 2" x-collapse class="px-5 pb-5">
-                        <p class="text-gray-500 leading-relaxed">Biaya tergantung pada fitur dan kustomisasi yang Anda butuhkan. Hubungi kami untuk konsultasi gratis dan mendapatkan penawaran yang sesuai dengan kebutuhan klinik Anda.</p>
-                    </div>
-                </div>
-
-                <!-- FAQ 3 -->
-                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                    <button @click="openFaq = openFaq === 3 ? null : 3" class="w-full flex items-center justify-between p-5 text-left">
-                        <span class="font-medium text-gray-900">Apakah data customer saya aman?</span>
-                        <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0" :class="{ 'rotate-180': openFaq === 3 }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div x-show="openFaq === 3" x-collapse class="px-5 pb-5">
-                        <p class="text-gray-500 leading-relaxed">Aman. Data dienkripsi dan disimpan di server yang aman. Kami melakukan backup otomatis setiap hari. Data sepenuhnya milik Anda dan bisa di-export kapan saja.</p>
-                    </div>
-                </div>
-
-                <!-- FAQ 4 -->
-                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                    <button @click="openFaq = openFaq === 4 ? null : 4" class="w-full flex items-center justify-between p-5 text-left">
-                        <span class="font-medium text-gray-900">Saya sudah punya data customer di Excel, bisa dipindahkan?</span>
-                        <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0" :class="{ 'rotate-180': openFaq === 4 }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div x-show="openFaq === 4" x-collapse class="px-5 pb-5">
-                        <p class="text-gray-500 leading-relaxed">Bisa. Tim kami akan membantu migrasi data lama Anda ke sistem baru. Proses ini termasuk dalam paket implementasi.</p>
-                    </div>
-                </div>
-
-                <!-- FAQ 5 -->
-                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                    <button @click="openFaq = openFaq === 5 ? null : 5" class="w-full flex items-center justify-between p-5 text-left">
-                        <span class="font-medium text-gray-900">Bagaimana dengan support setelah implementasi?</span>
-                        <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0" :class="{ 'rotate-180': openFaq === 5 }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div x-show="openFaq === 5" x-collapse class="px-5 pb-5">
-                        <p class="text-gray-500 leading-relaxed">Kami menyediakan support via WhatsApp dan telepon. Tim kami siap membantu jika ada kendala atau pertanyaan. Kami juga melakukan maintenance dan update rutin untuk memastikan sistem selalu optimal.</p>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </section>
@@ -1033,24 +1108,24 @@
             <div class="bg-gray-900 rounded-3xl p-16 max-md:p-10 text-center">
                 <span class="inline-flex items-center px-4 py-1.5 rounded-full {{ $lt->bg_500_20 }} {{ $lt->text_300 }} text-sm font-medium mb-6">
                     <span class="w-2 h-2 {{ $lt->bg_400 }} rounded-full mr-2 animate-pulse"></span>
-                    AFC Event - JagoFlutter
+                    {{ __('landing.contact_badge') }}
                 </span>
                 <h2 class="text-3xl max-sm:text-2xl font-display font-bold text-white mb-4">
-                    Dapatkan Full Sourcecode Aplikasi Ini
+                    {{ __('landing.contact_title') }}
                 </h2>
                 <p class="text-gray-400 mb-8 max-w-xl mx-auto">
-                    Join event AFC untuk mendapatkan full sourcecode website + mobile apps ini. Lengkap dengan dokumentasi dan support dari tim JagoFlutter.
+                    {{ __('landing.contact_subtitle') }}
                 </p>
                 <div class="flex flex-row max-sm:flex-col gap-4 justify-center">
-                    <a href="https://jagoflutter.com/glowupclinic" target="_blank" class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold rounded-full hover:shadow-xl {{ $lt->hover_shadow_xl }} transition-all hover:-translate-y-1">
+                    <a href="{{ route('register.index') }}" class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r {{ $lt->gradient_from }} {{ $lt->gradient_to }} text-white font-semibold rounded-full hover:shadow-xl {{ $lt->hover_shadow_xl }} transition-all hover:-translate-y-1">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                         </svg>
-                        Join Event & Dapatkan Sourcecode
+                        {{ __('landing.contact_cta_join') }}
                     </a>
-                    <a href="https://wa.me/6285640899224?text=Halo,%20saya%20tertarik%20dengan%20event%20AFC%20GlowUp%20Clinic" target="_blank" class="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-700 text-white font-semibold rounded-full hover:bg-gray-800 transition-all">
+                    <a href="https://wa.me/6285640899224?text=Halo,%20saya%20tertarik%20dengan%20Layanan%20SaaS%20Rupa" target="_blank" class="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-700 text-white font-semibold rounded-full hover:bg-gray-800 transition-all">
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                        Tanya via WhatsApp
+                        {{ __('landing.contact_cta_whatsapp') }}
                     </a>
                 </div>
             </div>
@@ -1108,7 +1183,7 @@
             </div>
 
             <div class="border-t border-gray-800 pt-6 flex flex-row max-sm:flex-col justify-between items-center gap-4 max-sm:gap-3">
-                <p class="text-xs text-gray-500 max-sm:text-center">{{ brand_copyright() }} @if(brand('footer.show_powered_by', true)) Powered by <a href="{{ brand('footer.powered_by_url', 'https://glowup.app') }}" target="_blank" class="text-primary-400 hover:text-primary-300 transition-colors">{{ brand('footer.powered_by_text', 'GlowUp') }}</a>@endif</p>
+                <p class="text-xs text-gray-500 max-sm:text-center">{{ brand_copyright() }} @if(brand('footer.show_powered_by', true)) Powered by <a href="{{ brand('footer.powered_by_url', 'https://rupa.app') }}" target="_blank" class="text-primary-400 hover:text-primary-300 transition-colors">{{ brand('footer.powered_by_text', 'Rupa') }}</a>@endif</p>
                 <div class="flex gap-4 text-xs text-gray-500">
                     <a href="#" class="hover:text-gray-300 transition-colors">{{ __('landing.footer_privacy') }}</a>
                     <a href="#" class="hover:text-gray-300 transition-colors">{{ __('landing.footer_terms') }}</a>

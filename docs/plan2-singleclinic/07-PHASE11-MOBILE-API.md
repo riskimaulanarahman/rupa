@@ -1,4 +1,4 @@
-# GlowUp Clinic - API Integration Documentation
+# Rupa Clinic - API Integration Documentation
 
 Dokumentasi integrasi API antara Laravel Backend dan Mobile App.
 
@@ -45,7 +45,7 @@ POST /login
     "user": {
       "id": 1,
       "name": "Admin",
-      "email": "admin@glowup.test",
+      "email": "admin@rupa.test",
       "phone": "081234567890",
       "role": "admin",
       "role_label": "Admin",
@@ -96,7 +96,7 @@ Authorization: Bearer {token}
   "data": {
     "id": 1,
     "name": "Admin",
-    "email": "admin@glowup.test",
+    "email": "admin@rupa.test",
     "phone": "081234567890",
     "role": "admin",
     "role_label": "Admin",
@@ -132,7 +132,7 @@ Authorization: Bearer {token}
   "data": {
     "id": 1,
     "name": "Admin Updated",
-    "email": "admin@glowup.test",
+    "email": "admin@rupa.test",
     "phone": "081234567899",
     "role": "admin",
     "role_label": "Admin",
@@ -1372,7 +1372,7 @@ Authorization: Bearer {token}
 {
   "data": {
     "clinic": {
-      "name": "GlowUp Clinic",
+      "name": "Rupa Clinic",
       "address": "Jl. Sudirman No. 123, Jakarta",
       "phone": "021-1234-5678"
     },

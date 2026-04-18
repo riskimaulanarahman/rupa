@@ -24,7 +24,7 @@
         @if($appointments->count() > 0)
             <div class="divide-y divide-gray-200 dark:divide-gray-700">
                 @foreach($appointments as $appointment)
-                    <a href="{{ route('portal.appointments.show', $appointment) }}" class="block p-4 max-sm:p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <a href="{{ customer_route('appointments.show', $appointment) }}" class="block p-4 max-sm:p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <div class="flex items-center gap-3 max-sm:gap-2">
                             <div class="w-12 h-12 max-sm:w-10 max-sm:h-10 bg-primary-100 dark:bg-primary-900/50 rounded-xl flex flex-col items-center justify-center flex-shrink-0">
                                 <span class="text-xs max-sm:text-[10px] font-medium text-primary-600 dark:text-primary-300">{{ $appointment->appointment_date->format('M') }}</span>

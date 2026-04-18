@@ -2,12 +2,18 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOutlet;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PackageUsage extends Model
 {
+    use BelongsToOutlet, BelongsToTenant;
+
     protected $fillable = [
+        'tenant_id',
+        'outlet_id',
         'customer_package_id',
         'appointment_id',
         'used_by',

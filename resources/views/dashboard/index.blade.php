@@ -4,6 +4,9 @@
 @section('page-title', __('dashboard.title'))
 
 @php
+    $currentOutlet = outlet();
+    $currentTenant = tenant();
+
     // Theme-based classes
     $accentColor = match($businessType ?? 'clinic') {
         'salon' => 'purple',
@@ -29,6 +32,39 @@
 
 @section('content')
 <div class="space-y-6 max-sm:space-y-4">
+    <!-- Outlet & Subscription Context (For Owner) -->
+    @if(auth()->user()->isOwner())
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border-l-4 border-rose-500 overflow-hidden relative">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-rose-600 uppercase tracking-widest bg-rose-50 px-2 py-0.5 rounded-full">{{ $currentOutlet?->business_type ?? '-' }}</span>
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">{{ $currentOutlet?->name ?? '-' }}</h2>
+                    </div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Selamat datang kembali di dashboard utama jaringan <strong>{{ $currentTenant?->name ?? '-' }}</strong>.</p>
+                </div>
+                
+                <div class="flex items-center gap-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                    <div class="text-right">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Paket Aktif</p>
+                        <p class="text-sm font-bold text-gray-900 dark:text-gray-100">{{ $currentTenant?->plan?->name ?? '-' }}</p>
+                    </div>
+                    <div class="h-8 w-px bg-gray-200 dark:bg-gray-700 mx-2"></div>
+                    <div class="text-left">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</p>
+                        <span class="text-sm font-bold {{ $currentTenant?->status === 'active' ? 'text-green-600' : 'text-rose-600' }} uppercase tracking-tighter">{{ $currentTenant?->status ?? '-' }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Abstract Background Visual -->
+            <div class="absolute -right-12 -bottom-12 opacity-[0.03] dark:opacity-[0.05] pointer-events-none">
+                <svg class="w-48 h-48" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+            </div>
+        </div>
+    @endif
     <!-- Stats Cards -->
     <div class="grid grid-cols-4 max-lg:grid-cols-2 gap-4 max-sm:gap-2">
         <!-- Revenue Today -->

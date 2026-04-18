@@ -7,7 +7,7 @@
     <div class="w-full max-w-md">
         <!-- Logo -->
         <div class="text-center mb-8">
-            <a href="{{ route('home') }}" class="inline-block">
+            <a href="{{ customer_home_url() }}" class="inline-block">
                 @if(brand_logo('logo'))
                     <img src="{{ brand_logo('logo') }}" alt="{{ brand_name() }}" class="h-12 mx-auto">
                 @else
@@ -28,7 +28,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('portal.register.submit') }}" method="POST">
+            <form action="{{ customer_route('register.submit') }}" method="POST">
                 @csrf
 
                 <div class="space-y-5">
@@ -100,7 +100,7 @@
             <div class="mt-6 text-center">
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     {{ __('portal.already_have_account') }}
-                    <a href="{{ route('portal.login') }}" class="text-primary-600 hover:text-primary-700 font-medium">
+                    <a href="{{ customer_route('login') }}" class="text-primary-600 hover:text-primary-700 font-medium">
                         {{ __('portal.login_now') }}
                     </a>
                 </p>
@@ -109,7 +109,7 @@
 
         <!-- Back to Home -->
         <div class="mt-6 text-center">
-            <a href="{{ route('home') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+            <a href="{{ customer_home_url() }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
                 &larr; {{ __('portal.back_to_home') }}
             </a>
         </div>

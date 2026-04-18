@@ -1,4 +1,4 @@
-# GlowUp Clinic - API Documentation
+# Rupa Clinic - API Documentation
 
 **Base URL:** `/api/v1`
 **Authentication:** Laravel Sanctum (Bearer Token)
@@ -120,7 +120,7 @@ Authorization: Bearer {token}
 **Request Example:**
 ```json
 {
-  "email": "admin@glowup.com",
+  "email": "admin@rupa.com",
   "password": "password123",
   "device_name": "iPhone 15"
 }
@@ -133,7 +133,7 @@ Authorization: Bearer {token}
     "user": {
       "id": 1,
       "name": "Admin",
-      "email": "admin@glowup.com",
+      "email": "admin@rupa.com",
       "phone": "081234567890",
       "role": "owner",
       "role_label": "Owner",
@@ -188,7 +188,7 @@ Authorization: Bearer {token}
   "data": {
     "id": 1,
     "name": "Admin",
-    "email": "admin@glowup.com",
+    "email": "admin@rupa.com",
     "phone": "081234567890",
     "role": "owner",
     "role_label": "Owner",
@@ -234,7 +234,7 @@ Authorization: Bearer {token}
   "data": {
     "id": 1,
     "name": "Admin Updated",
-    "email": "admin@glowup.com",
+    "email": "admin@rupa.com",
     "phone": "081234567899",
     "role": "owner",
     "role_label": "Owner",
@@ -261,10 +261,10 @@ Authorization: Bearer {token}
 {
   "data": {
     "clinic": {
-      "name": "GlowUp Clinic",
+      "name": "Rupa Clinic",
       "address": "Jl. Contoh No. 123",
       "phone": "021-1234567",
-      "email": "info@glowup.com",
+      "email": "info@rupa.com",
       "description": "Klinik kecantikan terbaik"
     },
     "operating_hours": [
@@ -300,10 +300,10 @@ Authorization: Bearer {token}
 ```json
 {
   "data": {
-    "name": "GlowUp Clinic",
+    "name": "Rupa Clinic",
     "address": "Jl. Contoh No. 123",
     "phone": "021-1234567",
-    "email": "info@glowup.com",
+    "email": "info@rupa.com",
     "description": "Klinik kecantikan terbaik"
   }
 }
@@ -423,11 +423,11 @@ Authorization: Bearer {token}
 **Request Example:**
 ```json
 {
-  "name": "GlowUp Clinic Jakarta",
+  "name": "Rupa Clinic Jakarta",
   "address": "Jl. Sudirman No. 123",
   "phone": "02112345678",
   "whatsapp": "081234567890",
-  "email": "info@glowup.id"
+  "email": "info@rupa.id"
 }
 ```
 
@@ -436,9 +436,9 @@ Authorization: Bearer {token}
 {
   "message": "Profil klinik berhasil diperbarui.",
   "data": {
-    "name": "GlowUp Clinic Jakarta",
+    "name": "Rupa Clinic Jakarta",
     "phone": "02112345678",
-    "email": "info@glowup.id",
+    "email": "info@rupa.id",
     "address": "Jl. Sudirman No. 123",
     "city": null,
     "province": null,
@@ -1014,7 +1014,7 @@ Authorization: Bearer {token}
     {
       "id": 1,
       "name": "Dr. Sarah",
-      "email": "sarah@glowup.com",
+      "email": "sarah@rupa.com",
       "phone": "081234567890",
       "role": "beautician",
       "role_label": "Beautician",
@@ -1042,7 +1042,7 @@ Authorization: Bearer {token}
     {
       "id": 1,
       "name": "Dr. Sarah",
-      "email": "sarah@glowup.com",
+      "email": "sarah@rupa.com",
       "phone": "081234567890",
       "role": "beautician",
       "role_label": "Beautician",
@@ -1074,7 +1074,7 @@ Authorization: Bearer {token}
   "data": {
     "id": 1,
     "name": "Dr. Sarah",
-    "email": "sarah@glowup.com",
+    "email": "sarah@rupa.com",
     "phone": "081234567890",
     "role": "beautician",
     "role_label": "Beautician",
@@ -3287,7 +3287,7 @@ GET /api/v1/appointments-available-slots?date=2024-01-20&service_id=1&staff_id=2
 {
   "data": {
     "clinic": {
-      "name": "GlowUp Clinic",
+      "name": "Rupa Clinic",
       "address": "Jl. Contoh No. 123",
       "phone": "021-1234567"
     },

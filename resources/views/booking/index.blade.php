@@ -20,6 +20,9 @@
     $preferredStaff = __('booking.preferred_staff_' . $businessType, [], null) !== 'booking.preferred_staff_' . $businessType
         ? __('booking.preferred_staff_' . $businessType)
         : __('booking.preferred_staff');
+    $bookingRoutePrefix = $bookingRoutePrefix ?? 'booking';
+    $bookingRouteParams = $bookingRouteParams ?? [];
+    $bookingHomeUrl = $bookingHomeUrl ?? route('home');
 @endphp
 
 @section('title', $bookingTitle . ' - ' . brand_name())
@@ -29,7 +32,7 @@
     <div class="max-w-4xl mx-auto relative z-10">
         <!-- Header -->
         <div class="text-center mb-8">
-            <a href="{{ route('home') }}" class="inline-flex items-center gap-2 mb-6">
+            <a href="{{ $bookingHomeUrl }}" class="inline-flex items-center gap-2 mb-6">
                 @if(brand_logo())
                     <img src="{{ brand_logo() }}" alt="{{ brand_name() }}" class="h-10 w-auto">
                 @else
@@ -59,7 +62,7 @@
 
         <!-- Booking Form -->
         <div class="bg-white rounded-2xl shadow-xl p-8 max-sm:p-6" x-data="bookingForm()">
-            <form action="{{ route('booking.store') }}" method="POST" @submit="validateForm">
+            <form action="{{ route($bookingRoutePrefix . '.store', $bookingRouteParams) }}" method="POST" @submit="validateForm">
                 @csrf
 
                 <!-- Step Indicator -->
@@ -345,7 +348,7 @@
         <div class="mt-6 text-center">
             <p class="text-gray-600">
                 {{ __('booking.already_booked') }}
-                <a href="{{ route('booking.status') }}" class="{{ $tc->link ?? 'text-rose-500 hover:text-rose-600' }}">{{ __('booking.check_status') }}</a>
+                <a href="{{ route($bookingRoutePrefix . '.status', $bookingRouteParams) }}" class="{{ $tc->link ?? 'text-rose-500 hover:text-rose-600' }}">{{ __('booking.check_status') }}</a>
             </p>
         </div>
     </div>
@@ -415,7 +418,7 @@ function bookingForm() {
                     params.append('staff_id', this.staffId);
                 }
 
-                const response = await fetch(`{{ route('booking.slots') }}?${params}`);
+                const response = await fetch(`{{ route($bookingRoutePrefix . '.slots', $bookingRouteParams) }}?${params}`);
                 const data = await response.json();
 
                 this.slots = data.slots || [];

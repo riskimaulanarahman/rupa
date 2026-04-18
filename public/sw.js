@@ -1,4 +1,4 @@
-const CACHE_NAME = 'glowup-v1';
+const CACHE_NAME = 'rupa-v2';
 const OFFLINE_URL = '/offline.html';
 
 // Assets to cache on install

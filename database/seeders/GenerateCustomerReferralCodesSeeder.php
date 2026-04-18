@@ -3,13 +3,20 @@
 namespace Database\Seeders;
 
 use App\Models\Customer;
+use Database\Seeders\Concerns\ResolvesDemoTenantOutlet;
 use Illuminate\Database\Seeder;
 
 class GenerateCustomerReferralCodesSeeder extends Seeder
 {
+    use ResolvesDemoTenantOutlet;
+
     public function run(): void
     {
-        $customers = Customer::whereNull('referral_code')->get();
+        if (! app()->has('tenant_id') || ! app()->has('outlet_id')) {
+            $this->ensureDemoContextBound();
+        }
+
+        $customers = Customer::query()->whereNull('referral_code')->get();
 
         $count = 0;
         foreach ($customers as $customer) {

@@ -14,7 +14,7 @@ return [
 
     // Application Identity
     'app' => [
-        'name' => env('APP_BRAND_NAME', 'GlowUp'),
+        'name' => env('APP_BRAND_NAME', 'Rupa'),
         'tagline' => env('APP_BRAND_TAGLINE', 'Beauty & Wellness Management'),
         'tagline_id' => env('APP_BRAND_TAGLINE_ID', 'Manajemen Kecantikan & Wellness'),
         'description' => env('APP_BRAND_DESCRIPTION', 'Complete management system for beauty clinics, salons, and barbershops'),
@@ -53,7 +53,7 @@ return [
 
     // Contact Information
     'contact' => [
-        'email' => env('APP_CONTACT_EMAIL', 'support@glowup.app'),
+        'email' => env('APP_CONTACT_EMAIL', 'support@rupa.app'),
         'phone' => env('APP_CONTACT_PHONE', null),
         'whatsapp' => env('APP_CONTACT_WHATSAPP', null),
         'address' => env('APP_CONTACT_ADDRESS', null),
@@ -74,8 +74,8 @@ return [
         'copyright' => env('APP_FOOTER_COPYRIGHT', '© :year :app_name. All rights reserved.'),
         'copyright_id' => env('APP_FOOTER_COPYRIGHT_ID', '© :year :app_name. Hak cipta dilindungi.'),
         'show_powered_by' => env('APP_FOOTER_SHOW_POWERED_BY', true),
-        'powered_by_text' => env('APP_FOOTER_POWERED_BY', 'Powered by GlowUp'),
-        'powered_by_url' => env('APP_FOOTER_POWERED_BY_URL', 'https://glowup.app'),
+        'powered_by_text' => env('APP_FOOTER_POWERED_BY', 'Powered by Rupa'),
+        'powered_by_url' => env('APP_FOOTER_POWERED_BY_URL', 'https://rupa.app'),
     ],
 
     // Landing Page
@@ -118,5 +118,12 @@ return [
         'head_scripts' => env('APP_CUSTOM_HEAD_SCRIPTS', null), // Google Analytics, etc.
         'body_scripts' => env('APP_CUSTOM_BODY_SCRIPTS', null), // Chat widgets, etc.
         'custom_css' => env('APP_CUSTOM_CSS', null),
+    ],
+
+    // Generated icon pipeline configuration
+    'icons' => [
+        'padding' => (float) env('APP_ICON_PADDING', 0.11),
+        'output_root' => env('APP_ICON_OUTPUT_ROOT', public_path()),
+        'temp_root' => env('APP_ICON_TEMP_ROOT', storage_path('app/tmp')),
     ],
 ];

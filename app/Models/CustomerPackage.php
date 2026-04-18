@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOutlet;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerPackage extends Model
 {
-    use HasFactory, SoftDeletes;
+    use BelongsToOutlet, BelongsToTenant, HasFactory, SoftDeletes;
 
     public const STATUSES = [
         'active' => 'Aktif',
@@ -20,6 +22,8 @@ class CustomerPackage extends Model
     ];
 
     protected $fillable = [
+        'tenant_id',
+        'outlet_id',
         'customer_id',
         'package_id',
         'sold_by',
