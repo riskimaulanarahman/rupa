@@ -78,7 +78,9 @@ class OutletAuthController extends Controller
         $request->session()->put('outlet_slug', $outlet->slug);
 
         $response = null;
-        if (! $user->canViewRevenue()) {
+        if ($user->isBeautician()) {
+            $response = redirect()->route('dashboard');
+        } elseif (! $user->canViewRevenue()) {
             $response = redirect()->route('appointments.index');
         } else {
             $response = redirect()->route('dashboard');

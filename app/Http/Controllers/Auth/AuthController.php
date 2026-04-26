@@ -41,6 +41,9 @@ class AuthController extends Controller
             if ($user->isSuperAdmin()) {
                 $request->session()->forget('url.intended');
                 $response = redirect()->route('platform.dashboard');
+            } elseif ($user->isBeautician()) {
+                $request->session()->forget('url.intended');
+                $response = redirect()->route('dashboard');
             } elseif (! $user->canViewRevenue()) {
                 $request->session()->forget('url.intended');
                 $response = redirect()->route('appointments.index');

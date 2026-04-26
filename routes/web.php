@@ -127,7 +127,7 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->middleware(['module.access:dashboard', 'revenue.access'])
+        ->middleware(['module.access:dashboard'])
         ->name('dashboard');
 
     // Service Categories

@@ -2,7 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\Customer;
+use App\Models\CustomerPackage;
+use App\Models\Package;
+use App\Models\Service;
 use App\Models\Setting;
+use App\Models\Transaction;
+use App\Models\TransactionItem;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -211,6 +217,164 @@ class RevenueAccessTest extends TestCase
         ]);
 
         $response->assertRedirect(route('appointments.index'));
+    }
+
+    public function test_beautician_is_redirected_to_dashboard_and_blocked_from_non_dashboard_modules(): void
+    {
+        $beautician = User::factory()->create([
+            'email' => 'beautician-login@example.com',
+            'password' => bcrypt('password'),
+            'role' => 'beautician',
+            'can_view_revenue' => false,
+            'is_active' => true,
+        ]);
+
+        $this->post(route('login'), [
+            'email' => $beautician->email,
+            'password' => 'password',
+        ])->assertRedirect(route('dashboard'));
+
+        $this->actingAs($beautician)->get(route('dashboard'))->assertOk();
+        $this->actingAs($beautician)->get(route('appointments.index'))->assertForbidden();
+        $this->actingAs($beautician)->get(route('customers.index'))->assertForbidden();
+        $this->actingAs($beautician)->get(route('transactions.index'))->assertForbidden();
+        $this->actingAs($beautician)->get(route('reports.index'))->assertForbidden();
+
+        $this->actingAs($beautician, 'sanctum')->getJson('/api/v1/dashboard/self')->assertOk();
+        $this->actingAs($beautician, 'sanctum')->getJson('/api/v1/appointments')
+            ->assertStatus(403)
+            ->assertJsonPath('module', 'appointments');
+        $this->actingAs($beautician, 'sanctum')->getJson('/api/v1/customers')
+            ->assertStatus(403)
+            ->assertJsonPath('module', 'customers');
+        $this->actingAs($beautician, 'sanctum')->getJson('/api/v1/transactions')
+            ->assertStatus(403)
+            ->assertJsonPath('module', 'transactions');
+        $this->actingAs($beautician, 'sanctum')->getJson('/api/v1/reports')
+            ->assertStatus(403)
+            ->assertJsonPath('module', 'reports');
+    }
+
+    public function test_beautician_self_dashboard_aggregates_paid_service_and_package_incentives(): void
+    {
+        $beautician = User::factory()->create([
+            'role' => 'beautician',
+            'can_view_revenue' => false,
+            'is_active' => true,
+        ]);
+        $customer = Customer::factory()->create();
+        $service = Service::factory()->create([
+            'name' => 'Facial Glow',
+            'incentive' => 25000,
+        ]);
+        $package = Package::query()->create([
+            'name' => 'Facial Package',
+            'description' => 'Package',
+            'service_id' => $service->id,
+            'total_sessions' => 3,
+            'original_price' => 450000,
+            'package_price' => 400000,
+            'validity_days' => 30,
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+        $customerPackage = CustomerPackage::query()->create([
+            'customer_id' => $customer->id,
+            'package_id' => $package->id,
+            'sold_by' => $beautician->id,
+            'price_paid' => 400000,
+            'sessions_total' => 3,
+            'sessions_used' => 0,
+            'purchased_at' => now()->toDateString(),
+            'expires_at' => now()->addDays(30)->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $paidTransaction = Transaction::query()->create([
+            'invoice_number' => 'INV-BEAUTICIAN-001',
+            'customer_id' => $customer->id,
+            'cashier_id' => $beautician->id,
+            'subtotal' => 500000,
+            'discount_amount' => 0,
+            'tax_amount' => 0,
+            'total_amount' => 500000,
+            'paid_amount' => 500000,
+            'change_amount' => 0,
+            'status' => 'paid',
+            'paid_at' => now(),
+        ]);
+
+        TransactionItem::query()->create([
+            'transaction_id' => $paidTransaction->id,
+            'item_type' => 'service',
+            'service_id' => $service->id,
+            'staff_id' => $beautician->id,
+            'item_name' => $service->name,
+            'quantity' => 1,
+            'unit_price' => 150000,
+            'discount' => 0,
+            'total_price' => 150000,
+        ]);
+
+        TransactionItem::query()->create([
+            'transaction_id' => $paidTransaction->id,
+            'item_type' => 'package',
+            'package_id' => $package->id,
+            'staff_id' => $beautician->id,
+            'item_name' => $package->name,
+            'quantity' => 1,
+            'unit_price' => 150000,
+            'discount' => 0,
+            'total_price' => 150000,
+        ]);
+
+        TransactionItem::query()->create([
+            'transaction_id' => $paidTransaction->id,
+            'item_type' => 'customer_package',
+            'customer_package_id' => $customerPackage->id,
+            'staff_id' => $beautician->id,
+            'item_name' => 'Pemakaian Facial Package',
+            'quantity' => 2,
+            'unit_price' => 100000,
+            'discount' => 0,
+            'total_price' => 200000,
+        ]);
+
+        $unpaidTransaction = Transaction::query()->create([
+            'invoice_number' => 'INV-BEAUTICIAN-002',
+            'customer_id' => $customer->id,
+            'cashier_id' => $beautician->id,
+            'subtotal' => 150000,
+            'discount_amount' => 0,
+            'tax_amount' => 0,
+            'total_amount' => 150000,
+            'paid_amount' => 0,
+            'change_amount' => 0,
+            'status' => 'pending',
+        ]);
+
+        TransactionItem::query()->create([
+            'transaction_id' => $unpaidTransaction->id,
+            'item_type' => 'service',
+            'service_id' => $service->id,
+            'staff_id' => $beautician->id,
+            'item_name' => $service->name,
+            'quantity' => 3,
+            'unit_price' => 50000,
+            'discount' => 0,
+            'total_price' => 150000,
+        ]);
+
+        $response = $this->actingAs($beautician, 'sanctum')
+            ->getJson('/api/v1/dashboard/self?period=bulan_ini');
+
+        $response->assertOk()
+            ->assertJsonPath('data.summary.total_service_items', 4)
+            ->assertJsonPath('data.summary.unique_services', 1)
+            ->assertJsonPath('data.summary.total_incentive_paid', 100000)
+            ->assertJsonPath('data.services.0.service_name', 'Facial Glow')
+            ->assertJsonPath('data.services.0.count', 4)
+            ->assertJsonPath('data.services.0.incentive_total', 100000);
     }
 
     public function test_user_resource_returns_can_view_revenue(): void

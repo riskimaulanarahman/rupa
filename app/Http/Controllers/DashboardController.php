@@ -2,16 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Dashboard\BeauticianDashboardService;
 use App\Models\Appointment;
 use App\Models\Customer;
 use App\Models\Service;
 use App\Models\Transaction;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(): View
+    public function __construct(private readonly BeauticianDashboardService $beauticianDashboardService) {}
+
+    public function index(Request $request): View
     {
+        $user = $request->user();
+
+        if ($user?->isBeautician()) {
+            $period = (string) $request->string('period', 'bulan_ini');
+            $dashboard = $this->beauticianDashboardService->build(
+                $user,
+                $period,
+                $request->string('start_date')->toString(),
+                $request->string('end_date')->toString(),
+            );
+
+            return view('dashboard.beautician', [
+                'dashboard' => $dashboard,
+                'availablePeriods' => [
+                    'hari_ini' => 'Hari Ini',
+                    'minggu_ini' => 'Minggu Ini',
+                    'bulan_ini' => 'Bulan Ini',
+                    'tahun_ini' => 'Tahun Ini',
+                    'custom' => 'Custom',
+                ],
+            ]);
+        }
+
         $stats = $this->getStats();
         $revenueChart = $this->getRevenueChart(7);
         $popularServices = $this->getPopularServices(5);

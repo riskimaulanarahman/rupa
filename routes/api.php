@@ -71,9 +71,10 @@ Route::middleware('tenant.api')->group(function () {
         });
 
         // Dashboard
-        Route::middleware(['module.access:dashboard', 'revenue.access'])->group(function () {
+        Route::middleware(['module.access:dashboard'])->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index']);
             Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+            Route::get('/dashboard/self', [DashboardController::class, 'self']);
         });
 
         // Service Categories

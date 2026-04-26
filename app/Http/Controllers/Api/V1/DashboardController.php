@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AppointmentResource;
+use App\Services\Dashboard\BeauticianDashboardService;
 use App\Models\Appointment;
 use App\Models\Customer;
 use App\Models\Transaction;
@@ -13,11 +14,19 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    public function __construct(private readonly BeauticianDashboardService $beauticianDashboardService) {}
+
     /**
      * Get dashboard statistics
      */
     public function index(Request $request): JsonResponse
     {
+        if ($request->user()?->isBeautician()) {
+            return response()->json([
+                'message' => 'Gunakan endpoint dashboard pribadi beautician.',
+            ], 403);
+        }
+
         $today = now()->startOfDay();
         $startOfMonth = now()->startOfMonth();
 
@@ -106,6 +115,12 @@ class DashboardController extends Controller
      */
     public function summary(): JsonResponse
     {
+        if (request()->user()?->isBeautician()) {
+            return response()->json([
+                'message' => 'Gunakan endpoint dashboard pribadi beautician.',
+            ], 403);
+        }
+
         return response()->json([
             'data' => [
                 'total_customers' => Customer::count(),
@@ -134,5 +149,30 @@ class DashboardController extends Controller
                 'total' => $item->total,
             ])
             ->toArray();
+    }
+
+    public function self(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $user || ! $user->isBeautician()) {
+            return response()->json([
+                'message' => 'Dashboard pribadi beautician hanya tersedia untuk role beautician.',
+            ], 403);
+        }
+
+        $dashboard = $this->beauticianDashboardService->build(
+            $user,
+            $request->query('period', 'bulan_ini'),
+            $request->query('start_date'),
+            $request->query('end_date'),
+        );
+
+        return response()->json([
+            'data' => [
+                'summary' => $dashboard['summary'],
+                'services' => $dashboard['services'],
+            ],
+        ]);
     }
 }

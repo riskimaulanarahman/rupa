@@ -14,6 +14,9 @@ class ModulePermissionRegistry
             'customers',
             'transactions',
         ],
+        'beautician' => [
+            'dashboard',
+        ],
     ];
 
     /**

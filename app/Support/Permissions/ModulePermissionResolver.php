@@ -50,7 +50,11 @@ class ModulePermissionResolver
             return false;
         }
 
-        if (in_array($moduleKey, ['dashboard', 'reports'], true) && ! $user->canViewRevenue()) {
+        if ($moduleKey === 'reports' && ! $user->canViewRevenue()) {
+            return false;
+        }
+
+        if ($moduleKey === 'dashboard' && ! $user->canViewRevenue() && ! $user->isBeautician()) {
             return false;
         }
 
@@ -120,6 +124,10 @@ class ModulePermissionResolver
 
     private function resolvePermissionValue(string $role, string $moduleKey, int $outletId): bool
     {
+        if ($role === 'beautician' && $moduleKey === 'dashboard') {
+            return true;
+        }
+
         if (! $this->registry->isModuleAssignableToRole($role, $moduleKey)) {
             return false;
         }
@@ -144,7 +152,8 @@ class ModulePermissionResolver
     private function legacyFallbackByRole(string $role, string $moduleKey): bool
     {
         return match ($moduleKey) {
-            'dashboard', 'reports' => in_array($role, ['owner', 'admin'], true),
+            'dashboard' => in_array($role, ['owner', 'admin', 'beautician'], true),
+            'reports' => in_array($role, ['owner', 'admin'], true),
             'settings', 'import_data' => in_array($role, ['owner', 'admin'], true),
             'staff', 'outlets', 'billing' => $role === 'owner',
             default => in_array($role, ['owner', 'admin', 'beautician'], true),
@@ -238,6 +247,10 @@ class ModulePermissionResolver
 
     private function applyHardLock(string $role, string $moduleKey, bool $isAllowed): bool
     {
+        if ($role === 'beautician' && $moduleKey === 'dashboard') {
+            return true;
+        }
+
         return $this->registry->isModuleAssignableToRole($role, $moduleKey)
             ? $isAllowed
             : false;
