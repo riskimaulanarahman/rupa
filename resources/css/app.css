@@ -8,6 +8,10 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+[x-cloak] {
+    display: none !important;
+}
+
 @theme {
     /* Font Families */
     --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
