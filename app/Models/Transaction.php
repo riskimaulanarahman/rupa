@@ -4,15 +4,25 @@ namespace App\Models;
 
 use App\Traits\BelongsToOutlet;
 use App\Traits\BelongsToTenant;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class Transaction extends Model
 {
     use BelongsToOutlet, BelongsToTenant, HasFactory, SoftDeletes;
+
+    private const INVOICE_PREFIX = 'INV';
+
+    private const INVOICE_SEQUENCE_LENGTH = 4;
+
+    private const INVOICE_INSERT_RETRY_LIMIT = 5;
 
     public const STATUSES = [
         'pending' => 'Belum Bayar',
@@ -80,17 +90,64 @@ class Transaction extends Model
 
     public static function generateInvoiceNumber($date = null): string
     {
-        $prefix = 'INV';
-        $date = $date ? \Carbon\Carbon::parse($date) : now();
+        $date = $date ? Carbon::parse($date) : now();
         $dateStr = $date->format('Ymd');
 
-        $lastTransaction = self::where('invoice_number', 'like', $prefix.$dateStr.'%')
+        $query = self::withoutGlobalScopes()
+            ->where('invoice_number', 'like', self::INVOICE_PREFIX.$dateStr.'%');
+
+        if (DB::transactionLevel() > 0) {
+            $query->lockForUpdate();
+        }
+
+        $lastTransaction = $query
             ->orderBy('invoice_number', 'desc')
             ->first();
 
-        $sequence = $lastTransaction ? ((int) substr($lastTransaction->invoice_number, -4)) + 1 : 1;
+        $sequence = $lastTransaction
+            ? ((int) substr($lastTransaction->invoice_number, -self::INVOICE_SEQUENCE_LENGTH)) + 1
+            : 1;
 
-        return $prefix.$dateStr.str_pad($sequence, 4, '0', STR_PAD_LEFT);
+        return self::INVOICE_PREFIX.$dateStr.str_pad($sequence, self::INVOICE_SEQUENCE_LENGTH, '0', STR_PAD_LEFT);
+    }
+
+    public static function causedByDuplicateInvoiceNumber(QueryException $exception): bool
+    {
+        $sqlState = (string) $exception->getCode();
+        $driverCode = (string) ($exception->errorInfo[1] ?? '');
+        $message = strtolower($exception->getMessage());
+
+        if (! in_array($sqlState, ['23000', '23505'], true)) {
+            return false;
+        }
+
+        if (! str_contains($message, 'invoice_number')) {
+            return false;
+        }
+
+        return in_array($driverCode, ['19', '1062', '2067'], true)
+            || str_contains($message, 'duplicate')
+            || str_contains($message, 'unique');
+    }
+
+    protected function performInsert(Builder $query)
+    {
+        for ($attempt = 0; $attempt < self::INVOICE_INSERT_RETRY_LIMIT; $attempt++) {
+            try {
+                return parent::performInsert($query);
+            } catch (QueryException $exception) {
+                if (
+                    $attempt === self::INVOICE_INSERT_RETRY_LIMIT - 1
+                    || ! static::causedByDuplicateInvoiceNumber($exception)
+                ) {
+                    throw $exception;
+                }
+
+                $this->invoice_number = self::generateInvoiceNumber($this->created_at ?? now());
+            }
+        }
+
+        return false;
     }
 
     public function customer(): BelongsTo

@@ -15,6 +15,7 @@ use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
@@ -198,6 +199,19 @@ class TransactionController extends Controller
                 'message' => 'Transaksi berhasil dibuat.',
                 'data' => new TransactionResource($transaction),
             ], 201);
+        } catch (QueryException $e) {
+            DB::rollBack();
+
+            if (Transaction::causedByDuplicateInvoiceNumber($e)) {
+                return response()->json([
+                    'message' => 'Gagal membuat transaksi karena nomor invoice bentrok. Silakan coba lagi.',
+                ], 409);
+            }
+
+            return response()->json([
+                'message' => 'Gagal membuat transaksi.',
+                'error' => $e->getMessage(),
+            ], 500);
         } catch (\Exception $e) {
             DB::rollBack();
 

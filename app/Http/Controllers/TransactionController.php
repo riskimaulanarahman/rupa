@@ -12,6 +12,7 @@ use App\Models\ReferralLog;
 use App\Models\Service;
 use App\Models\Transaction;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -188,6 +189,16 @@ class TransactionController extends Controller
 
             return redirect()->route('transactions.show', $transaction)
                 ->with('success', 'Transaksi berhasil dibuat.'.($request->appointment_id ? ' Appointment telah diselesaikan.' : ''));
+        } catch (QueryException $e) {
+            DB::rollBack();
+
+            if (Transaction::causedByDuplicateInvoiceNumber($e)) {
+                return back()->withInput()
+                    ->with('error', 'Gagal membuat transaksi karena nomor invoice bentrok. Silakan coba lagi.');
+            }
+
+            return back()->withInput()
+                ->with('error', 'Gagal membuat transaksi: '.$e->getMessage());
         } catch (\Exception $e) {
             DB::rollBack();
 
