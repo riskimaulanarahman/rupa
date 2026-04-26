@@ -166,6 +166,73 @@
         </div>
     </div>
 
+    <!-- Payment Method Revenue -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div class="p-5 max-sm:p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between gap-3">
+            <div>
+                <h2 class="text-base max-sm:text-sm font-semibold text-gray-900 dark:text-gray-100">{{ __('dashboard.payment_methods_7_days') }}</h2>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ __('dashboard.payment_methods_7_days_help') }}</p>
+            </div>
+            <a href="{{ route('reports.revenue') }}" class="text-xs {{ $linkClass }} font-medium whitespace-nowrap">{{ __('dashboard.view_report') }}</a>
+        </div>
+
+        @if($paymentMethodRevenueByDay['has_data'])
+            <div class="hidden sm:block overflow-x-auto">
+                <table class="w-full min-w-[920px]">
+                    <thead class="bg-gray-50 dark:bg-gray-700/50">
+                        <tr>
+                            <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('dashboard.payment_date') }}</th>
+                            @foreach($paymentMethodRevenueByDay['methods'] as $method)
+                                <th class="px-5 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ $method['label'] }}</th>
+                            @endforeach
+                            <th class="px-5 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('dashboard.daily_total') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @foreach($paymentMethodRevenueByDay['rows'] as $row)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <td class="px-5 py-4 text-sm font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">
+                                    {{ format_date($row['date'], 'd M Y') }}
+                                </td>
+                                @foreach($paymentMethodRevenueByDay['methods'] as $method)
+                                    <td class="px-5 py-4 text-sm text-right text-gray-900 dark:text-gray-100 whitespace-nowrap">
+                                        {{ format_currency($row[$method['key']]) }}
+                                    </td>
+                                @endforeach
+                                <td class="px-5 py-4 text-sm text-right font-semibold text-green-600 dark:text-green-400 whitespace-nowrap">
+                                    {{ format_currency($row['total']) }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sm:hidden divide-y divide-gray-100 dark:divide-gray-700">
+                @foreach($paymentMethodRevenueByDay['rows'] as $row)
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ format_date($row['date'], 'd M Y') }}</span>
+                            <span class="text-sm font-semibold text-green-600 dark:text-green-400">{{ format_currency($row['total']) }}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            @foreach($paymentMethodRevenueByDay['methods'] as $method)
+                                <div class="rounded-lg bg-gray-50 dark:bg-gray-700/40 px-3 py-2">
+                                    <p class="text-[11px] text-gray-500 dark:text-gray-400">{{ $method['label'] }}</p>
+                                    <p class="mt-1 text-xs font-medium text-gray-900 dark:text-gray-100">{{ format_currency($row[$method['key']]) }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="p-8 max-sm:p-6 text-center">
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('dashboard.no_payment_method_revenue') }}</p>
+            </div>
+        @endif
+    </div>
+
     <!-- Recent Transactions -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div class="p-5 max-sm:p-4 border-b border-gray-100 dark:border-gray-700 flex-shrink-0">

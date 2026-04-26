@@ -14,6 +14,11 @@ return [
     // Charts
     'revenue_7_days' => 'Last 7 Days Revenue',
     'view_report' => 'View Report',
+    'payment_methods_7_days' => 'Revenue by Payment Method',
+    'payment_methods_7_days_help' => 'Last 7 days payment summary based on payment date.',
+    'payment_date' => 'Date',
+    'daily_total' => 'Daily Total',
+    'no_payment_method_revenue' => 'No recorded payments in the last 7 days.',
 
     // Popular services
     'popular_services' => 'Popular Services',

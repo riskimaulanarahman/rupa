@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Services\Dashboard\BeauticianDashboardService;
 use App\Models\Appointment;
 use App\Models\Customer;
+use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -41,6 +43,7 @@ class DashboardController extends Controller
 
         $stats = $this->getStats();
         $revenueChart = $this->getRevenueChart(7);
+        $paymentMethodRevenueByDay = $this->getPaymentMethodRevenueByDay(7);
         $popularServices = $this->getPopularServices(5);
         $todayAppointments = $this->getTodayAppointments();
         $recentTransactions = $this->getRecentTransactions(5);
@@ -48,6 +51,7 @@ class DashboardController extends Controller
         return view('dashboard.index', compact(
             'stats',
             'revenueChart',
+            'paymentMethodRevenueByDay',
             'popularServices',
             'todayAppointments',
             'recentTransactions'
@@ -97,6 +101,70 @@ class DashboardController extends Controller
         return [
             'labels' => $labels,
             'data' => $data,
+        ];
+    }
+
+    /**
+     * @return array{
+     *     methods: array<int, array{key: string, label: string}>,
+     *     rows: array<int, array<string, mixed>>,
+     *     has_data: bool
+     * }
+     */
+    private function getPaymentMethodRevenueByDay(int $days): array
+    {
+        $startDate = now()->subDays($days - 1)->startOfDay();
+        $endDate = now()->endOfDay();
+        $methodLabels = Transaction::PAYMENT_METHODS;
+
+        $paymentsByDate = Payment::query()
+            ->join('transactions', 'payments.transaction_id', '=', 'transactions.id')
+            ->where('transactions.status', 'paid')
+            ->whereBetween('payments.paid_at', [$startDate, $endDate])
+            ->selectRaw('DATE(payments.paid_at) as paid_date, payments.payment_method, SUM(payments.amount) as total')
+            ->groupBy(DB::raw('DATE(payments.paid_at)'), 'payments.payment_method')
+            ->get()
+            ->groupBy('paid_date');
+
+        $rows = [];
+
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $dateKey = $date->toDateString();
+            $row = [
+                'date' => $dateKey,
+                'label' => $date->format('d M'),
+                'total' => 0.0,
+                'total_harian' => 0.0,
+            ];
+
+            foreach (array_keys($methodLabels) as $methodKey) {
+                $row[$methodKey] = 0.0;
+            }
+
+            foreach ($paymentsByDate->get($dateKey, collect()) as $payment) {
+                $methodKey = (string) $payment->payment_method;
+                $total = (float) $payment->total;
+
+                if (! array_key_exists($methodKey, $methodLabels)) {
+                    continue;
+                }
+
+                $row[$methodKey] = $total;
+                $row['total'] += $total;
+                $row['total_harian'] += $total;
+            }
+
+            $rows[] = $row;
+        }
+
+        return [
+            'methods' => collect($methodLabels)
+                ->map(fn (string $label, string $key): array => ['key' => $key, 'label' => $label])
+                ->values()
+                ->all(),
+            'rows' => $rows,
+            'has_data' => collect($rows)->contains(fn (array $row): bool => (float) $row['total'] > 0),
         ];
     }
 
