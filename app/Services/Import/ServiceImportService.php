@@ -9,7 +9,7 @@ class ServiceImportService extends BaseImportService
 {
     public function getRequiredColumns(): array
     {
-        return ['name', 'category', 'price', 'duration_minutes'];
+        return ['name', 'category', 'duration_minutes'];
     }
 
     public function getAvailableColumns(): array
@@ -18,7 +18,10 @@ class ServiceImportService extends BaseImportService
             'name' => 'Nama layanan (wajib)',
             'category' => 'Nama kategori (wajib, akan dibuat otomatis jika tidak ada)',
             'description' => 'Deskripsi layanan',
-            'price' => 'Harga (wajib, angka tanpa format)',
+            'pricing_mode' => 'Mode harga (opsional: fixed/range, default: fixed)',
+            'price' => 'Harga tunggal (wajib untuk fixed, angka tanpa format)',
+            'price_min' => 'Harga minimum (wajib untuk range, angka tanpa format)',
+            'price_max' => 'Harga maksimum (wajib untuk range, angka tanpa format)',
             'incentive' => 'Insentif (opsional, angka tanpa format)',
             'duration_minutes' => 'Durasi dalam menit (wajib)',
             'is_active' => 'Status aktif (1/0, yes/no, aktif/tidak)',
@@ -32,7 +35,10 @@ class ServiceImportService extends BaseImportService
                 'name' => 'Facial Basic',
                 'category' => 'Facial',
                 'description' => 'Perawatan wajah dasar dengan pembersihan dan masker',
+                'pricing_mode' => 'fixed',
                 'price' => '150000',
+                'price_min' => '',
+                'price_max' => '',
                 'incentive' => '25000',
                 'duration_minutes' => '60',
                 'is_active' => '1',
@@ -41,7 +47,10 @@ class ServiceImportService extends BaseImportService
                 'name' => 'Chemical Peeling',
                 'category' => 'Facial',
                 'description' => 'Peeling wajah dengan bahan kimia untuk mengangkat sel kulit mati',
+                'pricing_mode' => 'fixed',
                 'price' => '350000',
+                'price_min' => '',
+                'price_max' => '',
                 'incentive' => '50000',
                 'duration_minutes' => '45',
                 'is_active' => '1',
@@ -50,7 +59,10 @@ class ServiceImportService extends BaseImportService
                 'name' => 'Laser Hair Removal',
                 'category' => 'Laser',
                 'description' => 'Penghilangan bulu dengan teknologi laser',
-                'price' => '500000',
+                'pricing_mode' => 'range',
+                'price' => '',
+                'price_min' => '500000',
+                'price_max' => '750000',
                 'incentive' => '75000',
                 'duration_minutes' => '30',
                 'is_active' => '1',
@@ -62,7 +74,6 @@ class ServiceImportService extends BaseImportService
     {
         $name = $this->cleanValue($row['name'] ?? null);
         $categoryName = $this->cleanValue($row['category'] ?? null);
-        $priceRaw = $row['price'] ?? null;
         $durationRaw = $row['duration_minutes'] ?? null;
 
         // Validate required fields
@@ -74,9 +85,9 @@ class ServiceImportService extends BaseImportService
             return ['success' => false, 'message' => 'Kategori wajib diisi.'];
         }
 
-        $price = $this->parseNumber($priceRaw);
-        if ($price === null || $price < 0) {
-            return ['success' => false, 'message' => "Harga tidak valid: {$priceRaw}. Masukkan angka positif."];
+        $pricing = $this->resolvePricingData($row);
+        if (isset($pricing['error'])) {
+            return ['success' => false, 'message' => $pricing['error']];
         }
 
         $incentive = null;
@@ -123,7 +134,10 @@ class ServiceImportService extends BaseImportService
             // Update existing service
             $existingService->update([
                 'description' => $this->cleanValue($row['description'] ?? null) ?? $existingService->description,
-                'price' => $price,
+                'pricing_mode' => $pricing['pricing_mode'],
+                'price' => $pricing['price'],
+                'price_min' => $pricing['price_min'],
+                'price_max' => $pricing['price_max'],
                 'incentive' => $incentive ?? $existingService->incentive,
                 'duration_minutes' => (int) $duration,
                 'is_active' => isset($row['is_active']) ? $this->parseBoolean($row['is_active']) : $existingService->is_active,
@@ -142,7 +156,10 @@ class ServiceImportService extends BaseImportService
             'category_id' => $category->id,
             'name' => $name,
             'description' => $this->cleanValue($row['description'] ?? null),
-            'price' => $price,
+            'pricing_mode' => $pricing['pricing_mode'],
+            'price' => $pricing['price'],
+            'price_min' => $pricing['price_min'],
+            'price_max' => $pricing['price_max'],
             'incentive' => $incentive ?? 0,
             'duration_minutes' => (int) $duration,
             'is_active' => isset($row['is_active']) ? $this->parseBoolean($row['is_active']) : true,
@@ -152,6 +169,66 @@ class ServiceImportService extends BaseImportService
             'success' => true,
             'message' => 'Layanan berhasil ditambahkan.',
             'data' => $service,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array{pricing_mode?: string, price?: float|int, price_min?: float|int, price_max?: float|int, error?: string}
+     */
+    protected function resolvePricingData(array $row): array
+    {
+        $pricingModeRaw = strtolower((string) ($this->cleanValue($row['pricing_mode'] ?? null) ?? ''));
+        $priceRaw = $row['price'] ?? null;
+        $priceMinRaw = $row['price_min'] ?? null;
+        $priceMaxRaw = $row['price_max'] ?? null;
+
+        $hasRangeValues = $this->cleanValue($priceMinRaw) !== null || $this->cleanValue($priceMaxRaw) !== null;
+
+        $pricingMode = match ($pricingModeRaw) {
+            '', 'fixed' => $hasRangeValues ? Service::PRICING_MODE_RANGE : Service::PRICING_MODE_FIXED,
+            'range' => Service::PRICING_MODE_RANGE,
+            default => null,
+        };
+
+        if ($pricingMode === null) {
+            return ['error' => "Mode harga tidak valid: {$pricingModeRaw}. Gunakan fixed atau range."];
+        }
+
+        if ($pricingMode === Service::PRICING_MODE_RANGE) {
+            $priceMin = $this->parseNumber($priceMinRaw);
+            $priceMax = $this->parseNumber($priceMaxRaw);
+
+            if ($priceMin === null || $priceMin < 0) {
+                return ['error' => "Harga minimum tidak valid: {$priceMinRaw}. Masukkan angka positif."];
+            }
+
+            if ($priceMax === null || $priceMax < 0) {
+                return ['error' => "Harga maksimum tidak valid: {$priceMaxRaw}. Masukkan angka positif."];
+            }
+
+            if ($priceMax < $priceMin) {
+                return ['error' => 'Harga maksimum tidak boleh lebih kecil dari harga minimum.'];
+            }
+
+            return [
+                'pricing_mode' => Service::PRICING_MODE_RANGE,
+                'price' => $priceMin,
+                'price_min' => $priceMin,
+                'price_max' => $priceMax,
+            ];
+        }
+
+        $price = $this->parseNumber($priceRaw);
+        if ($price === null || $price < 0) {
+            return ['error' => "Harga tidak valid: {$priceRaw}. Masukkan angka positif."];
+        }
+
+        return [
+            'pricing_mode' => Service::PRICING_MODE_FIXED,
+            'price' => $price,
+            'price_min' => $price,
+            'price_max' => $price,
         ];
     }
 }

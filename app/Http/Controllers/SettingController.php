@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\OperatingHour;
 use App\Models\Setting;
 use App\Support\Branding\BrandIconGenerator;
+use App\Services\OperatingHoursService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +14,10 @@ use Illuminate\View\View;
 
 class SettingController extends Controller
 {
-    public function __construct(private readonly BrandIconGenerator $brandIconGenerator) {}
+    public function __construct(
+        private readonly BrandIconGenerator $brandIconGenerator,
+        private readonly OperatingHoursService $operatingHoursService
+    ) {}
 
     public function index(): View
     {
@@ -102,25 +105,17 @@ class SettingController extends Controller
 
     public function hours(): View
     {
-        $hours = OperatingHour::orderBy('day_of_week')->get();
+        $this->abortIfHoursContextMissing();
 
-        if ($hours->isEmpty()) {
-            for ($i = 0; $i < 7; $i++) {
-                OperatingHour::create([
-                    'day_of_week' => $i,
-                    'open_time' => $i === 0 ? null : '09:00',
-                    'close_time' => $i === 0 ? null : '18:00',
-                    'is_closed' => $i === 0,
-                ]);
-            }
-            $hours = OperatingHour::orderBy('day_of_week')->get();
-        }
+        $hours = $this->operatingHoursService->getWeeklyScheduleForCurrentOutlet();
 
         return view('settings.hours', compact('hours'));
     }
 
     public function updateHours(Request $request): RedirectResponse
     {
+        $this->abortIfHoursContextMissing();
+
         $request->validate([
             'hours' => ['required', 'array'],
             'hours.*.is_closed' => ['boolean'],
@@ -128,18 +123,28 @@ class SettingController extends Controller
             'hours.*.close_time' => ['nullable', 'date_format:H:i'],
         ]);
 
-        foreach ($request->hours as $dayOfWeek => $data) {
-            OperatingHour::updateOrCreate(
-                ['day_of_week' => $dayOfWeek],
-                [
-                    'is_closed' => $data['is_closed'] ?? false,
-                    'open_time' => ($data['is_closed'] ?? false) ? null : ($data['open_time'] ?? null),
-                    'close_time' => ($data['is_closed'] ?? false) ? null : ($data['close_time'] ?? null),
-                ]
-            );
-        }
+        $hours = collect($request->input('hours', []))
+            ->map(fn (array $data, string|int $dayOfWeek): array => [
+                'day_of_week' => (int) $dayOfWeek,
+                'is_closed' => $data['is_closed'] ?? false,
+                'open_time' => $data['open_time'] ?? null,
+                'close_time' => $data['close_time'] ?? null,
+            ])
+            ->values()
+            ->all();
+
+        $this->operatingHoursService->upsertWeeklyScheduleForCurrentOutlet($hours);
 
         return back()->with('success', 'Jam operasional berhasil diperbarui.');
+    }
+
+    private function abortIfHoursContextMissing(): void
+    {
+        abort_unless(
+            $this->operatingHoursService->hasCurrentOutletContext(),
+            400,
+            'Konteks outlet wajib tersedia untuk jam operasional.'
+        );
     }
 
     public function branding(): View

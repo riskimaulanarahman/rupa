@@ -394,7 +394,11 @@ class TransactionController extends Controller
         return response()->json([
             'id' => $service->id,
             'name' => $service->name,
+            'pricing_mode' => $service->pricing_mode,
             'price' => $service->price,
+            'price_min' => $service->price_min,
+            'price_max' => $service->price_max,
+            'has_price_range' => $service->has_price_range,
             'formatted_price' => $service->formatted_price,
             'incentive' => $service->incentive,
             'formatted_incentive' => $service->formatted_incentive,

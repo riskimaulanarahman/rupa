@@ -70,8 +70,8 @@
                 @enderror
             </div>
 
-            <!-- Duration, Price & Incentive -->
-            <div class="grid grid-cols-3 max-sm:grid-cols-1 gap-4 max-sm:gap-3">
+            <!-- Duration & Incentive -->
+            <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-4 max-sm:gap-3">
                 <div>
                     <label for="duration_minutes" class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 max-sm:mb-1.5">{{ __('service.duration_minutes') }} <span class="text-red-500">*</span></label>
                     <input
@@ -90,20 +90,72 @@
                 </div>
                 <div>
                     <x-currency-input
-                        name="price"
-                        :label="__('service.price')"
-                        :value="old('price')"
-                        :required="true"
-                        placeholder="250.000"
-                    />
-                </div>
-                <div>
-                    <x-currency-input
                         name="incentive"
                         :label="__('service.incentive')"
                         :value="old('incentive', 0)"
                         placeholder="25.000"
                     />
+                </div>
+            </div>
+
+            <!-- Pricing -->
+            <div x-data="servicePricingForm(@js(old('pricing_mode', 'fixed')))">
+                <label class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 max-sm:mb-1.5">{{ __('service.price_mode') }} <span class="text-red-500">*</span></label>
+                <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-3">
+                    <label class="flex items-start gap-3 p-4 max-sm:p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition" :class="pricingMode === 'fixed' ? 'border-rose-400 bg-rose-50 dark:bg-rose-900/20' : ''">
+                        <input type="radio" name="pricing_mode" value="fixed" x-model="pricingMode" class="mt-1 w-4 h-4 text-rose-500 border-gray-300 focus:ring-rose-500/20">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('service.price_fixed') }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('service.price_mode_help') }}</p>
+                        </div>
+                    </label>
+                    <label class="flex items-start gap-3 p-4 max-sm:p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition" :class="pricingMode === 'range' ? 'border-rose-400 bg-rose-50 dark:bg-rose-900/20' : ''">
+                        <input type="radio" name="pricing_mode" value="range" x-model="pricingMode" class="mt-1 w-4 h-4 text-rose-500 border-gray-300 focus:ring-rose-500/20">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('service.price_range') }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('service.price_min') }} - {{ __('service.price_max') }}</p>
+                        </div>
+                    </label>
+                </div>
+                @error('pricing_mode')
+                    <p class="mt-1 text-sm max-sm:text-xs text-red-500">{{ $message }}</p>
+                @enderror
+
+                <div class="mt-4">
+                    <template x-if="pricingMode === 'fixed'">
+                        <div>
+                            <x-currency-input
+                                name="price"
+                                :label="__('service.price')"
+                                :value="old('price')"
+                                :required="true"
+                                placeholder="250.000"
+                            />
+                        </div>
+                    </template>
+
+                    <template x-if="pricingMode === 'range'">
+                        <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-4 max-sm:gap-3">
+                            <div>
+                                <x-currency-input
+                                    name="price_min"
+                                    :label="__('service.price_min')"
+                                    :value="old('price_min')"
+                                    :required="true"
+                                    placeholder="250.000"
+                                />
+                            </div>
+                            <div>
+                                <x-currency-input
+                                    name="price_max"
+                                    :label="__('service.price_max')"
+                                    :value="old('price_max')"
+                                    :required="true"
+                                    placeholder="350.000"
+                                />
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </div>
 
@@ -149,3 +201,15 @@
     </div>
 </div>
 @endsection
+
+@once
+@push('scripts')
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('servicePricingForm', (initialMode = 'fixed') => ({
+        pricingMode: initialMode || 'fixed',
+    }));
+});
+</script>
+@endpush
+@endonce

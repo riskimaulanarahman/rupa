@@ -39,7 +39,7 @@ class ServiceController extends Controller
 
     public function store(ServiceRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $data = $this->normalizePricingData($request->validated());
         $data['incentive'] = $data['incentive'] ?? 0;
 
         if ($request->hasFile('image')) {
@@ -61,7 +61,7 @@ class ServiceController extends Controller
 
     public function update(ServiceRequest $request, Service $service): RedirectResponse
     {
-        $data = $request->validated();
+        $data = $this->normalizePricingData($request->validated());
         $data['incentive'] = $data['incentive'] ?? 0;
 
         if ($request->hasFile('image')) {
@@ -100,5 +100,29 @@ class ServiceController extends Controller
         $status = $service->is_active ? 'diaktifkan' : 'dinonaktifkan';
 
         return back()->with('success', "Layanan berhasil {$status}.");
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function normalizePricingData(array $data): array
+    {
+        $pricingMode = $data['pricing_mode'] ?? Service::PRICING_MODE_FIXED;
+        $data['pricing_mode'] = $pricingMode;
+
+        if ($pricingMode === Service::PRICING_MODE_RANGE) {
+            $data['price_min'] = (float) ($data['price_min'] ?? 0);
+            $data['price_max'] = (float) ($data['price_max'] ?? $data['price_min']);
+            $data['price'] = $data['price_min'];
+
+            return $data;
+        }
+
+        $data['price'] = (float) ($data['price'] ?? 0);
+        $data['price_min'] = $data['price'];
+        $data['price_max'] = $data['price'];
+
+        return $data;
     }
 }

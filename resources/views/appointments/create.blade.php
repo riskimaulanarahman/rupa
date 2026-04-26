@@ -61,7 +61,7 @@
                                         data-price="{{ $service->price }}"
                                         {{ old('service_id') == $service->id ? 'selected' : '' }}
                                     >
-                                        {{ $service->name }} ({{ $service->duration_minutes }} {{ __('common.minutes') }} - {{ format_currency($service->price) }})
+                                        {{ $service->name }} ({{ $service->duration_minutes }} {{ __('common.minutes') }} - {{ $service->formatted_price }})
                                     </option>
                                 @endforeach
                             </optgroup>

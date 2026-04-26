@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateClinicSettingRequest;
 use App\Http\Requests\UpdateOperatingHoursRequest;
 use App\Http\Resources\OperatingHourResource;
-use App\Models\OperatingHour;
 use App\Models\Setting;
+use App\Services\OperatingHoursService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 
 class SettingController extends Controller
 {
+    public function __construct(private readonly OperatingHoursService $operatingHoursService) {}
+
     /**
      * Get clinic/business settings
      */
@@ -44,6 +45,10 @@ class SettingController extends Controller
      */
     public function hours(): JsonResponse
     {
+        if (! $this->operatingHoursService->hasCurrentOutletContext()) {
+            return $this->missingOutletContextResponse();
+        }
+
         return response()->json([
             'data' => $this->getOperatingHours(),
         ]);
@@ -86,22 +91,17 @@ class SettingController extends Controller
      */
     public function updateHours(UpdateOperatingHoursRequest $request): JsonResponse
     {
-        DB::transaction(function () use ($request) {
-            foreach ($request->input('operating_hours') as $hourData) {
-                OperatingHour::updateOrCreate(
-                    ['day_of_week' => $hourData['day_of_week']],
-                    [
-                        'open_time' => $hourData['is_closed'] ?? false ? null : $hourData['open_time'],
-                        'close_time' => $hourData['is_closed'] ?? false ? null : $hourData['close_time'],
-                        'is_closed' => $hourData['is_closed'] ?? false,
-                    ]
-                );
-            }
-        });
+        if (! $this->operatingHoursService->hasCurrentOutletContext()) {
+            return $this->missingOutletContextResponse();
+        }
+
+        $hours = $this->operatingHoursService->upsertWeeklyScheduleForCurrentOutlet(
+            $request->input('operating_hours', [])
+        );
 
         return response()->json([
             'message' => 'Jam operasional berhasil diperbarui.',
-            'data' => $this->getOperatingHours(),
+            'data' => OperatingHourResource::collection($hours)->resolve(),
         ]);
     }
 
@@ -208,9 +208,20 @@ class SettingController extends Controller
      */
     private function getOperatingHours(): array
     {
-        $hours = OperatingHour::orderBy('day_of_week')->get();
+        if (! $this->operatingHoursService->hasCurrentOutletContext()) {
+            return [];
+        }
+
+        $hours = $this->operatingHoursService->getWeeklyScheduleForCurrentOutlet();
 
         return OperatingHourResource::collection($hours)->resolve();
+    }
+
+    private function missingOutletContextResponse(): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Konteks outlet wajib tersedia untuk jam operasional.',
+        ], 400);
     }
 
     /**

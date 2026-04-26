@@ -87,7 +87,7 @@
                 <p class="text-sm max-sm:text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('appointment.service') }}</p>
                 @if($appointment->service)
                     <p class="text-gray-900 dark:text-gray-100 font-medium text-sm">{{ $appointment->service->name }}</p>
-                    <p class="text-sm max-sm:text-xs text-gray-600 dark:text-gray-400">{{ $appointment->service->duration_minutes }} {{ __('common.minutes') }} - {{ format_currency($appointment->service->price) }}</p>
+                    <p class="text-sm max-sm:text-xs text-gray-600 dark:text-gray-400">{{ $appointment->service->duration_minutes }} {{ __('common.minutes') }} - {{ $appointment->service->formatted_price }}</p>
                 @else
                     <p class="text-gray-400 dark:text-gray-500 italic text-sm">-</p>
                 @endif

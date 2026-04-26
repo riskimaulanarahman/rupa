@@ -20,6 +20,9 @@
     $bookingRoutePrefix = $bookingRoutePrefix ?? 'booking';
     $bookingRouteParams = $bookingRouteParams ?? [];
     $bookingHomeUrl = $bookingHomeUrl ?? route('home');
+    $initialSelectedService = $categories
+        ->flatMap(fn ($category) => $category->services)
+        ->firstWhere('id', (int) old('service_id'));
 @endphp
 
 @section('title', $bookingTitle . ' - ' . brand_name())
@@ -97,7 +100,10 @@
                                             <label class="flex items-start gap-4 p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0">
                                                 <input type="radio" name="service_id" value="{{ $service->id }}"
                                                        x-model="serviceId"
-                                                       @change="selectService({{ $service->id }}, '{{ $service->name }}', {{ $service->duration_minutes }}, {{ $service->price }})"
+                                                       data-name="{{ $service->name }}"
+                                                       data-duration="{{ $service->duration_minutes }}"
+                                                       data-formatted-price="{{ $service->formatted_price }}"
+                                                       @change="selectService($event)"
                                                        class="mt-1 {{ $tc->radio ?? 'text-rose-500' }} focus:ring-{{ $tc->primary ?? 'rose' }}-500">
                                                 <div class="flex-1">
                                                     <div class="flex items-start justify-between">
@@ -145,7 +151,7 @@
                         <p class="font-semibold text-gray-900" x-text="serviceName"></p>
                         <p class="text-sm text-gray-500">
                             <span x-text="serviceDuration"></span> {{ __('common.minutes') }} -
-                            <span class="{{ $tc->linkDark ?? 'text-rose-600' }}" x-text="'Rp ' + servicePrice.toLocaleString('id-ID')"></span>
+                            <span class="{{ $tc->linkDark ?? 'text-rose-600' }}" x-text="serviceFormattedPrice"></span>
                         </p>
                     </div>
 
@@ -345,24 +351,24 @@ function bookingForm() {
         openCategories: [{{ $categories->first()?->id ?? 0 }}],
 
         // Step 1
-        serviceId: '',
-        serviceName: '',
-        serviceDuration: 0,
-        servicePrice: 0,
+        serviceId: @js(old('service_id', $initialSelectedService?->id ?? '')),
+        serviceName: @js($initialSelectedService?->name ?? ''),
+        serviceDuration: @js($initialSelectedService?->duration_minutes ?? 0),
+        serviceFormattedPrice: @js($initialSelectedService?->formatted_price ?? ''),
 
         // Step 2
-        appointmentDate: '',
-        startTime: '',
+        appointmentDate: @js(old('appointment_date', '')),
+        startTime: @js(old('start_time', '')),
         slots: [],
         morningSlots: [],
         afternoonSlots: [],
         loadingSlots: false,
 
         // Step 3 - Pre-fill with logged in customer data
-        customerName: '{{ $loggedInCustomer?->name ?? '' }}',
-        customerPhone: '{{ $loggedInCustomer?->phone ?? '' }}',
-        customerEmail: '{{ $loggedInCustomer?->email ?? '' }}',
-        notes: '',
+        customerName: @js(old('name', $loggedInCustomer?->name ?? '')),
+        customerPhone: @js(old('phone', $loggedInCustomer?->phone ?? '')),
+        customerEmail: @js(old('email', $loggedInCustomer?->email ?? '')),
+        notes: @js(old('notes', '')),
         referralCode: '{{ request('ref', '') }}',
         isLoggedIn: {{ $loggedInCustomer ? 'true' : 'false' }},
 
@@ -374,11 +380,13 @@ function bookingForm() {
             }
         },
 
-        selectService(id, name, duration, price) {
-            this.serviceId = id;
-            this.serviceName = name;
-            this.serviceDuration = duration;
-            this.servicePrice = price;
+        selectService(event) {
+            const target = event.target;
+
+            this.serviceId = target.value;
+            this.serviceName = target.dataset.name || '';
+            this.serviceDuration = target.dataset.duration || '';
+            this.serviceFormattedPrice = target.dataset.formattedPrice || '';
         },
 
         async fetchSlots() {

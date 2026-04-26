@@ -52,6 +52,23 @@ class TransactionTherapistCheckoutTest extends TestCase
         $response->assertSee("['service', 'package', 'customer_package'].includes(item.item_type)", false);
     }
 
+    public function test_checkout_page_uses_service_min_price_as_default_for_range_services(): void
+    {
+        $owner = User::factory()->create(['role' => 'owner']);
+        $service = $this->createService([
+            'pricing_mode' => Service::PRICING_MODE_RANGE,
+            'price' => 150000,
+            'price_min' => 150000,
+            'price_max' => 250000,
+        ]);
+
+        $response = $this->actingAs($owner)->get(route('transactions.create'));
+
+        $response->assertOk();
+        $response->assertSee($service->formatted_price);
+        $response->assertSee('data-price="'.$service->price.'"', false);
+    }
+
     public function test_transaction_store_requires_therapist_for_service_items(): void
     {
         $owner = User::factory()->create(['role' => 'owner']);

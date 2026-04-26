@@ -114,7 +114,7 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $appointment->service->duration_minutes }} {{ __('portal.minutes') }}</p>
                 </div>
                 <p class="font-semibold text-gray-900 dark:text-white">
-                    {{ format_currency($appointment->service->price) }}
+                    {{ $appointment->service->formatted_price }}
                 </p>
             </div>
         </div>

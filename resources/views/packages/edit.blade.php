@@ -47,7 +47,7 @@
                         <option value="">{{ __('package.select_service_optional') }}</option>
                         @foreach($services as $service)
                             <option value="{{ $service->id }}" {{ old('service_id', $package->service_id) == $service->id ? 'selected' : '' }}>
-                                {{ $service->name }} - {{ format_currency($service->price) }}
+                                {{ $service->name }} - {{ $service->formatted_price }}
                             </option>
                         @endforeach
                     </select>

@@ -94,6 +94,30 @@ class BookingTest extends TestCase
         $response->assertDontSee('name="staff_id"', false);
     }
 
+    public function test_booking_index_displays_service_price_range(): void
+    {
+        $category = ServiceCategory::factory()->create([
+            'tenant_id' => $this->outlet->tenant_id,
+            'outlet_id' => $this->outlet->id,
+            'is_active' => true,
+        ]);
+        Service::factory()->create([
+            'category_id' => $category->id,
+            'tenant_id' => $this->outlet->tenant_id,
+            'outlet_id' => $this->outlet->id,
+            'is_active' => true,
+            'pricing_mode' => Service::PRICING_MODE_RANGE,
+            'price' => 150000,
+            'price_min' => 150000,
+            'price_max' => 250000,
+        ]);
+
+        $response = $this->get($this->outletRoute('index'));
+
+        $response->assertOk();
+        $response->assertSee('Rp 150.000 - Rp 250.000');
+    }
+
     public function test_outlet_booking_does_not_redirect_to_setup_when_setup_not_completed(): void
     {
         Cache::forget('setup_completed');

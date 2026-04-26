@@ -15,6 +15,10 @@ class Service extends Model
     /** @use HasFactory<\Database\Factories\ServiceFactory> */
     use BelongsToOutlet, BelongsToTenant, HasFactory, SoftDeletes;
 
+    public const PRICING_MODE_FIXED = 'fixed';
+
+    public const PRICING_MODE_RANGE = 'range';
+
     protected $fillable = [
         'tenant_id',
         'outlet_id',
@@ -22,7 +26,10 @@ class Service extends Model
         'name',
         'description',
         'duration_minutes',
+        'pricing_mode',
         'price',
+        'price_min',
+        'price_max',
         'incentive',
         'image',
         'is_active',
@@ -31,11 +38,38 @@ class Service extends Model
     protected function casts(): array
     {
         return [
+            'pricing_mode' => 'string',
             'price' => 'decimal:2',
+            'price_min' => 'decimal:2',
+            'price_max' => 'decimal:2',
             'incentive' => 'decimal:2',
             'duration_minutes' => 'integer',
             'is_active' => 'boolean',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $service): void {
+            $pricingMode = $service->pricing_mode ?: self::PRICING_MODE_FIXED;
+            $service->pricing_mode = $pricingMode;
+
+            if ($pricingMode === self::PRICING_MODE_RANGE) {
+                $priceMin = $service->price_min ?? $service->price ?? 0;
+                $priceMax = $service->price_max ?? $priceMin;
+
+                $service->price_min = $priceMin;
+                $service->price_max = $priceMax;
+                $service->price = $priceMin;
+
+                return;
+            }
+
+            $price = $service->price ?? $service->price_min ?? 0;
+            $service->price = $price;
+            $service->price_min = $price;
+            $service->price_max = $price;
+        });
     }
 
     public function category(): BelongsTo
@@ -55,16 +89,33 @@ class Service extends Model
 
     public function getFormattedPriceAttribute(): string
     {
-        return 'Rp '.number_format($this->price, 0, ',', '.');
+        if ($this->has_price_range) {
+            return $this->formatCurrency($this->price_min).' - '.$this->formatCurrency($this->price_max);
+        }
+
+        return $this->formatCurrency($this->price);
     }
 
     public function getFormattedIncentiveAttribute(): string
     {
-        return 'Rp '.number_format($this->incentive ?? 0, 0, ',', '.');
+        return $this->formatCurrency($this->incentive ?? 0);
     }
 
     public function getFormattedDurationAttribute(): string
     {
         return $this->duration_minutes.' min';
+    }
+
+    public function getHasPriceRangeAttribute(): bool
+    {
+        return $this->pricing_mode === self::PRICING_MODE_RANGE
+            && $this->price_min !== null
+            && $this->price_max !== null
+            && (float) $this->price_max > (float) $this->price_min;
+    }
+
+    protected function formatCurrency(float|int|string|null $amount): string
+    {
+        return 'Rp '.number_format((float) ($amount ?? 0), 0, ',', '.');
     }
 }

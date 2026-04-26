@@ -2,13 +2,15 @@
 
 namespace Database\Seeders;
 
-use App\Models\OperatingHour;
+use App\Services\OperatingHoursService;
 use Database\Seeders\Concerns\ResolvesDemoTenantOutlet;
 use Illuminate\Database\Seeder;
 
 class OperatingHourSeeder extends Seeder
 {
     use ResolvesDemoTenantOutlet;
+
+    public function __construct(private readonly OperatingHoursService $operatingHoursService) {}
 
     public function run(): void
     {
@@ -24,14 +26,6 @@ class OperatingHourSeeder extends Seeder
             ['day_of_week' => 6, 'is_closed' => false, 'open_time' => '09:00', 'close_time' => '15:00'], // Saturday
         ];
 
-        foreach ($hours as $hour) {
-            OperatingHour::withoutGlobalScopes()->updateOrCreate(
-                ['day_of_week' => $hour['day_of_week']],
-                array_merge($hour, [
-                    'tenant_id' => $tenant->id,
-                    'outlet_id' => $outlet->id,
-                ])
-            );
-        }
+        $this->operatingHoursService->upsertWeeklyScheduleForContext($tenant->id, $outlet->id, $hours);
     }
 }

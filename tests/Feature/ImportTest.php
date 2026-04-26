@@ -267,6 +267,31 @@ class ImportTest extends TestCase
         ]);
     }
 
+    public function test_can_process_service_import_with_price_range(): void
+    {
+        $fileName = $this->createExcelFile(
+            ['name', 'category', 'pricing_mode', 'price_min', 'price_max', 'duration_minutes', 'description'],
+            [
+                ['Laser Glow', 'Laser', 'range', '500000', '750000', '45', 'Dynamic price by treatment area'],
+            ]
+        );
+
+        $response = $this->actingAs($this->owner)->post(route('imports.process', 'services'), [
+            'file' => $fileName,
+        ]);
+
+        $response->assertRedirect();
+
+        $this->assertDatabaseHas('services', [
+            'name' => 'Laser Glow',
+            'pricing_mode' => Service::PRICING_MODE_RANGE,
+            'price' => 500000,
+            'price_min' => 500000,
+            'price_max' => 750000,
+            'duration_minutes' => 45,
+        ]);
+    }
+
     public function test_can_view_import_log_details(): void
     {
         $importLog = ImportLog::create([
