@@ -286,35 +286,28 @@ class ReportController extends Controller
 
     private function getStaffData(Carbon $start, Carbon $end): array
     {
-        $staffMembers = User::whereIn('role', ['therapist', 'staff', 'admin'])
+        $staffMembers = User::whereIn('role', ['admin', 'beautician'])
             ->where('is_active', true)
             ->get();
+        $itemsByStaff = $this->getAttributedTransactionItems($start, $end)->groupBy('staff_id');
 
         $result = [];
 
         foreach ($staffMembers as $staff) {
-            // Appointments handled
-            $appointments = Appointment::where('staff_id', $staff->id)
-                ->with('service:id,incentive')
-                ->whereBetween('appointment_date', [$start, $end])
-                ->get();
-
-            $appointmentsCount = $appointments->count();
-            $completedCount = $appointments->where('status', 'completed')->count();
-            $incentive = $appointments
-                ->where('status', 'completed')
-                ->sum(fn ($appointment) => (float) ($appointment->completed_incentive ?? $appointment->service?->incentive ?? 0));
+            $items = $itemsByStaff->get($staff->id, collect());
+            $appointmentIds = $items->pluck('transaction.appointment_id')
+                ->filter()
+                ->unique();
+            $appointmentsCount = $appointmentIds->count();
+            $completedCount = $appointmentsCount;
+            $incentive = $items->sum(fn (TransactionItem $item) => $this->resolveTransactionItemIncentive($item));
 
             // Treatments done
             $treatments = TreatmentRecord::where('staff_id', $staff->id)
                 ->whereBetween('created_at', [$start, $end])
                 ->count();
 
-            // Revenue from transactions where staff did the appointment
-            $appointmentIds = $appointments->pluck('id');
-            $revenue = Transaction::whereIn('appointment_id', $appointmentIds)
-                ->paid()
-                ->sum('total_amount');
+            $revenue = $items->sum(fn (TransactionItem $item) => (float) $item->total_price);
 
             $result[] = [
                 'id' => $staff->id,
@@ -332,6 +325,35 @@ class ReportController extends Controller
         usort($result, fn ($a, $b) => $b['revenue'] <=> $a['revenue']);
 
         return $result;
+    }
+
+    private function getAttributedTransactionItems(Carbon $start, Carbon $end)
+    {
+        return TransactionItem::query()
+            ->with([
+                'transaction:id,appointment_id,created_at,status',
+                'service:id,incentive',
+                'package.service:id,incentive',
+                'customerPackage.package.service:id,incentive',
+            ])
+            ->whereNotNull('staff_id')
+            ->whereIn('item_type', ['service', 'package', 'customer_package'])
+            ->whereHas('transaction', function ($query) use ($start, $end) {
+                $query->paid()->whereBetween('created_at', [$start, $end]);
+            })
+            ->get();
+    }
+
+    private function resolveTransactionItemIncentive(TransactionItem $item): float
+    {
+        $baseIncentive = match ($item->item_type) {
+            'service' => (float) ($item->service?->incentive ?? 0),
+            'package' => (float) ($item->package?->service?->incentive ?? 0),
+            'customer_package' => (float) ($item->customerPackage?->package?->service?->incentive ?? 0),
+            default => 0,
+        };
+
+        return $baseIncentive * max(1, (int) $item->quantity);
     }
 
     private function getPackageStats(Carbon $start, Carbon $end): array

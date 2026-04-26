@@ -358,9 +358,9 @@ class ReferralTest extends TestCase
         ]);
     }
 
-    public function test_admin_can_view_referrals_page(): void
+    public function test_owner_can_view_referrals_page(): void
     {
-        $user = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'owner']);
 
         $response = $this->actingAs($user)->get(route('loyalty.referrals'));
 
@@ -370,7 +370,7 @@ class ReferralTest extends TestCase
 
     public function test_referrals_page_shows_referral_data(): void
     {
-        $user = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'owner']);
 
         $referrer = Customer::factory()->create();
         $referee = Customer::factory()->create([

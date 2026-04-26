@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\ReferralLog;
 use App\Models\Service;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,11 +63,17 @@ class TransactionController extends Controller
         $appointmentId = $request->get('appointment_id');
         $appointment = null;
 
+        $staffMembers = User::query()
+            ->where('role', 'beautician')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
         if ($appointmentId) {
-            $appointment = Appointment::with(['customer', 'service'])->find($appointmentId);
+            $appointment = Appointment::with(['customer', 'service', 'staff'])->find($appointmentId);
         }
 
-        return view('transactions.create', compact('customers', 'services', 'packages', 'products', 'selectedCustomerId', 'appointment'));
+        return view('transactions.create', compact('customers', 'services', 'packages', 'products', 'selectedCustomerId', 'appointment', 'staffMembers'));
     }
 
     public function store(TransactionRequest $request): RedirectResponse
@@ -87,6 +94,7 @@ class TransactionController extends Controller
                     'package_id' => $item['package_id'] ?? null,
                     'product_id' => $item['product_id'] ?? null,
                     'customer_package_id' => $item['customer_package_id'] ?? null,
+                    'staff_id' => $item['staff_id'] ?? null,
                     'item_name' => $item['item_name'],
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
@@ -190,7 +198,7 @@ class TransactionController extends Controller
 
     public function show(Transaction $transaction): View
     {
-        $transaction->load(['customer', 'appointment.service', 'cashier', 'items', 'payments.receiver']);
+        $transaction->load(['customer', 'appointment.service', 'cashier', 'items.staff', 'payments.receiver']);
 
         return view('transactions.show', compact('transaction'));
     }

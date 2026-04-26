@@ -9,6 +9,7 @@
         <div>
             <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Default Permission Global</h1>
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Template akses menu awal untuk semua tenant/outlet. Override per outlet tetap dikelola dari detail tenant.</p>
+            <p class="mt-2 text-xs font-medium text-amber-700 dark:text-amber-300">Role admin dikunci sistem agar hanya bisa memakai Dashboard, Jadwal, Pelanggan, dan Transaksi. Modul admin di luar itu tidak bisa diaktifkan dari halaman ini.</p>
         </div>
         <a href="{{ route('platform.tenants.index') }}" class="inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 transition hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:ring-gray-600 dark:hover:bg-gray-600">
             Kembali ke Tenant
@@ -48,6 +49,7 @@
                                 @foreach($roles as $role)
                                     @php
                                         $checked = (bool) data_get($matrix, "{$role}.{$module['key']}", false);
+                                        $locked = (bool) data_get($lockedMatrix, "{$role}.{$module['key']}", false);
                                     @endphp
                                     <td class="px-4 py-3 text-center">
                                         <input type="hidden" name="permissions[{{ $role }}][{{ $module['key'] }}]" value="0">
@@ -55,9 +57,13 @@
                                             type="checkbox"
                                             name="permissions[{{ $role }}][{{ $module['key'] }}]"
                                             value="1"
-                                            class="h-4 w-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500"
+                                            class="h-4 w-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500 {{ $locked ? 'cursor-not-allowed opacity-50' : '' }}"
                                             @checked($checked)
+                                            @disabled($locked)
                                         >
+                                        @if($locked)
+                                            <div class="mt-1 text-[10px] font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-300">Locked</div>
+                                        @endif
                                     </td>
                                 @endforeach
                             </tr>

@@ -17,9 +17,6 @@
     $selectedService = __('booking.selected_service_' . $businessType, [], null) !== 'booking.selected_service_' . $businessType
         ? __('booking.selected_service_' . $businessType)
         : __('booking.selected_service');
-    $preferredStaff = __('booking.preferred_staff_' . $businessType, [], null) !== 'booking.preferred_staff_' . $businessType
-        ? __('booking.preferred_staff_' . $businessType)
-        : __('booking.preferred_staff');
     $bookingRoutePrefix = $bookingRoutePrefix ?? 'booking';
     $bookingRouteParams = $bookingRouteParams ?? [];
     $bookingHomeUrl = $bookingHomeUrl ?? route('home');
@@ -152,30 +149,15 @@
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-6">
-                        <!-- Date Selection -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('booking.appointment_date') }}</label>
-                            <input type="date" name="appointment_date" x-model="appointmentDate"
-                                   @change="fetchSlots()"
-                                   min="{{ now()->format('Y-m-d') }}"
-                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 {{ $tc->ring ?? 'focus:ring-rose-500/20' }} focus:border-{{ $tc->primary ?? 'rose' }}-400">
-                            @error('appointment_date')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Staff Selection (Optional) -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ $preferredStaff }} <span class="text-gray-400">({{ __('common.optional') }})</span></label>
-                            <select name="staff_id" x-model="staffId" @change="fetchSlots()"
-                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 {{ $tc->ring ?? 'focus:ring-rose-500/20' }} focus:border-{{ $tc->primary ?? 'rose' }}-400">
-                                <option value="">{{ __('booking.any_available') }}</option>
-                                @foreach($beauticians as $beautician)
-                                    <option value="{{ $beautician->id }}">{{ $beautician->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('booking.appointment_date') }}</label>
+                        <input type="date" name="appointment_date" x-model="appointmentDate"
+                               @change="fetchSlots()"
+                               min="{{ now()->format('Y-m-d') }}"
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 {{ $tc->ring ?? 'focus:ring-rose-500/20' }} focus:border-{{ $tc->primary ?? 'rose' }}-400">
+                        @error('appointment_date')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Time Slots -->
@@ -370,7 +352,6 @@ function bookingForm() {
 
         // Step 2
         appointmentDate: '',
-        staffId: '',
         startTime: '',
         slots: [],
         morningSlots: [],
@@ -414,9 +395,6 @@ function bookingForm() {
                     date: this.appointmentDate,
                     service_id: this.serviceId,
                 });
-                if (this.staffId) {
-                    params.append('staff_id', this.staffId);
-                }
 
                 const response = await fetch(`{{ route($bookingRoutePrefix . '.slots', $bookingRouteParams) }}?${params}`);
                 const data = await response.json();

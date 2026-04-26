@@ -43,6 +43,7 @@ class AppointmentCustomerPickerTest extends TestCase
         $response->assertOk();
         $response->assertSee('data-customer-picker', false);
         $response->assertSee('name="customer_id"', false);
+        $response->assertDontSee('name="staff_id"', false);
         $response->assertSee('placeholder="Pilih pelanggan"', false);
         $response->assertSee('Rina Search', false);
 
@@ -87,7 +88,47 @@ class AppointmentCustomerPickerTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('data-customer-picker', false);
+        $response->assertDontSee('name="staff_id"', false);
         $response->assertSee('value="Maya Editable - 081298765432"', false);
         $response->assertSee('value="'.$customer->id.'"', false);
+    }
+
+    public function test_edit_update_preserves_existing_staff_assignment_when_form_no_longer_submits_staff_id(): void
+    {
+        $owner = User::factory()->create(['role' => 'owner']);
+        $staff = User::factory()->create(['role' => 'beautician', 'is_active' => true]);
+        $customer = Customer::factory()->create();
+        $category = ServiceCategory::factory()->create();
+        $service = Service::factory()->create([
+            'category_id' => $category->id,
+            'duration_minutes' => 60,
+            'is_active' => true,
+        ]);
+        $appointment = Appointment::factory()->create([
+            'customer_id' => $customer->id,
+            'service_id' => $service->id,
+            'staff_id' => $staff->id,
+            'appointment_date' => now()->addDay()->format('Y-m-d'),
+            'start_time' => '10:00',
+            'end_time' => '11:00',
+        ]);
+
+        $response = $this->actingAs($owner)->put(route('appointments.update', $appointment), [
+            'customer_id' => $customer->id,
+            'service_id' => $service->id,
+            'appointment_date' => now()->addDays(2)->format('Y-m-d'),
+            'start_time' => '12:00',
+            'source' => 'walk_in',
+            'notes' => 'Updated without staff field',
+        ]);
+
+        $response->assertRedirect(route('appointments.show', $appointment));
+
+        $this->assertDatabaseHas('appointments', [
+            'id' => $appointment->id,
+            'staff_id' => $staff->id,
+            'start_time' => '12:00',
+            'notes' => 'Updated without staff field',
+        ]);
     }
 }

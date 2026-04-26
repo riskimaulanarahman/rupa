@@ -62,15 +62,10 @@ class AppointmentController extends Controller
             $q->where('is_active', true)->orderBy('name');
         }])->orderBy('sort_order')->get();
 
-        $beauticians = User::where('role', 'beautician')
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
-
         $selectedCustomerId = $request->get('customer_id');
         $selectedDate = $request->get('date', today()->format('Y-m-d'));
 
-        return view('appointments.create', compact('customers', 'categories', 'beauticians', 'selectedCustomerId', 'selectedDate'));
+        return view('appointments.create', compact('customers', 'categories', 'selectedCustomerId', 'selectedDate'));
     }
 
     public function store(AppointmentRequest $request): RedirectResponse
@@ -81,7 +76,7 @@ class AppointmentController extends Controller
         $appointment = Appointment::create([
             'customer_id' => $request->customer_id,
             'service_id' => $request->service_id,
-            'staff_id' => $request->staff_id,
+            'staff_id' => null,
             'appointment_date' => $request->appointment_date,
             'start_time' => $request->start_time,
             'end_time' => $endTime,
@@ -110,12 +105,7 @@ class AppointmentController extends Controller
             $q->where('is_active', true)->orderBy('name');
         }])->orderBy('sort_order')->get();
 
-        $beauticians = User::where('role', 'beautician')
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
-
-        return view('appointments.edit', compact('appointment', 'customers', 'categories', 'beauticians'));
+        return view('appointments.edit', compact('appointment', 'customers', 'categories'));
     }
 
     public function update(AppointmentRequest $request, Appointment $appointment): RedirectResponse
@@ -126,7 +116,6 @@ class AppointmentController extends Controller
         $appointment->update([
             'customer_id' => $request->customer_id,
             'service_id' => $request->service_id,
-            'staff_id' => $request->staff_id,
             'appointment_date' => $request->appointment_date,
             'start_time' => $request->start_time,
             'end_time' => $endTime,

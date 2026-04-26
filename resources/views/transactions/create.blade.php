@@ -219,6 +219,23 @@
                                     <!-- Hidden Item Name for non-other types -->
                                     <input type="hidden" :name="'items[' + index + '][item_name]'" :value="item.item_name" x-show="item.item_type !== 'other'">
 
+                                    <!-- Therapist -->
+                                    <div class="md:col-span-2" x-show="isTherapistAssignable(item)">
+                                        <label class="block text-xs max-sm:text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1 max-sm:mb-0.5">{{ business_staff_label() }} <span class="text-red-500">*</span></label>
+                                        <select
+                                            :name="'items[' + index + '][staff_id]'"
+                                            x-model="item.staff_id"
+                                            :required="isTherapistAssignable(item)"
+                                            :disabled="!isTherapistAssignable(item)"
+                                            class="w-full px-3 py-2 max-sm:py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        >
+                                            <option value="">{{ business_staff_label() }}</option>
+                                            @foreach($staffMembers as $staffMember)
+                                                <option value="{{ $staffMember->id }}">{{ $staffMember->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
                                     <!-- Quantity -->
                                     <div>
                                         <label class="block text-xs max-sm:text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1 max-sm:mb-0.5">{{ __('transaction.quantity') }}</label>
@@ -434,18 +451,20 @@
 
 @push('scripts')
 @php
-    $defaultItems = [];
-    if ($appointment && $appointment->service) {
-        $defaultItems = [[
-            'item_type' => 'service',
-            'service_id' => $appointment->service_id,
-            'package_id' => null,
-            'customer_package_id' => null,
-            'item_name' => $appointment->service->name,
-            'quantity' => 1,
-            'unit_price' => $appointment->service->price,
-            'discount' => 0,
-            'notes' => ''
+        $defaultItems = [];
+        if ($appointment && $appointment->service) {
+            $defaultItems = [[
+                'item_type' => 'service',
+                'service_id' => $appointment->service_id,
+                'package_id' => null,
+                'product_id' => null,
+                'customer_package_id' => null,
+                'staff_id' => $appointment->staff_id,
+                'item_name' => $appointment->service->name,
+                'quantity' => 1,
+                'unit_price' => $appointment->service->price,
+                'discount' => 0,
+                'notes' => ''
         ]];
     }
     $initialItems = old('items', $defaultItems);
@@ -470,6 +489,7 @@
             minPointsRedeem: {{ config('loyalty.min_points_redeem', 10) }},
 
             init() {
+                this.items = this.items.map((item) => this.normalizeItem(item));
                 this.discountAmountDisplay = this.formatNumber(this.discountAmount);
                 this.taxAmountDisplay = this.formatNumber(this.taxAmount);
                 if (this.customerId) {
@@ -501,6 +521,28 @@
                 return (item.unit_price * item.quantity) - (item.discount || 0);
             },
 
+            normalizeItem(item) {
+                return {
+                    item_type: item.item_type ?? 'service',
+                    service_id: item.service_id ?? null,
+                    package_id: item.package_id ?? null,
+                    product_id: item.product_id ?? null,
+                    customer_package_id: item.customer_package_id ?? null,
+                    staff_id: item.staff_id ?? null,
+                    item_name: item.item_name ?? '',
+                    quantity: item.quantity ?? 1,
+                    unit_price: item.unit_price ?? 0,
+                    discount: item.discount ?? 0,
+                    notes: item.notes ?? '',
+                    stock: item.stock ?? null,
+                    track_stock: item.track_stock ?? false,
+                };
+            },
+
+            isTherapistAssignable(item) {
+                return ['service', 'package', 'customer_package'].includes(item.item_type);
+            },
+
             formatRupiah(value) {
                 return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
             },
@@ -515,20 +557,9 @@
             },
 
             addItem(type) {
-                this.items.push({
+                this.items.push(this.normalizeItem({
                     item_type: type,
-                    service_id: null,
-                    package_id: null,
-                    product_id: null,
-                    customer_package_id: null,
-                    item_name: '',
-                    quantity: 1,
-                    unit_price: 0,
-                    discount: 0,
-                    notes: '',
-                    stock: null,
-                    track_stock: false
-                });
+                }));
             },
 
             addCustomerPackageItem(cp) {
@@ -541,17 +572,11 @@
                     return;
                 }
 
-                this.items.push({
+                this.items.push(this.normalizeItem({
                     item_type: 'customer_package',
-                    service_id: null,
-                    package_id: null,
                     customer_package_id: cp.id,
                     item_name: cp.package.name + ' (Pakai Sesi)',
-                    quantity: 1,
-                    unit_price: 0,
-                    discount: 0,
-                    notes: ''
-                });
+                }));
             },
 
             removeItem(index) {

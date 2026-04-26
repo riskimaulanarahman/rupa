@@ -75,46 +75,21 @@
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 max-sm:p-4">
             <h3 class="text-lg max-sm:text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 max-sm:mb-3">3. {{ __('appointment.step_datetime') }}</h3>
 
-            <div class="grid sm:grid-cols-2 gap-4 max-sm:gap-3">
-                <!-- Date -->
-                <div>
-                    <label for="appointment_date" class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 max-sm:mb-1.5">{{ __('appointment.date') }} <span class="text-red-500">*</span></label>
-                    <input
-                        type="date"
-                        id="appointment_date"
-                        name="appointment_date"
-                        x-model="appointmentDate"
-                        @change="fetchSlots()"
-                        min="{{ today()->format('Y-m-d') }}"
-                        class="w-full px-4 py-2.5 max-sm:py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 @error('appointment_date') border-red-400 @enderror"
-                        required
-                    >
-                    @error('appointment_date')
-                        <p class="mt-1 text-sm max-sm:text-xs text-red-500">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Staff -->
-                <div>
-                    <label for="staff_id" class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 max-sm:mb-1.5">{{ $staffLabel }}</label>
-                    <select
-                        id="staff_id"
-                        name="staff_id"
-                        x-model="staffId"
-                        @change="fetchSlots()"
-                        class="w-full pl-4 pr-12 py-2.5 max-sm:py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 @error('staff_id') border-red-400 @enderror"
-                    >
-                        <option value="">{{ __('appointment.anyone_available') }}</option>
-                        @foreach($beauticians as $beautician)
-                            <option value="{{ $beautician->id }}" {{ old('staff_id', $appointment->staff_id) == $beautician->id ? 'selected' : '' }}>
-                                {{ $beautician->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('staff_id')
-                        <p class="mt-1 text-sm max-sm:text-xs text-red-500">{{ $message }}</p>
-                    @enderror
-                </div>
+            <div>
+                <label for="appointment_date" class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 max-sm:mb-1.5">{{ __('appointment.date') }} <span class="text-red-500">*</span></label>
+                <input
+                    type="date"
+                    id="appointment_date"
+                    name="appointment_date"
+                    x-model="appointmentDate"
+                    @change="fetchSlots()"
+                    min="{{ today()->format('Y-m-d') }}"
+                    class="w-full px-4 py-2.5 max-sm:py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 @error('appointment_date') border-red-400 @enderror"
+                    required
+                >
+                @error('appointment_date')
+                    <p class="mt-1 text-sm max-sm:text-xs text-red-500">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Time Slots -->
@@ -215,7 +190,6 @@
 function appointmentForm() {
     return {
         serviceId: '{{ old('service_id', $appointment->service_id) }}',
-        staffId: '{{ old('staff_id', $appointment->staff_id) }}',
         appointmentDate: '{{ old('appointment_date', $appointment->appointment_date->format('Y-m-d')) }}',
         startTime: '{{ old('start_time', \Carbon\Carbon::parse($appointment->start_time)->format('H:i')) }}',
         slots: [],
@@ -236,10 +210,6 @@ function appointmentForm() {
                     date: this.appointmentDate,
                     exclude_appointment_id: this.appointmentId,
                 });
-
-                if (this.staffId) {
-                    params.append('staff_id', this.staffId);
-                }
 
                 const response = await fetch(`{{ route('appointments.slots') }}?${params}`);
                 const data = await response.json();

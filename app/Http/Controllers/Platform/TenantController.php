@@ -44,6 +44,7 @@ class TenantController extends Controller
 
         $roles = $this->modulePermissionRegistry->managedRoles();
         $modules = $this->modulePermissionRegistry->modules();
+        $lockedMatrix = $this->modulePermissionRegistry->lockedPermissionMatrix();
         $selectedOutlet = $this->resolveSelectedOutlet($request, $tenant);
         $permissionMatrix = $selectedOutlet
             ? $this->modulePermissionResolver->outletPermissionMatrix($selectedOutlet)
@@ -54,6 +55,7 @@ class TenantController extends Controller
             'plans',
             'roles',
             'modules',
+            'lockedMatrix',
             'selectedOutlet',
             'permissionMatrix'
         ));
@@ -91,15 +93,10 @@ class TenantController extends Controller
     {
         $validated = $request->validated();
         $outlet = $tenant->outlets()->whereKey((int) $validated['outlet_id'])->firstOrFail();
-        $permissions = $validated['permissions'];
+        $permissions = $this->modulePermissionRegistry->normalizePermissionMatrix($validated['permissions']);
 
-        $roles = $this->modulePermissionRegistry->managedRoles();
-        $modules = $this->modulePermissionRegistry->moduleKeys();
-
-        foreach ($roles as $role) {
-            foreach ($modules as $moduleKey) {
-                $isAllowed = (bool) data_get($permissions, "{$role}.{$moduleKey}", false);
-
+        foreach ($permissions as $role => $rolePermissions) {
+            foreach ($rolePermissions as $moduleKey => $isAllowed) {
                 OutletRoleModulePermission::query()->updateOrCreate(
                     [
                         'tenant_id' => $tenant->id,

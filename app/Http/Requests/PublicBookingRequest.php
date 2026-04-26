@@ -25,11 +25,8 @@ class PublicBookingRequest extends FormRequest
         $outletId = outlet_id();
 
         $serviceExistsRule = Rule::exists('services', 'id');
-        $staffExistsRule = Rule::exists('users', 'id');
-
         if ($outletId) {
             $serviceExistsRule = $serviceExistsRule->where(fn ($query) => $query->where('outlet_id', $outletId));
-            $staffExistsRule = $staffExistsRule->where(fn ($query) => $query->where('outlet_id', $outletId));
         }
 
         return [
@@ -37,7 +34,6 @@ class PublicBookingRequest extends FormRequest
             'phone' => ['required', 'string', 'max:20'],
             'email' => ['nullable', 'email', 'max:255'],
             'service_id' => ['required', $serviceExistsRule],
-            'staff_id' => ['nullable', $staffExistsRule],
             'appointment_date' => ['required', 'date', 'after_or_equal:today'],
             'start_time' => ['required', 'date_format:H:i'],
             'notes' => ['nullable', 'string', 'max:500'],

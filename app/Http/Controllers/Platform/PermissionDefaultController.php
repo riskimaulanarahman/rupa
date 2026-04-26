@@ -20,19 +20,19 @@ class PermissionDefaultController extends Controller
         $roles = $this->modulePermissionRegistry->managedRoles();
         $modules = $this->modulePermissionRegistry->modules();
         $matrix = $this->modulePermissionResolver->defaultPermissionMatrix();
+        $lockedMatrix = $this->modulePermissionRegistry->lockedPermissionMatrix();
 
-        return view('platform.permissions.defaults', compact('roles', 'modules', 'matrix'));
+        return view('platform.permissions.defaults', compact('roles', 'modules', 'matrix', 'lockedMatrix'));
     }
 
     public function update(UpdateModulePermissionDefaultsRequest $request)
     {
-        $permissions = $request->validated('permissions', []);
-        $roles = $this->modulePermissionRegistry->managedRoles();
-        $modules = $this->modulePermissionRegistry->moduleKeys();
+        $permissions = $this->modulePermissionRegistry->normalizePermissionMatrix(
+            $request->validated('permissions', [])
+        );
 
-        foreach ($roles as $role) {
-            foreach ($modules as $moduleKey) {
-                $isAllowed = (bool) data_get($permissions, "{$role}.{$moduleKey}", false);
+        foreach ($permissions as $role => $rolePermissions) {
+            foreach ($rolePermissions as $moduleKey => $isAllowed) {
 
                 ModulePermissionDefault::query()->updateOrCreate(
                     [

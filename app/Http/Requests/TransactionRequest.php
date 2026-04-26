@@ -20,10 +20,11 @@ class TransactionRequest extends FormRequest
             'customer_id' => ['required', 'exists:customers,id'],
             'appointment_id' => ['nullable', 'exists:appointments,id'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.item_type' => ['required', 'in:service,package,product,other'],
+            'items.*.item_type' => ['required', 'in:service,package,customer_package,product,other'],
             'items.*.service_id' => ['nullable', 'exists:services,id'],
             'items.*.package_id' => ['nullable', 'exists:packages,id'],
             'items.*.customer_package_id' => ['nullable', 'exists:customer_packages,id'],
+            'items.*.staff_id' => ['nullable', 'exists:users,id'],
             'items.*.item_name' => ['required', 'string', 'max:255'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.unit_price' => ['required', 'numeric', 'min:0'],
@@ -48,5 +49,24 @@ class TransactionRequest extends FormRequest
             'items.*.quantity.required' => 'Jumlah harus diisi.',
             'items.*.unit_price.required' => 'Harga harus diisi.',
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            foreach ($this->input('items', []) as $index => $item) {
+                $itemType = $item['item_type'] ?? null;
+                if (! in_array($itemType, ['service', 'package', 'customer_package'], true)) {
+                    continue;
+                }
+
+                if (empty($item['staff_id'])) {
+                    $validator->errors()->add(
+                        "items.$index.staff_id",
+                        business_staff_label().' harus dipilih untuk item '.($index + 1).'.'
+                    );
+                }
+            }
+        });
     }
 }

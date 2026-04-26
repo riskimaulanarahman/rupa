@@ -39,6 +39,10 @@ class ModulePermissionResolver
         }
 
         $role = strtolower((string) $user->role);
+        if (! $this->registry->isModuleAssignableToRole($role, $moduleKey)) {
+            return false;
+        }
+
         $outletId = (int) (outlet_id() ?? $user->outlet_id ?? 0);
 
         $isAllowed = $this->resolvePermissionValue($role, $moduleKey, $outletId);
@@ -76,8 +80,11 @@ class ModulePermissionResolver
         foreach ($this->registry->managedRoles() as $role) {
             $roleDefaults = $this->getDefaultRolePermissions($role);
             foreach ($this->registry->moduleKeys() as $moduleKey) {
-                $matrix[$role][$moduleKey] = $roleDefaults[$moduleKey]
-                    ?? $this->legacyFallbackByRole($role, $moduleKey);
+                $matrix[$role][$moduleKey] = $this->applyHardLock(
+                    $role,
+                    $moduleKey,
+                    $roleDefaults[$moduleKey] ?? $this->legacyFallbackByRole($role, $moduleKey)
+                );
             }
         }
 
@@ -96,12 +103,15 @@ class ModulePermissionResolver
 
             foreach ($this->registry->moduleKeys() as $moduleKey) {
                 if (array_key_exists($moduleKey, $roleOverrides)) {
-                    $matrix[$role][$moduleKey] = $roleOverrides[$moduleKey];
+                    $matrix[$role][$moduleKey] = $this->applyHardLock($role, $moduleKey, (bool) $roleOverrides[$moduleKey]);
                     continue;
                 }
 
-                $matrix[$role][$moduleKey] = $roleDefaults[$moduleKey]
-                    ?? $this->legacyFallbackByRole($role, $moduleKey);
+                $matrix[$role][$moduleKey] = $this->applyHardLock(
+                    $role,
+                    $moduleKey,
+                    $roleDefaults[$moduleKey] ?? $this->legacyFallbackByRole($role, $moduleKey)
+                );
             }
         }
 
@@ -110,6 +120,10 @@ class ModulePermissionResolver
 
     private function resolvePermissionValue(string $role, string $moduleKey, int $outletId): bool
     {
+        if (! $this->registry->isModuleAssignableToRole($role, $moduleKey)) {
+            return false;
+        }
+
         if ($this->registry->isManagedRole($role) && $outletId > 0) {
             $outletPermissions = $this->getOutletRolePermissions($outletId, $role);
             if (array_key_exists($moduleKey, $outletPermissions)) {
@@ -220,5 +234,12 @@ class ModulePermissionResolver
         }
 
         return has_feature($featureKey);
+    }
+
+    private function applyHardLock(string $role, string $moduleKey, bool $isAllowed): bool
+    {
+        return $this->registry->isModuleAssignableToRole($role, $moduleKey)
+            ? $isAllowed
+            : false;
     }
 }

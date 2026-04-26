@@ -14,6 +14,7 @@ class TransactionItem extends Model
     public const ITEM_TYPES = [
         'service' => 'Layanan',
         'package' => 'Paket',
+        'customer_package' => 'Paket Customer',
         'product' => 'Produk',
         'other' => 'Lainnya',
     ];
@@ -27,6 +28,7 @@ class TransactionItem extends Model
         'package_id',
         'product_id',
         'customer_package_id',
+        'staff_id',
         'item_name',
         'quantity',
         'unit_price',
@@ -62,6 +64,11 @@ class TransactionItem extends Model
     public function customerPackage(): BelongsTo
     {
         return $this->belongsTo(CustomerPackage::class);
+    }
+
+    public function staff(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'staff_id');
     }
 
     public function product(): BelongsTo

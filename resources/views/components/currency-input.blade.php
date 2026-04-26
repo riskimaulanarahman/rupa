@@ -15,7 +15,7 @@
     $initialValue = old($name, $value);
 @endphp
 
-<div x-data="currencyInput('{{ $initialValue }}')" class="w-full">
+<div x-data="currencyInput(@js($initialValue))" class="w-full">
     @if($label)
         <label for="{{ $inputId }}_display" class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 max-sm:mb-1.5">
             {{ $label }}
@@ -63,9 +63,50 @@ document.addEventListener('alpine:init', () => {
         displayValue: '',
 
         init() {
-            const initial = initialValue ? String(initialValue).replace(/\D/g, '') : '';
+            const initial = this.normalizeInitialValue(initialValue);
             this.rawValue = initial;
             this.displayValue = this.formatNumber(initial);
+        },
+
+        normalizeInitialValue(value) {
+            if (value === null || value === undefined || value === '') {
+                return '';
+            }
+
+            if (typeof value === 'number') {
+                if (!Number.isFinite(value)) {
+                    return '';
+                }
+
+                return this.normalizeDigits(String(Math.trunc(value)));
+            }
+
+            const compactValue = String(value).trim().replace(/\s/g, '');
+
+            if (!compactValue) {
+                return '';
+            }
+
+            const lastDot = compactValue.lastIndexOf('.');
+            const lastComma = compactValue.lastIndexOf(',');
+            const decimalSeparatorIndex = Math.max(lastDot, lastComma);
+
+            // Treat the last separator as a decimal marker when it has 1-2 trailing digits.
+            if (decimalSeparatorIndex > 0) {
+                const decimalPart = compactValue.slice(decimalSeparatorIndex + 1);
+
+                if (/^\d{1,2}$/.test(decimalPart)) {
+                    const integerPart = compactValue.slice(0, decimalSeparatorIndex).replace(/\D/g, '');
+
+                    return this.normalizeDigits(integerPart);
+                }
+            }
+
+            return this.normalizeDigits(compactValue.replace(/\D/g, ''));
+        },
+
+        normalizeDigits(value) {
+            return value.replace(/^0+/, '') || '';
         },
 
         allowOnlyNumbers(event) {

@@ -20,7 +20,6 @@ class AppointmentRequest extends FormRequest
         return [
             'customer_id' => ['required', 'exists:customers,id'],
             'service_id' => ['required', 'exists:services,id'],
-            'staff_id' => ['nullable', 'exists:users,id'],
             'appointment_date' => ['required', 'date', 'after_or_equal:today'],
             'start_time' => ['required', 'date_format:H:i'],
             'source' => ['nullable', Rule::in(['walk_in', 'phone', 'whatsapp', 'online'])],

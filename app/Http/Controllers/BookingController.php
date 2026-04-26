@@ -8,7 +8,6 @@ use App\Models\Customer;
 use App\Models\Outlet;
 use App\Models\Service;
 use App\Models\ServiceCategory;
-use App\Models\User;
 use App\Services\AppointmentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -39,20 +38,11 @@ class BookingController extends Controller
             ->with(['services' => fn ($q) => $q->where('is_active', true)->orderBy('name')])
             ->get();
 
-        $beauticians = User::query()
-            ->when($outlet?->id, function ($query) use ($outlet) {
-                $query->where('outlet_id', $outlet->id);
-            })
-            ->where('role', 'beautician')
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
-
         // Get logged in customer if any
         $loggedInCustomer = Auth::guard('customer')->user();
 
         return view('booking.index', array_merge(
-            compact('categories', 'beauticians', 'loggedInCustomer'),
+            compact('categories', 'loggedInCustomer'),
             $this->bookingViewData($request)
         ));
     }
@@ -186,7 +176,7 @@ class BookingController extends Controller
             'outlet_id' => $outletId,
             'customer_id' => $customer->id,
             'service_id' => $validated['service_id'],
-            'staff_id' => $validated['staff_id'] ?? null,
+            'staff_id' => null,
             'appointment_date' => $validated['appointment_date'],
             'start_time' => $validated['start_time'],
             'end_time' => $endTime,

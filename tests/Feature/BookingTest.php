@@ -91,6 +91,7 @@ class BookingTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('booking.index');
+        $response->assertDontSee('name="staff_id"', false);
     }
 
     public function test_outlet_booking_does_not_redirect_to_setup_when_setup_not_completed(): void
@@ -217,6 +218,7 @@ class BookingTest extends TestCase
         $this->assertDatabaseHas('appointments', [
             'service_id' => $service->id,
             'outlet_id' => $this->outlet->id,
+            'staff_id' => null,
             'status' => 'pending',
             'source' => 'online',
         ]);

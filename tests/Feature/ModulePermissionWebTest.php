@@ -62,6 +62,7 @@ class ModulePermissionWebTest extends TestCase
         $matrix['owner']['dashboard'] = true;
         $matrix['owner']['reports'] = true;
         $matrix['admin']['appointments'] = true;
+        $matrix['admin']['settings'] = true;
 
         $response = $this->actingAs($superadmin)->put(
             route('platform.permissions.defaults.update'),
@@ -90,6 +91,7 @@ class ModulePermissionWebTest extends TestCase
 
         $matrix = $this->permissionMatrix(false);
         $matrix['admin']['appointments'] = true;
+        $matrix['admin']['settings'] = true;
         $matrix['owner']['settings'] = true;
 
         $response = $this->actingAs($superadmin)->put(
@@ -171,7 +173,7 @@ class ModulePermissionWebTest extends TestCase
             ->where('module_key', 'import_data')
             ->delete();
 
-        $this->assertTrue($resolver->canAccessModuleForUser($admin, 'import_data'));
+        $this->assertFalse($resolver->canAccessModuleForUser($admin, 'import_data'));
     }
 
     public function test_web_routes_return_403_when_module_not_allowed(): void
@@ -193,6 +195,58 @@ class ModulePermissionWebTest extends TestCase
         $this->actingAs($admin)
             ->get(route('settings.index'))
             ->assertForbidden();
+    }
+
+    public function test_admin_only_can_access_operational_web_modules(): void
+    {
+        [$tenant, $outlet] = $this->createTenantWithOutlet();
+        $admin = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'outlet_id' => $outlet->id,
+            'role' => 'admin',
+            'is_active' => true,
+            'can_view_revenue' => true,
+        ]);
+
+        foreach (['appointments.index', 'customers.index', 'transactions.index'] as $routeName) {
+            $this->actingAs($admin)->get(route($routeName))->assertOk();
+        }
+
+        foreach ([
+            'service-categories.index',
+            'services.index',
+            'products.index',
+            'packages.index',
+            'customer-packages.index',
+            'treatment-records.index',
+            'loyalty.index',
+            'reports.index',
+            'staff.index',
+            'settings.index',
+            'imports.index',
+            'tenant.outlets.index',
+            'tenant.billing.index',
+        ] as $routeName) {
+            $this->actingAs($admin)->get(route($routeName))->assertForbidden();
+        }
+    }
+
+    public function test_platform_permission_pages_mark_locked_admin_modules(): void
+    {
+        $superadmin = $this->createSuperAdmin();
+        [$tenant] = $this->createTenantWithOutlet();
+
+        $this->actingAs($superadmin)
+            ->get(route('platform.permissions.defaults'))
+            ->assertOk()
+            ->assertSee('Role admin dikunci sistem')
+            ->assertSee('Locked');
+
+        $this->actingAs($superadmin)
+            ->get(route('platform.tenants.show', $tenant))
+            ->assertOk()
+            ->assertSee('Role admin dikunci sistem')
+            ->assertSee('Locked');
     }
 
     public function test_web_settings_route_falls_back_when_outlet_permission_table_is_missing(): void

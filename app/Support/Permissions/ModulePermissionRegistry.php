@@ -5,6 +5,18 @@ namespace App\Support\Permissions;
 class ModulePermissionRegistry
 {
     /**
+     * @var array<string, array<int, string>>
+     */
+    private const HARD_LOCKED_ALLOWED_MODULES_BY_ROLE = [
+        'admin' => [
+            'dashboard',
+            'appointments',
+            'customers',
+            'transactions',
+        ],
+    ];
+
+    /**
      * @return array<int, string>
      */
     public function managedRoles(): array
@@ -54,5 +66,70 @@ class ModulePermissionRegistry
     public function isManagedRole(string $role): bool
     {
         return in_array($role, $this->managedRoles(), true);
+    }
+
+    /**
+     * @return array<int, string>|null
+     */
+    public function hardLockedAllowedModulesForRole(string $role): ?array
+    {
+        return self::HARD_LOCKED_ALLOWED_MODULES_BY_ROLE[$role] ?? null;
+    }
+
+    public function roleHasHardLockedModules(string $role): bool
+    {
+        return $this->hardLockedAllowedModulesForRole($role) !== null;
+    }
+
+    public function isModuleAssignableToRole(string $role, string $moduleKey): bool
+    {
+        $allowedModules = $this->hardLockedAllowedModulesForRole($role);
+        if ($allowedModules === null) {
+            return true;
+        }
+
+        return in_array($moduleKey, $allowedModules, true);
+    }
+
+    public function isRoleModuleLocked(string $role, string $moduleKey): bool
+    {
+        return $this->roleHasHardLockedModules($role)
+            && ! $this->isModuleAssignableToRole($role, $moduleKey);
+    }
+
+    /**
+     * @param  array<string, array<string, mixed>>  $permissions
+     * @return array<string, array<string, bool>>
+     */
+    public function normalizePermissionMatrix(array $permissions): array
+    {
+        $normalized = [];
+
+        foreach ($this->managedRoles() as $role) {
+            foreach ($this->moduleKeys() as $moduleKey) {
+                $requested = (bool) data_get($permissions, "{$role}.{$moduleKey}", false);
+                $normalized[$role][$moduleKey] = $this->isModuleAssignableToRole($role, $moduleKey)
+                    ? $requested
+                    : false;
+            }
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @return array<string, array<string, bool>>
+     */
+    public function lockedPermissionMatrix(): array
+    {
+        $matrix = [];
+
+        foreach ($this->managedRoles() as $role) {
+            foreach ($this->moduleKeys() as $moduleKey) {
+                $matrix[$role][$moduleKey] = $this->isRoleModuleLocked($role, $moduleKey);
+            }
+        }
+
+        return $matrix;
     }
 }

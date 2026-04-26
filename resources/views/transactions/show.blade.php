@@ -142,12 +142,14 @@
                                                 $typeColors = [
                                                     'service' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400',
                                                     'package' => 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-400',
+                                                    'customer_package' => 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400',
                                                     'product' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-400',
                                                     'other' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
                                                 ];
                                                 $typeLabels = [
                                                     'service' => 'Layanan',
                                                     'package' => 'Paket',
+                                                    'customer_package' => 'Paket Customer',
                                                     'product' => 'Produk',
                                                     'other' => 'Lainnya',
                                                 ];
@@ -157,6 +159,9 @@
                                             </span>
                                             <span class="font-medium text-sm max-sm:text-xs text-gray-900 dark:text-gray-100">{{ $item->item_name }}</span>
                                         </div>
+                                        @if($item->staff)
+                                            <p class="text-xs max-sm:text-[10px] text-gray-500 dark:text-gray-400 mt-1">{{ business_staff_label() }}: {{ $item->staff->name }}</p>
+                                        @endif
                                         @if($item->notes)
                                             <p class="text-xs max-sm:text-[10px] text-gray-500 dark:text-gray-400 mt-1">{{ $item->notes }}</p>
                                         @endif

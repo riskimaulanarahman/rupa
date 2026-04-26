@@ -54,6 +54,19 @@ class ModulePermissionApiTest extends TestCase
             ])
             ->assertJsonPath('data.user.module_access.transactions', true);
 
+        foreach ([
+            'appointments' => true,
+            'customers' => true,
+            'dashboard' => true,
+            'transactions' => true,
+            'services' => false,
+            'settings' => false,
+            'reports' => false,
+            'loyalty' => false,
+        ] as $moduleKey => $expected) {
+            $loginResponse->assertJsonPath("data.user.module_access.{$moduleKey}", $expected);
+        }
+
         $this->actingAs($user, 'sanctum')
             ->getJson('/api/v1/profile')
             ->assertOk()
@@ -61,7 +74,10 @@ class ModulePermissionApiTest extends TestCase
                 'data' => [
                     'module_access',
                 ],
-            ]);
+            ])
+            ->assertJsonPath('data.module_access.transactions', true)
+            ->assertJsonPath('data.module_access.settings', false)
+            ->assertJsonPath('data.module_access.reports', false);
     }
 
     public function test_api_module_route_returns_403_when_permission_is_denied(): void

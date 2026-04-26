@@ -31,7 +31,7 @@ class RevenueAccessTest extends TestCase
         $this->actingAs($owner)->get(route('reports.index'))->assertOk();
     }
 
-    public function test_admin_with_revenue_access_can_access_revenue_modules_on_web(): void
+    public function test_admin_with_revenue_access_can_access_dashboard_but_not_reports_on_web(): void
     {
         $admin = User::factory()->create([
             'role' => 'admin',
@@ -39,7 +39,7 @@ class RevenueAccessTest extends TestCase
         ]);
 
         $this->actingAs($admin)->get(route('dashboard'))->assertOk();
-        $this->actingAs($admin)->get(route('reports.index'))->assertOk();
+        $this->actingAs($admin)->get(route('reports.index'))->assertForbidden();
     }
 
     public function test_admin_without_revenue_access_is_forbidden_from_revenue_modules_on_web(): void
@@ -91,7 +91,7 @@ class RevenueAccessTest extends TestCase
             ->assertSee(__('transaction.revenue'));
     }
 
-    public function test_owner_and_allowed_admin_can_access_revenue_modules_on_api(): void
+    public function test_owner_and_allowed_admin_can_access_expected_revenue_modules_on_api(): void
     {
         $owner = User::factory()->create([
             'role' => 'owner',
@@ -106,7 +106,7 @@ class RevenueAccessTest extends TestCase
         $this->actingAs($owner, 'sanctum')->getJson('/api/v1/reports')->assertOk();
 
         $this->actingAs($admin, 'sanctum')->getJson('/api/v1/dashboard')->assertOk();
-        $this->actingAs($admin, 'sanctum')->getJson('/api/v1/reports')->assertOk();
+        $this->actingAs($admin, 'sanctum')->getJson('/api/v1/reports')->assertStatus(403);
     }
 
     public function test_admin_without_revenue_access_is_forbidden_from_revenue_modules_on_api(): void
@@ -119,12 +119,14 @@ class RevenueAccessTest extends TestCase
         $this->actingAs($admin, 'sanctum')
             ->getJson('/api/v1/dashboard')
             ->assertStatus(403)
-            ->assertJsonPath('message', 'Anda tidak memiliki akses ke data revenue.');
+            ->assertJsonPath('message', 'Anda tidak memiliki akses ke modul ini.')
+            ->assertJsonPath('module', 'dashboard');
 
         $this->actingAs($admin, 'sanctum')
             ->getJson('/api/v1/reports')
             ->assertStatus(403)
-            ->assertJsonPath('message', 'Anda tidak memiliki akses ke data revenue.');
+            ->assertJsonPath('message', 'Anda tidak memiliki akses ke modul ini.')
+            ->assertJsonPath('module', 'reports');
     }
 
     public function test_owner_can_set_admin_revenue_access_when_creating_staff(): void

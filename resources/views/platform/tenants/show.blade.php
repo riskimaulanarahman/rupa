@@ -59,6 +59,7 @@
                     <div>
                         <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-100">Permission Matrix Per Outlet</h3>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Override permission per role untuk outlet terpilih.</p>
+                        <p class="mt-2 text-xs font-medium text-amber-700 dark:text-amber-300">Role admin dikunci sistem agar hanya bisa memakai Dashboard, Jadwal, Pelanggan, dan Transaksi. Modul lain akan selalu tetap nonaktif walaupun request dikirim manual.</p>
                     </div>
                     <a href="{{ route('platform.permissions.defaults') }}" class="inline-flex items-center justify-center rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 ring-1 ring-inset ring-rose-200 transition hover:bg-rose-100 dark:bg-rose-900/20 dark:text-rose-300 dark:ring-rose-700/60">
                         Atur Default Global
@@ -104,6 +105,7 @@
                                                     @foreach($roles as $role)
                                                         @php
                                                             $checked = (bool) data_get($permissionMatrix, "{$role}.{$module['key']}", false);
+                                                            $locked = (bool) data_get($lockedMatrix, "{$role}.{$module['key']}", false);
                                                         @endphp
                                                         <td class="px-4 py-3 text-center">
                                                             <input type="hidden" name="permissions[{{ $role }}][{{ $module['key'] }}]" value="0">
@@ -111,9 +113,13 @@
                                                                 type="checkbox"
                                                                 name="permissions[{{ $role }}][{{ $module['key'] }}]"
                                                                 value="1"
-                                                                class="h-4 w-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500"
+                                                                class="h-4 w-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500 {{ $locked ? 'cursor-not-allowed opacity-50' : '' }}"
                                                                 @checked($checked)
+                                                                @disabled($locked)
                                                             >
+                                                            @if($locked)
+                                                                <div class="mt-1 text-[10px] font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-300">Locked</div>
+                                                            @endif
                                                         </td>
                                                     @endforeach
                                                 </tr>
