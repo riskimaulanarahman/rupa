@@ -6,6 +6,7 @@ use App\Models\ModulePermissionDefault;
 use App\Models\Outlet;
 use App\Models\OutletRoleModulePermission;
 use App\Models\User;
+use Illuminate\Support\Facades\Schema;
 
 class ModulePermissionResolver
 {
@@ -18,6 +19,8 @@ class ModulePermissionResolver
      * @var array<string, array<string, bool>>
      */
     private array $outletRolePermissionCache = [];
+
+    private ?bool $outletPermissionTableExists = null;
 
     public function __construct(private readonly ModulePermissionRegistry $registry) {}
 
@@ -167,6 +170,12 @@ class ModulePermissionResolver
             return $this->outletRolePermissionCache[$cacheKey];
         }
 
+        if (! $this->hasOutletPermissionTable()) {
+            $this->outletRolePermissionCache[$cacheKey] = [];
+
+            return [];
+        }
+
         $rows = OutletRoleModulePermission::query()
             ->where('outlet_id', $outletId)
             ->where('role', $role)
@@ -180,6 +189,15 @@ class ModulePermissionResolver
         $this->outletRolePermissionCache[$cacheKey] = $permissions;
 
         return $permissions;
+    }
+
+    private function hasOutletPermissionTable(): bool
+    {
+        if ($this->outletPermissionTableExists !== null) {
+            return $this->outletPermissionTableExists;
+        }
+
+        return $this->outletPermissionTableExists = Schema::hasTable('outlet_role_module_permissions');
     }
 
     private function isFeatureAvailable(string $moduleKey): bool

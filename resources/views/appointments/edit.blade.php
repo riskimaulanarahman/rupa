@@ -22,24 +22,14 @@
             <h3 class="text-lg max-sm:text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 max-sm:mb-3">1. {{ __('appointment.customer') }}</h3>
 
             <div>
-                <label for="customer_id" class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 max-sm:mb-1.5">{{ __('appointment.customer') }} <span class="text-red-500">*</span></label>
-                <select
-                    id="customer_id"
+                <x-form.searchable-customer-select
                     name="customer_id"
-                    x-model="customerId"
-                    class="w-full pl-4 pr-12 py-2.5 max-sm:py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 @error('customer_id') border-red-400 @enderror"
+                    :customers="$customers"
+                    :selected-id="old('customer_id', $appointment->customer_id)"
+                    :label="__('appointment.customer')"
+                    placeholder="Pilih pelanggan"
                     required
-                >
-                    <option value="">{{ __('appointment.select_customer') }}</option>
-                    @foreach($customers as $customer)
-                        <option value="{{ $customer->id }}" {{ old('customer_id', $appointment->customer_id) == $customer->id ? 'selected' : '' }}>
-                            {{ $customer->name }} - {{ $customer->phone }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('customer_id')
-                    <p class="mt-1 text-sm max-sm:text-xs text-red-500">{{ $message }}</p>
-                @enderror
+                />
             </div>
         </div>
 
@@ -224,7 +214,6 @@
 <script>
 function appointmentForm() {
     return {
-        customerId: '{{ old('customer_id', $appointment->customer_id) }}',
         serviceId: '{{ old('service_id', $appointment->service_id) }}',
         staffId: '{{ old('staff_id', $appointment->staff_id) }}',
         appointmentDate: '{{ old('appointment_date', $appointment->appointment_date->format('Y-m-d')) }}',

@@ -72,12 +72,13 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-1">Subdomain</label>
-                                    <div class="relative flex items-center">
+                                    @php($registerHost = parse_url(config('app.url'), PHP_URL_HOST))
+                                    <div class="flex flex-col sm:flex-row rounded-xl border border-gray-200 bg-white transition-all overflow-hidden focus-within:border-rose-500 focus-within:ring-4 focus-within:ring-rose-500/10">
                                         <input type="text" name="subdomain" x-model="subdomain" value="{{ old('subdomain') }}" required 
-                                               class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 transition-all outline-none pr-32"
+                                               class="w-full min-w-0 flex-1 px-4 py-3 bg-transparent outline-none border-0 rounded-none"
                                                placeholder="klinik-anda">
-                                        <div class="absolute right-3 px-2 py-1 bg-gray-100 rounded text-[10px] font-bold text-gray-500 border border-gray-200 pointer-events-none">
-                                            .{{ parse_url(config('app.url'), PHP_URL_HOST) }}
+                                        <div class="px-4 py-3 bg-gray-50 text-xs font-bold text-gray-500 border-t border-gray-200 pointer-events-none break-all sm:border-t-0 sm:border-l sm:whitespace-nowrap">
+                                            .{{ $registerHost }}
                                         </div>
                                     </div>
                                     <p class="text-[10px] text-gray-400 mt-1">Alamat akses website Anda nantinya</p>

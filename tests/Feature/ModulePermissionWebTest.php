@@ -10,6 +10,7 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Support\Permissions\ModulePermissionResolver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -192,6 +193,28 @@ class ModulePermissionWebTest extends TestCase
         $this->actingAs($admin)
             ->get(route('settings.index'))
             ->assertForbidden();
+    }
+
+    public function test_web_settings_route_falls_back_when_outlet_permission_table_is_missing(): void
+    {
+        [$tenant, $outlet] = $this->createTenantWithOutlet();
+        $owner = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'outlet_id' => $outlet->id,
+            'role' => 'owner',
+            'is_active' => true,
+            'can_view_revenue' => true,
+        ]);
+
+        Schema::drop('outlet_role_module_permissions');
+
+        $this->actingAs($owner)
+            ->withSession([
+                'active_outlet_id' => $outlet->id,
+                'outlet_slug' => $outlet->slug,
+            ])
+            ->get(route('settings.index'))
+            ->assertOk();
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Http\Resources\CustomerPackageResource;
 use App\Http\Resources\CustomerResource;
 use App\Http\Resources\TreatmentRecordResource;
 use App\Models\Customer;
+use App\Support\Customers\CustomerProfileRules;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -30,19 +31,11 @@ class CustomerController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:20', 'unique:customers,phone'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'birthdate' => ['nullable', 'date', 'before:today'],
-            'gender' => ['nullable', 'in:male,female,other'],
-            'address' => ['nullable', 'string', 'max:500'],
-            'skin_type' => ['nullable', 'in:normal,oily,dry,combination,sensitive'],
-            'skin_concerns' => ['nullable', 'array'],
-            'skin_concerns.*' => ['string'],
-            'allergies' => ['nullable', 'string', 'max:500'],
-            'notes' => ['nullable', 'string', 'max:1000'],
-        ]);
+        $validated = $request->validate(
+            $this->customerRules(),
+            [],
+            CustomerProfileRules::attributes()
+        );
 
         $customer = Customer::create($validated);
 
@@ -61,19 +54,11 @@ class CustomerController extends Controller
 
     public function update(Request $request, Customer $customer): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['sometimes', 'required', 'string', 'max:255'],
-            'phone' => ['sometimes', 'required', 'string', 'max:20', 'unique:customers,phone,'.$customer->id],
-            'email' => ['nullable', 'email', 'max:255'],
-            'birthdate' => ['nullable', 'date', 'before:today'],
-            'gender' => ['nullable', 'in:male,female,other'],
-            'address' => ['nullable', 'string', 'max:500'],
-            'skin_type' => ['nullable', 'in:normal,oily,dry,combination,sensitive'],
-            'skin_concerns' => ['nullable', 'array'],
-            'skin_concerns.*' => ['string'],
-            'allergies' => ['nullable', 'string', 'max:500'],
-            'notes' => ['nullable', 'string', 'max:1000'],
-        ]);
+        $validated = $request->validate(
+            $this->customerRules($customer),
+            [],
+            CustomerProfileRules::attributes()
+        );
 
         $customer->update($validated);
 
@@ -147,5 +132,35 @@ class CustomerController extends Controller
         $appointments = $query->latest('appointment_date')->paginate($perPage);
 
         return AppointmentResource::collection($appointments);
+    }
+
+    /**
+     * @return array<string, array<int, string|\Illuminate\Validation\Rules\In>>
+     */
+    private function customerRules(?Customer $customer = null): array
+    {
+        $nameRules = ['required', 'string', 'max:255'];
+        $phoneRules = [
+            'required',
+            'string',
+            'max:20',
+            'unique:customers,phone'.($customer ? ','.$customer->id : ''),
+        ];
+
+        if ($customer) {
+            array_unshift($nameRules, 'sometimes');
+            array_unshift($phoneRules, 'sometimes');
+        }
+
+        return [
+            'name' => $nameRules,
+            'phone' => $phoneRules,
+            'email' => ['nullable', 'email', 'max:255'],
+            'birthdate' => ['nullable', 'date', 'before:today'],
+            'gender' => ['nullable', 'in:male,female,other'],
+            'address' => ['nullable', 'string', 'max:500'],
+            'allergies' => ['nullable', 'string', 'max:500'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ] + CustomerProfileRules::rules();
     }
 }

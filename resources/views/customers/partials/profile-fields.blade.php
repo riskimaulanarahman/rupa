@@ -50,11 +50,16 @@
     <!-- Profile Type (Skin Type / Hair Type) -->
     @if($typeField && count($typeOptions) > 0)
     <div>
-        <label class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 max-sm:mb-1.5">{{ $typeLabel }}</label>
+        <label class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 max-sm:mb-1.5">
+            {{ $typeLabel }}
+            @if(business_profile_field_required('type'))
+                <span class="text-red-500">*</span>
+            @endif
+        </label>
         <div class="flex flex-wrap gap-4 max-sm:gap-2">
             @foreach($typeOptions as $value => $label)
                 <label class="inline-flex items-center">
-                    <input type="radio" name="skin_type" value="{{ $value }}" class="w-4 h-4 text-rose-500 border-gray-300 dark:border-gray-600 focus:ring-rose-500/20 dark:bg-gray-700" {{ $currentType === $value ? 'checked' : '' }}>
+                    <input type="radio" name="skin_type" value="{{ $value }}" class="w-4 h-4 text-rose-500 border-gray-300 dark:border-gray-600 focus:ring-rose-500/20 dark:bg-gray-700" {{ business_profile_field_required('type') ? 'required' : '' }} {{ $currentType === $value ? 'checked' : '' }}>
                     <span class="ml-2 text-sm max-sm:text-xs text-gray-700 dark:text-gray-300">{{ $label }}</span>
                 </label>
             @endforeach

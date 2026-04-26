@@ -4,20 +4,51 @@ use App\Models\LandingContent;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
 
+if (! function_exists('business_cache_store')) {
+    /**
+     * Use a non-database cache store for runtime business metadata when available.
+     */
+    function business_cache_store(): \Illuminate\Contracts\Cache\Repository
+    {
+        $defaultStore = (string) config('cache.default', 'file');
+
+        if ($defaultStore !== 'database') {
+            return Cache::store($defaultStore);
+        }
+
+        return array_key_exists('file', config('cache.stores', []))
+            ? Cache::store('file')
+            : Cache::store($defaultStore);
+    }
+}
+
 if (! function_exists('is_setup_completed')) {
     /**
      * Check if the initial setup has been completed.
      */
     function is_setup_completed(): bool
     {
-        return Cache::remember('setup_completed', 60, function () {
+        static $resolved = null;
+
+        if ($resolved !== null) {
+            return $resolved;
+        }
+
+        $resolver = function (): bool {
             try {
                 return (bool) Setting::get('setup_completed', false);
-            } catch (\Exception $e) {
-                // Database might not be ready yet
+            } catch (\Throwable $e) {
                 return false;
             }
-        });
+        };
+
+        try {
+            $resolved = (bool) business_cache_store()->remember('setup_completed', 60, $resolver);
+        } catch (\Throwable $e) {
+            $resolved = $resolver();
+        }
+
+        return $resolved;
     }
 }
 
@@ -27,17 +58,80 @@ if (! function_exists('business_type')) {
      */
     function business_type(): ?string
     {
+        static $resolved = false;
+        static $cachedType = null;
+
+        if ($resolved) {
+            return $cachedType;
+        }
+
         if (app()->has('outlet')) {
             return app('outlet')->business_type;
         }
 
-        return Cache::remember('business_type', 60, function () {
+        $resolver = function (): ?string {
             try {
                 return Setting::get('business_type');
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 return null;
             }
-        });
+        };
+
+        try {
+            $cachedType = business_cache_store()->remember('business_type', 60, $resolver);
+        } catch (\Throwable $e) {
+            $cachedType = $resolver();
+        }
+
+        $resolved = true;
+
+        return $cachedType;
+    }
+}
+
+if (! function_exists('is_valid_business_type')) {
+    /**
+     * Check whether the given business type exists in configuration.
+     */
+    function is_valid_business_type(?string $type): bool
+    {
+        return is_string($type) && in_array($type, array_keys(config('business.types', [])), true);
+    }
+}
+
+if (! function_exists('reconcile_outlet_business_type')) {
+    /**
+     * Reconcile legacy business_type settings into the active outlet once.
+     */
+    function reconcile_outlet_business_type(): ?string
+    {
+        if (! app()->has('outlet')) {
+            return null;
+        }
+
+        $outlet = app('outlet');
+        $currentType = $outlet->business_type;
+        $legacyType = Setting::get('business_type');
+
+        if (! is_valid_business_type($legacyType) || $legacyType === $currentType) {
+            return $currentType;
+        }
+
+        try {
+            $outlet->forceFill([
+                'business_type' => $legacyType,
+            ])->save();
+
+            $outlet->business_type = $legacyType;
+            app()->instance('outlet', $outlet);
+            clear_business_cache();
+
+            return $legacyType;
+        } catch (\Throwable $e) {
+            report($e);
+
+            return $currentType;
+        }
     }
 }
 
@@ -52,6 +146,30 @@ if (! function_exists('business_config')) {
     {
         $type = business_type() ?? config('business.default', 'clinic');
         $config = config("business.types.{$type}");
+
+        if ($key === null) {
+            return $config;
+        }
+
+        return data_get($config, $key, $default);
+    }
+}
+
+if (! function_exists('business_config_for_type')) {
+    /**
+     * Get configuration for a specific business type.
+     *
+     * @param  string|null  $type  Explicit business type. Falls back to current type.
+     * @param  string|null  $key  Dot notation key to get specific config value
+     * @param  mixed  $default  Default value if key not found
+     */
+    function business_config_for_type(?string $type = null, ?string $key = null, mixed $default = null): mixed
+    {
+        $resolvedType = is_valid_business_type($type)
+            ? $type
+            : (business_type() ?? config('business.default', 'clinic'));
+
+        $config = config("business.types.{$resolvedType}");
 
         if ($key === null) {
             return $config;
@@ -109,9 +227,9 @@ if (! function_exists('business_profile_fields')) {
     /**
      * Get customer profile fields configuration for the current business type.
      */
-    function business_profile_fields(): array
+    function business_profile_fields(?string $type = null): array
     {
-        return business_config('profile_fields', []);
+        return business_config_for_type($type, 'profile_fields', []);
     }
 }
 
@@ -121,9 +239,9 @@ if (! function_exists('business_profile_options')) {
      *
      * @param  string  $field  The field name ('type' or 'concerns')
      */
-    function business_profile_options(string $field): array
+    function business_profile_options(string $field, ?string $type = null): array
     {
-        $fields = business_profile_fields();
+        $fields = business_profile_fields($type);
         $locale = app()->getLocale();
 
         if (! isset($fields[$field]['options'])) {
@@ -139,6 +257,54 @@ if (! function_exists('business_profile_options')) {
     }
 }
 
+if (! function_exists('business_profile_option_keys')) {
+    /**
+     * Get raw option keys for a profile field.
+     *
+     * @return array<int, string>
+     */
+    function business_profile_option_keys(string $field, ?string $type = null): array
+    {
+        $fields = business_profile_fields($type);
+
+        if (! isset($fields[$field]['options']) || ! is_array($fields[$field]['options'])) {
+            return [];
+        }
+
+        return array_keys($fields[$field]['options']);
+    }
+}
+
+if (! function_exists('business_profile_field_label')) {
+    /**
+     * Get localized label for a profile field.
+     */
+    function business_profile_field_label(string $field, ?string $type = null): string
+    {
+        $fields = business_profile_fields($type);
+        $locale = app()->getLocale();
+        $fieldConfig = $fields[$field] ?? [];
+
+        if ($locale === 'en' && isset($fieldConfig['label_en'])) {
+            return $fieldConfig['label_en'];
+        }
+
+        return $fieldConfig['label'] ?? $field;
+    }
+}
+
+if (! function_exists('business_profile_field_required')) {
+    /**
+     * Determine whether a profile field is required for the current business type.
+     */
+    function business_profile_field_required(string $field, ?string $type = null): bool
+    {
+        $fields = business_profile_fields($type);
+
+        return (bool) data_get($fields, "{$field}.required", false);
+    }
+}
+
 if (! function_exists('clear_business_cache')) {
     /**
      * Clear cached business settings.
@@ -146,8 +312,13 @@ if (! function_exists('clear_business_cache')) {
      */
     function clear_business_cache(): void
     {
-        Cache::forget('setup_completed');
-        Cache::forget('business_type');
+        foreach (['setup_completed', 'business_type'] as $key) {
+            Cache::forget($key);
+
+            if (array_key_exists('file', config('cache.stores', []))) {
+                Cache::store('file')->forget($key);
+            }
+        }
     }
 }
 
@@ -223,11 +394,14 @@ if (! function_exists('landing_text')) {
      */
     function landing_text(string $key, array $replace = []): string
     {
+        static $memoryCache = [];
+
         $locale = app()->getLocale();
         $cacheKey = "landing_content.{$locale}.{$key}";
+        $dbText = $memoryCache[$cacheKey] ?? null;
 
-        $dbText = Cache::remember($cacheKey, 300, function () use ($key, $locale) {
-            try {
+        if (! array_key_exists($cacheKey, $memoryCache)) {
+            $resolver = function () use ($key, $locale) {
                 $content = LandingContent::query()->where('key', $key)->first();
                 if (! $content) {
                     return null;
@@ -236,10 +410,20 @@ if (! function_exists('landing_text')) {
                 $value = $content->content[$locale] ?? $content->content['id'] ?? null;
 
                 return is_string($value) && $value !== '' ? $value : null;
+            };
+
+            try {
+                $dbText = business_cache_store()->remember($cacheKey, 300, $resolver);
             } catch (\Throwable $e) {
-                return null;
+                try {
+                    $dbText = $resolver();
+                } catch (\Throwable $innerException) {
+                    $dbText = null;
+                }
             }
-        });
+
+            $memoryCache[$cacheKey] = $dbText;
+        }
 
         if (is_string($dbText) && $dbText !== '') {
             foreach ($replace as $replaceKey => $replaceValue) {

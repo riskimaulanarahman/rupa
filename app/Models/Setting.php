@@ -25,15 +25,30 @@ class Setting extends Model
         $outletId = outlet_id() ?? 0;
         $cacheKey = "setting.{$tenantId}.{$outletId}.{$key}";
 
-        $setting = Cache::remember($cacheKey, 3600, function () use ($key) {
-            return static::where('key', $key)->first();
-        });
+        try {
+            $setting = self::cacheStore()->remember($cacheKey, 3600, function () use ($key) {
+                return static::where('key', $key)->first();
+            });
+        } catch (\Throwable) {
+            $setting = static::where('key', $key)->first();
+        }
 
         if (! $setting) {
             return $default;
         }
 
         return self::castValue($setting->value, $setting->type);
+    }
+
+    public static function getForCurrentContext(string $key, mixed $default = null): mixed
+    {
+        $value = static::get($key);
+
+        if ($value !== null) {
+            return $value;
+        }
+
+        return static::getGlobal($key, $default);
     }
 
     public static function set(string $key, mixed $value, string $type = 'string'): void
@@ -45,23 +60,61 @@ class Setting extends Model
             ['value' => $storedValue, 'type' => $type]
         );
 
-        $tenantId = tenant_id() ?? 0;
-        $outletId = outlet_id() ?? 0;
-        Cache::forget("setting.{$tenantId}.{$outletId}.{$key}");
+        self::forgetCacheKey("setting.".(tenant_id() ?? 0).'.'.(outlet_id() ?? 0).".{$key}");
+    }
+
+    public static function setForCurrentContext(string $key, mixed $value, string $type = 'string'): void
+    {
+        $storedValue = self::prepareStoredValue($value, $type);
+        $tenantId = tenant_id();
+        $outletId = outlet_id();
+
+        $existing = static::query()
+            ->withoutGlobalScopes()
+            ->where('key', $key)
+            ->first();
+
+        $oldTenantId = (int) ($existing?->tenant_id ?? 0);
+        $oldOutletId = (int) ($existing?->outlet_id ?? 0);
+
+        static::query()
+            ->withoutGlobalScopes()
+            ->updateOrCreate(
+                ['key' => $key],
+                [
+                    'tenant_id' => $tenantId,
+                    'outlet_id' => $outletId,
+                    'value' => $storedValue,
+                    'type' => $type,
+                ]
+            );
+
+        self::forgetCacheKey("setting.{$oldTenantId}.{$oldOutletId}.{$key}");
+        self::forgetCacheKey('setting.'.($tenantId ?? 0).'.'.($outletId ?? 0).".{$key}");
+        static::forgetGlobal($key);
     }
 
     public static function getGlobal(string $key, mixed $default = null): mixed
     {
         $cacheKey = "setting.global.{$key}";
 
-        $setting = Cache::remember($cacheKey, 3600, function () use ($key) {
-            return static::query()
+        try {
+            $setting = self::cacheStore()->remember($cacheKey, 3600, function () use ($key) {
+                return static::query()
+                    ->withoutGlobalScopes()
+                    ->where('key', $key)
+                    ->whereNull('tenant_id')
+                    ->whereNull('outlet_id')
+                    ->first();
+            });
+        } catch (\Throwable) {
+            $setting = static::query()
                 ->withoutGlobalScopes()
                 ->where('key', $key)
                 ->whereNull('tenant_id')
                 ->whereNull('outlet_id')
                 ->first();
-        });
+        }
 
         if (! $setting) {
             return $default;
@@ -90,7 +143,30 @@ class Setting extends Model
 
     public static function forgetGlobal(string $key): void
     {
-        Cache::forget("setting.global.{$key}");
+        self::forgetCacheKey("setting.global.{$key}");
+    }
+
+    private static function cacheStore(): \Illuminate\Contracts\Cache\Repository
+    {
+        $defaultStore = (string) config('cache.default', 'file');
+
+        if ($defaultStore !== 'database') {
+            return Cache::store($defaultStore);
+        }
+
+        return array_key_exists('file', config('cache.stores', []))
+            ? Cache::store('file')
+            : Cache::store($defaultStore);
+    }
+
+    private static function forgetCacheKey(string $key): void
+    {
+        Cache::forget($key);
+
+        $defaultStore = (string) config('cache.default', 'file');
+        if ($defaultStore === 'database' && array_key_exists('file', config('cache.stores', []))) {
+            Cache::store('file')->forget($key);
+        }
     }
 
     private static function prepareStoredValue(mixed $value, string $type): string

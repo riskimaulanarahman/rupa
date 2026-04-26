@@ -3,6 +3,24 @@
 use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
 
+if (! function_exists('branding_cache_store')) {
+    /**
+     * Keep branding lookups off the database cache store during local runtime.
+     */
+    function branding_cache_store(): \Illuminate\Contracts\Cache\Repository
+    {
+        $defaultStore = (string) config('cache.default', 'file');
+
+        if ($defaultStore !== 'database') {
+            return Cache::store($defaultStore);
+        }
+
+        return array_key_exists('file', config('cache.stores', []))
+            ? Cache::store('file')
+            : Cache::store($defaultStore);
+    }
+}
+
 if (! function_exists('brand')) {
     /**
      * Get a branding configuration value.
@@ -13,8 +31,8 @@ if (! function_exists('brand')) {
      */
     function brand(string $key, mixed $default = null): mixed
     {
-        return Cache::remember("brand.{$key}", 300, function () use ($key, $default) {
-            // First try to get from database settings
+        $cacheKey = "brand.{$key}";
+        $resolver = function () use ($key, $default) {
             $settingKey = 'brand_'.str_replace('.', '_', $key);
 
             try {
@@ -22,13 +40,18 @@ if (! function_exists('brand')) {
                 if ($dbValue !== null && $dbValue !== '') {
                     return $dbValue;
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // Database might not be ready
             }
 
-            // Fall back to config file
             return config("branding.{$key}", $default);
-        });
+        };
+
+        try {
+            return branding_cache_store()->remember($cacheKey, 300, $resolver);
+        } catch (\Throwable $e) {
+            return $resolver();
+        }
     }
 }
 
@@ -290,6 +313,11 @@ if (! function_exists('clear_brand_cache')) {
 
         foreach ($keys as $key) {
             Cache::forget("brand.{$key}");
+
+            $defaultStore = (string) config('cache.default', 'file');
+            if ($defaultStore === 'database' && array_key_exists('file', config('cache.stores', []))) {
+                Cache::store('file')->forget("brand.{$key}");
+            }
         }
     }
 }

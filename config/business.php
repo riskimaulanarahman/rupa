@@ -59,6 +59,7 @@ return [
                 'type' => [
                     'label' => 'Tipe Kulit',
                     'label_en' => 'Skin Type',
+                    'required' => true,
                     'options' => [
                         'normal' => ['id' => 'Normal', 'en' => 'Normal'],
                         'oily' => ['id' => 'Berminyak', 'en' => 'Oily'],
@@ -166,6 +167,7 @@ return [
                 'type' => [
                     'label' => 'Tipe Rambut',
                     'label_en' => 'Hair Type',
+                    'required' => false,
                     'options' => [
                         'normal' => ['id' => 'Normal', 'en' => 'Normal'],
                         'oily' => ['id' => 'Berminyak', 'en' => 'Oily'],
@@ -283,6 +285,7 @@ return [
                 'type' => [
                     'label' => 'Tipe Rambut',
                     'label_en' => 'Hair Type',
+                    'required' => false,
                     'options' => [
                         'normal' => ['id' => 'Normal', 'en' => 'Normal'],
                         'oily' => ['id' => 'Berminyak', 'en' => 'Oily'],

@@ -7,6 +7,7 @@ use App\Models\Setting;
 use App\Support\Branding\BrandIconGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -23,15 +24,15 @@ class SettingController extends Controller
     public function clinic(): View
     {
         $settings = [
-            'business_type' => Setting::get('business_type', 'clinic'),
-            'business_name' => Setting::get('business_name', ''),
-            'business_address' => Setting::get('business_address', ''),
-            'business_phone' => Setting::get('business_phone', ''),
-            'business_email' => Setting::get('business_email', ''),
-            'clinic_logo' => Setting::get('clinic_logo', ''),
-            'tax_percentage' => Setting::get('tax_percentage', 0),
-            'invoice_prefix' => Setting::get('invoice_prefix', 'INV'),
-            'slot_duration' => Setting::get('slot_duration', 30),
+            'business_type' => business_type() ?? Setting::getForCurrentContext('business_type', 'clinic'),
+            'business_name' => Setting::getForCurrentContext('business_name', ''),
+            'business_address' => Setting::getForCurrentContext('business_address', ''),
+            'business_phone' => Setting::getForCurrentContext('business_phone', ''),
+            'business_email' => Setting::getForCurrentContext('business_email', ''),
+            'clinic_logo' => Setting::getForCurrentContext('clinic_logo', ''),
+            'tax_percentage' => Setting::getForCurrentContext('tax_percentage', 0),
+            'invoice_prefix' => Setting::getForCurrentContext('invoice_prefix', 'INV'),
+            'slot_duration' => Setting::getForCurrentContext('slot_duration', 30),
         ];
 
         $businessTypes = config('business.types');
@@ -41,7 +42,7 @@ class SettingController extends Controller
 
     public function updateClinic(Request $request): RedirectResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'business_type' => ['required', 'string', 'in:clinic,salon,barbershop'],
             'business_name' => ['required', 'string', 'max:255'],
             'business_address' => ['nullable', 'string', 'max:500'],
@@ -53,25 +54,47 @@ class SettingController extends Controller
             'slot_duration' => ['required', 'integer', 'min:15', 'max:120'],
         ]);
 
-        Setting::set('business_type', $request->business_type);
-        Setting::set('business_name', $request->business_name);
-        Setting::set('business_address', $request->business_address);
-        Setting::set('business_phone', $request->business_phone);
-        Setting::set('business_email', $request->business_email);
-        Setting::set('tax_percentage', $request->tax_percentage, 'integer');
-        Setting::set('invoice_prefix', $request->invoice_prefix);
-        Setting::set('slot_duration', $request->slot_duration, 'integer');
+        $newLogoPath = null;
+        $oldLogo = Setting::getForCurrentContext('clinic_logo');
 
         if ($request->hasFile('clinic_logo')) {
-            $oldLogo = Setting::get('clinic_logo');
-            if ($oldLogo) {
-                Storage::disk('public')->delete($oldLogo);
-            }
-            $path = $request->file('clinic_logo')->store('settings', 'public');
-            Setting::set('clinic_logo', $path);
+            $newLogoPath = $request->file('clinic_logo')->store('settings', 'public');
         }
 
-        // Clear business cache so theme changes take effect immediately
+        try {
+            DB::transaction(function () use ($validated, $newLogoPath) {
+                $outlet = outlet();
+                if ($outlet) {
+                    $outlet->forceFill([
+                        'business_type' => $validated['business_type'],
+                    ])->save();
+                }
+
+                Setting::setForCurrentContext('business_type', $validated['business_type']);
+                Setting::setForCurrentContext('business_name', $validated['business_name']);
+                Setting::setForCurrentContext('business_address', $validated['business_address'] ?? null);
+                Setting::setForCurrentContext('business_phone', $validated['business_phone'] ?? null);
+                Setting::setForCurrentContext('business_email', $validated['business_email'] ?? null);
+                Setting::setForCurrentContext('tax_percentage', $validated['tax_percentage'], 'integer');
+                Setting::setForCurrentContext('invoice_prefix', $validated['invoice_prefix']);
+                Setting::setForCurrentContext('slot_duration', $validated['slot_duration'], 'integer');
+
+                if ($newLogoPath !== null) {
+                    Setting::setForCurrentContext('clinic_logo', $newLogoPath);
+                }
+            });
+        } catch (\Throwable $e) {
+            if ($newLogoPath !== null) {
+                Storage::disk('public')->delete($newLogoPath);
+            }
+
+            throw $e;
+        }
+
+        if ($newLogoPath !== null && $oldLogo && $oldLogo !== $newLogoPath) {
+            Storage::disk('public')->delete($oldLogo);
+        }
+
         clear_business_cache();
 
         return back()->with('success', __('setting.updated'));

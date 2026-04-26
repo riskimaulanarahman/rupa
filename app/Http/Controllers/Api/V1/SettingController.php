@@ -24,7 +24,7 @@ class SettingController extends Controller
                 'operating_hours' => $this->getOperatingHours(),
                 'appointment' => $this->getAppointmentSettings(),
                 'features' => $this->getEnabledFeatures(),
-                'business_type' => config('business.type', 'clinic'),
+                'business_type' => business_type() ?? 'clinic',
             ],
         ]);
     }
@@ -71,7 +71,7 @@ class SettingController extends Controller
 
         foreach ($fieldMap as $requestField => $settingKey) {
             if ($request->has($requestField)) {
-                Setting::set($settingKey, $request->input($requestField));
+                Setting::setForCurrentContext($settingKey, $request->input($requestField));
             }
         }
 
@@ -110,14 +110,14 @@ class SettingController extends Controller
      */
     public function branding(): JsonResponse
     {
-        $logo = Setting::get('clinic_logo');
+        $logo = Setting::getForCurrentContext('clinic_logo');
 
         return response()->json([
             'data' => [
                 'logo' => $logo,
                 'logo_url' => $logo ? asset('storage/'.$logo) : null,
-                'primary_color' => Setting::get('primary_color', '#f43f5e'),
-                'secondary_color' => Setting::get('secondary_color', '#cc4637'),
+                'primary_color' => Setting::getForCurrentContext('primary_color', '#f43f5e'),
+                'secondary_color' => Setting::getForCurrentContext('secondary_color', '#cc4637'),
             ],
         ]);
     }
@@ -188,18 +188,18 @@ class SettingController extends Controller
     private function getClinicInfo(): array
     {
         return [
-            'name' => Setting::get('clinic_name', config('app.name')),
-            'phone' => Setting::get('clinic_phone'),
-            'email' => Setting::get('clinic_email'),
-            'address' => Setting::get('clinic_address'),
-            'city' => Setting::get('clinic_city'),
-            'province' => Setting::get('clinic_province'),
-            'postal_code' => Setting::get('clinic_postal_code'),
-            'description' => Setting::get('clinic_description'),
-            'whatsapp' => Setting::get('clinic_whatsapp'),
-            'instagram' => Setting::get('clinic_instagram'),
-            'facebook' => Setting::get('clinic_facebook'),
-            'website' => Setting::get('clinic_website'),
+            'name' => Setting::getForCurrentContext('clinic_name', config('app.name')),
+            'phone' => Setting::getForCurrentContext('clinic_phone'),
+            'email' => Setting::getForCurrentContext('clinic_email'),
+            'address' => Setting::getForCurrentContext('clinic_address'),
+            'city' => Setting::getForCurrentContext('clinic_city'),
+            'province' => Setting::getForCurrentContext('clinic_province'),
+            'postal_code' => Setting::getForCurrentContext('clinic_postal_code'),
+            'description' => Setting::getForCurrentContext('clinic_description'),
+            'whatsapp' => Setting::getForCurrentContext('clinic_whatsapp'),
+            'instagram' => Setting::getForCurrentContext('clinic_instagram'),
+            'facebook' => Setting::getForCurrentContext('clinic_facebook'),
+            'website' => Setting::getForCurrentContext('clinic_website'),
         ];
     }
 
@@ -219,12 +219,12 @@ class SettingController extends Controller
     private function getAppointmentSettings(): array
     {
         return [
-            'slot_duration' => (int) Setting::get('slot_duration', 30),
-            'max_booking_days' => (int) Setting::get('max_booking_days', 90),
-            'min_booking_hours' => (int) Setting::get('min_booking_hours', 2),
-            'allow_walk_in' => (bool) Setting::get('allow_walk_in', true),
-            'require_deposit' => (bool) Setting::get('require_deposit', false),
-            'deposit_amount' => (int) Setting::get('deposit_amount', 0),
+            'slot_duration' => (int) Setting::getForCurrentContext('slot_duration', 30),
+            'max_booking_days' => (int) Setting::getForCurrentContext('max_booking_days', 90),
+            'min_booking_hours' => (int) Setting::getForCurrentContext('min_booking_hours', 2),
+            'allow_walk_in' => (bool) Setting::getForCurrentContext('allow_walk_in', true),
+            'require_deposit' => (bool) Setting::getForCurrentContext('require_deposit', false),
+            'deposit_amount' => (int) Setting::getForCurrentContext('deposit_amount', 0),
         ];
     }
 
@@ -244,11 +244,11 @@ class SettingController extends Controller
             'walk_in_queue',
         ];
 
-        $enabledFeatures = config('business.features', []);
+        $enabledFeatures = business_features();
 
         $result = [];
         foreach ($allFeatures as $feature) {
-            $result[$feature] = in_array($feature, $enabledFeatures);
+            $result[$feature] = (bool) ($enabledFeatures[$feature] ?? false);
         }
 
         return $result;
