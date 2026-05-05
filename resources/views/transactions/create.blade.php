@@ -4,7 +4,7 @@
 @section('page-title', __('transaction.add'))
 
 @section('content')
-<div x-data="transactionForm()" class="max-w-6xl mx-auto space-y-6 max-sm:space-y-4">
+<div x-data="transactionForm()" @customer-added.window="addNewCustomer($event.detail)" class="max-w-6xl mx-auto space-y-6 max-sm:space-y-4">
     <!-- Back Button -->
     <div class="mb-6 max-sm:mb-4">
         <a href="{{ route('transactions.index') }}" class="inline-flex items-center gap-2 text-sm max-sm:text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition">
@@ -40,7 +40,19 @@
             <div class="col-span-2 max-lg:col-span-1 space-y-6 max-sm:space-y-4">
                 <!-- Customer Selection -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 max-sm:p-4">
-                    <h3 class="text-lg max-sm:text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 max-sm:mb-3">{{ __('transaction.customer_info') }}</h3>
+                    <div class="flex items-center justify-between mb-4 max-sm:mb-3">
+                        <h3 class="text-lg max-sm:text-base font-semibold text-gray-900 dark:text-gray-100">{{ __('transaction.customer_info') }}</h3>
+                        <button
+                            type="button"
+                            @click="$dispatch('open-add-customer-modal')"
+                            class="inline-flex items-center gap-1 px-3 py-1.5 max-sm:px-2 max-sm:py-1 bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-sm max-sm:text-xs font-medium rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/50 border border-rose-200 dark:border-rose-800 transition"
+                        >
+                            <svg class="w-4 h-4 max-sm:w-3.5 max-sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Tambah Pelanggan
+                        </button>
+                    </div>
 
                     <div class="space-y-4 max-sm:space-y-3">
                         <div>
@@ -53,11 +65,9 @@
                                 required
                             >
                                 <option value="">{{ __('transaction.select_customer') }}</option>
-                                @foreach($customers as $customer)
-                                    <option value="{{ $customer->id }}" {{ (old('customer_id', $selectedCustomerId) == $customer->id) ? 'selected' : '' }}>
-                                        {{ $customer->name }} - {{ $customer->phone }}
-                                    </option>
-                                @endforeach
+                                <template x-for="customer in customers" :key="customer.id">
+                                    <option :value="customer.id" x-text="customer.name + ' - ' + customer.phone"></option>
+                                </template>
                             </select>
                         </div>
 
@@ -447,6 +457,195 @@
             </div>
         </div>
     </form>
+
+    {{-- Add Customer Modal --}}
+    <div
+        x-data="{
+            open: false,
+            loading: false,
+            errors: {},
+            form: { name: '', phone: '', email: '', gender: '' },
+
+            resetForm() {
+                this.form = { name: '', phone: '', email: '', gender: '' };
+                this.errors = {};
+            },
+
+            async submit() {
+                this.loading = true;
+                this.errors = {};
+
+                try {
+                    const response = await fetch('{{ route('web.api.customers.quick-store') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                        },
+                        body: JSON.stringify(this.form),
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        this.$dispatch('customer-added', data.customer);
+                        this.open = false;
+                        this.resetForm();
+                    } else if (response.status === 422) {
+                        this.errors = data.errors ?? {};
+                    } else {
+                        this.errors = { _general: ['Terjadi kesalahan. Silakan coba lagi.'] };
+                    }
+                } catch (e) {
+                    this.errors = { _general: ['Terjadi kesalahan jaringan. Silakan coba lagi.'] };
+                } finally {
+                    this.loading = false;
+                }
+            }
+        }"
+        @open-add-customer-modal.window="open = true; resetForm()"
+        x-show="open"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto"
+    >
+        <div class="flex items-center justify-center min-h-screen px-4 max-sm:px-3">
+            {{-- Backdrop --}}
+            <div
+                x-show="open"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-black/50"
+                @click="open = false"
+            ></div>
+
+            {{-- Panel --}}
+            <div
+                x-show="open"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 max-sm:p-4"
+            >
+                {{-- Header --}}
+                <div class="flex items-center justify-between mb-4 max-sm:mb-3">
+                    <h3 class="text-lg max-sm:text-base font-semibold text-gray-900 dark:text-gray-100">Tambah Pelanggan Baru</h3>
+                    <button type="button" @click="open = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- General error --}}
+                <div x-show="errors._general" class="mb-4 max-sm:mb-3 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p class="text-sm max-sm:text-xs text-red-600 dark:text-red-400" x-text="(errors._general || [])[0]"></p>
+                </div>
+
+                {{-- Form --}}
+                <div class="space-y-4 max-sm:space-y-3">
+                    {{-- Name --}}
+                    <div>
+                        <label class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 max-sm:mb-1">
+                            Nama <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            x-model="form.name"
+                            placeholder="Nama lengkap pelanggan"
+                            class="w-full px-4 py-2.5 max-sm:py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                            :class="errors.name ? 'border-red-400' : 'border-gray-200 dark:border-gray-600'"
+                        >
+                        <p x-show="errors.name" class="mt-1 text-xs text-red-500" x-text="(errors.name || [])[0]"></p>
+                    </div>
+
+                    {{-- Phone --}}
+                    <div>
+                        <label class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 max-sm:mb-1">
+                            Nomor HP <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            x-model="form.phone"
+                            placeholder="08xxxxxxxxxx"
+                            inputmode="tel"
+                            class="w-full px-4 py-2.5 max-sm:py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                            :class="errors.phone ? 'border-red-400' : 'border-gray-200 dark:border-gray-600'"
+                        >
+                        <p x-show="errors.phone" class="mt-1 text-xs text-red-500" x-text="(errors.phone || [])[0]"></p>
+                    </div>
+
+                    {{-- Email --}}
+                    <div>
+                        <label class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 max-sm:mb-1">
+                            Email <span class="text-gray-400 font-normal">(opsional)</span>
+                        </label>
+                        <input
+                            type="email"
+                            x-model="form.email"
+                            placeholder="email@contoh.com"
+                            class="w-full px-4 py-2.5 max-sm:py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                            :class="errors.email ? 'border-red-400' : 'border-gray-200 dark:border-gray-600'"
+                        >
+                        <p x-show="errors.email" class="mt-1 text-xs text-red-500" x-text="(errors.email || [])[0]"></p>
+                    </div>
+
+                    {{-- Gender --}}
+                    <div>
+                        <label class="block text-sm max-sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 max-sm:mb-1">
+                            Jenis Kelamin <span class="text-gray-400 font-normal">(opsional)</span>
+                        </label>
+                        <div class="flex flex-wrap gap-4 max-sm:gap-3">
+                            <label class="inline-flex items-center">
+                                <input type="radio" x-model="form.gender" value="male" class="w-4 h-4 text-rose-500 border-gray-300 dark:border-gray-600 focus:ring-rose-500/20 dark:bg-gray-700">
+                                <span class="ml-2 text-sm max-sm:text-xs text-gray-700 dark:text-gray-300">Laki-laki</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" x-model="form.gender" value="female" class="w-4 h-4 text-rose-500 border-gray-300 dark:border-gray-600 focus:ring-rose-500/20 dark:bg-gray-700">
+                                <span class="ml-2 text-sm max-sm:text-xs text-gray-700 dark:text-gray-300">Perempuan</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" x-model="form.gender" value="other" class="w-4 h-4 text-rose-500 border-gray-300 dark:border-gray-600 focus:ring-rose-500/20 dark:bg-gray-700">
+                                <span class="ml-2 text-sm max-sm:text-xs text-gray-700 dark:text-gray-300">Lainnya</span>
+                            </label>
+                        </div>
+                        <p x-show="errors.gender" class="mt-1 text-xs text-red-500" x-text="(errors.gender || [])[0]"></p>
+                    </div>
+                </div>
+
+                {{-- Footer actions --}}
+                <div class="flex flex-row max-sm:flex-col items-center justify-end gap-3 max-sm:gap-2 mt-6 max-sm:mt-4">
+                    <button
+                        type="button"
+                        @click="open = false"
+                        :disabled="loading"
+                        class="px-4 py-2 max-sm:w-full max-sm:py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm max-sm:text-xs font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        type="button"
+                        @click="submit()"
+                        :disabled="loading"
+                        class="px-4 py-2 max-sm:w-full max-sm:py-1.5 bg-rose-500 hover:bg-rose-600 text-white text-sm max-sm:text-xs font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+                    >
+                        <svg x-show="loading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        <span x-text="loading ? 'Menyimpan...' : 'Simpan Pelanggan'"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @push('scripts')
@@ -472,6 +671,7 @@
 <script>
     function transactionForm() {
         return {
+            customers: @json($customers->map(fn ($c) => ['id' => (string) $c->id, 'name' => $c->name, 'phone' => $c->phone])),
             customerId: '{{ old('customer_id', $appointment?->customer_id ?? $selectedCustomerId ?? '') }}',
             items: @json($initialItems),
             customerPackages: [],
@@ -686,6 +886,16 @@
 
             useMaxPoints() {
                 this.pointsToUse = this.maxPointsToUse;
+            },
+
+            addNewCustomer(customer) {
+                const exists = this.customers.find(c => c.id == customer.id);
+                if (!exists) {
+                    this.customers.push({ id: String(customer.id), name: customer.name, phone: customer.phone });
+                }
+                this.customerId = String(customer.id);
+                this.loadCustomerPackages();
+                this.loadCustomerPoints();
             }
         };
     }

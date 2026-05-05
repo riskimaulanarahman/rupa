@@ -153,6 +153,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Customers
     Route::middleware('module.access:customers')->group(function () {
+        Route::post('api/customers/quick-store', [CustomerController::class, 'quickStore'])
+            ->name('web.api.customers.quick-store');
         Route::resource('customers', CustomerController::class);
     });
 

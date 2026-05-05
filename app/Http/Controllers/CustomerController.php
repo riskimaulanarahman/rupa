@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustomerRequest;
 use App\Models\Customer;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class CustomerController extends Controller
@@ -111,5 +113,29 @@ class CustomerController extends Controller
             'lifetime_points' => $customer->lifetime_points,
             'tier' => $customer->loyalty_tier,
         ]);
+    }
+
+    public function quickStore(Request $request): JsonResponse
+    {
+        $validated = $request->validate(
+            [
+                'name' => ['required', 'string', 'max:255'],
+                'phone' => ['required', 'string', 'max:20', 'regex:/^08[0-9]{8,13}$/', Rule::unique('customers', 'phone')],
+                'email' => ['nullable', 'email', 'max:255'],
+                'gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
+            ],
+            ['phone.unique' => 'Nomor telepon sudah terdaftar.']
+        );
+
+        $customer = Customer::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'customer' => [
+                'id' => $customer->id,
+                'name' => $customer->name,
+                'phone' => $customer->phone,
+            ],
+        ], 201);
     }
 }
